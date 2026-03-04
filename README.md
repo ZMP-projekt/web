@@ -1,73 +1,34 @@
-# React + TypeScript + Vite
+# 🌐 GymSystem Web App
+Webowa część systemu zarządzania siłownią realizowana w ramach projektu ZMP. Aplikacja stanowi responsywne centrum obsługi dla klientów siłowni oraz panel operacyjny dla kadry trenerskiej.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🛠 Tech Stack & Wersje
+* **Framework**: React 19.2.0
+* **Build Tool**: Vite 7.3.1
+* **Język**: TypeScript 5.9.3
+* **Komunikacja API**: Axios (obsługa zapytań REST, interceptory JWT)
+* **Stylizacja**: Tailwind CSS
 
-Currently, two official plugins are available:
+## 🚀 Funkcjonalności (Roadmap)
+Na podstawie analizy wymagań, aplikacja realizuje następujące moduły:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**🔐 Autoryzacja i Dostęp**
+* Kompletny system logowania i rejestracji.
+* Logowanie przez zewnętrzne serwisy (oAuth).
+* Procedura resetowania zapomnianego hasła.
+* Wybór wersji językowej interfejsu.
 
-## React Compiler
+**👤 Panel Użytkownika (Klient)**
+* **Profil**: Zarządzanie danymi użytkownika i status karnetu.
+* **Harmonogram**: Pełny podgląd grafiku zajęć w ujęciu miesięcznym.
+* **Karnety**: Przegląd dostępnych pakietów, cenników oraz dodatkowych benefitów.
+* **Mapa**: Interaktywna lokalizacja placówek siłowni.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**🏋️ Panel Trenera**
+* Dedykowany interfejs dla kadry zarządzającej treningami.
+* **Zarządzanie zajęciami**: Możliwość przekładania oraz odwoływania treningów.
+* Dostęp do szczegółowych informacji o grupach i uczestnikach.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**ℹ️ Informacje i Content**
+* Sekcja "O nas": Galeria zdjęć obiektu oraz informacje o siłowni.
+* Lista trenerów: Prezentacja kadry wraz z opisami kompetencji.
+* Rozszerzone informacje o wszystkich usługach systemu.
