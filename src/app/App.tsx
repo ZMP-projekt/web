@@ -8,12 +8,9 @@ function App() {
     return (
         <Router>
             <Routes>
-                {/* Definiujemy ścieżki i przypisujemy do nich komponenty */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-
-                {/* Placeholder dla rejestracji - na razie kieruje do Landing Page */}
                 <Route path="/register" element={<Register />} />
             </Routes>
         </Router>
