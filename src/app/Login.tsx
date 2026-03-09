@@ -1,6 +1,6 @@
 import './index.css'
 import React, { useState } from 'react';
-import { Mail, Lock, ArrowRight, Dumbbell } from 'lucide-react';
+import {Mail, Lock, ArrowRight, Dumbbell, AlertCircle, Loader2} from 'lucide-react';
 import {Link, useNavigate} from "react-router";
 import {useAuth} from "../auth/useAuth.ts";
 import {api} from "../api/axios.ts";
@@ -8,11 +8,15 @@ import {api} from "../api/axios.ts";
 export const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
 
     const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
+        setError('');
+        setIsLoading(true);
 
         try {
             const response = await api.post('/auth/login', {email, password});
@@ -21,6 +25,9 @@ export const Login: React.FC = () => {
             navigate('/dashboard');
         } catch (err) {
             console.error('Błąd logowania:', err);
+            setError("Niepoprawny login lub hasło");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -34,6 +41,13 @@ export const Login: React.FC = () => {
                     <h2 className="text-3xl font-bold text-white">Witaj ponownie!</h2>
                     <p className="text-slate-400 mt-2 text-center">Zaloguj się, aby zarządzać swoim karnetem i treningami.</p>
                 </div>
+
+                {error && (
+                    <div className="mb-6 flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400">
+                        <AlertCircle className="w-5 h-5 shrink-0" />
+                        <p className="text-sm font-medium">{error}</p>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
 
@@ -78,10 +92,20 @@ export const Login: React.FC = () => {
 
                     <button
                         type="submit"
-                        className="w-full flex justify-center items-center gap-2 py-4 px-4 border border-transparent rounded-2xl shadow-lg text-sm font-bold text-white bg-[#3B82F6] hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-[#3B82F6] transition-all mt-8"
+                        disabled={isLoading}
+                        className="w-full flex justify-center items-center gap-2 py-4 px-4 border border-transparent rounded-2xl shadow-lg text-sm font-bold text-white bg-[#3B82F6] hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-[#3B82F6] transition-all mt-8 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        Zaloguj się
-                        <ArrowRight className="w-5 h-5" />
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <span>Logowanie...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>Zaloguj się</span>
+                                <ArrowRight className="w-5 h-5" />
+                            </>
+                        )}
                     </button>
                 </form>
 
