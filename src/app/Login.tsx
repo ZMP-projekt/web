@@ -13,7 +13,7 @@ export const Login: React.FC = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
 
-    const handleSubmit = async (e: React.SyntheticEvent) => {
+    const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
         setError('');
         setIsLoading(true);
@@ -25,7 +25,7 @@ export const Login: React.FC = () => {
             navigate('/dashboard');
         } catch (err) {
             console.error('Błąd logowania:', err);
-            setError("Niepoprawny login lub hasło");
+            setError("Niepoprawny email lub hasło");
         } finally {
             setIsLoading(false);
         }

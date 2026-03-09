@@ -102,7 +102,7 @@ export const Dashboard: React.FC = () => {
         <div className="fixed left-0 top-0 h-full w-64 bg-[#0F172A]/95 border-r border-slate-800 p-6 flex flex-col">
             <div className="text-2xl font-bold text-white mb-10 flex items-center gap-2">
                 <Dumbbell className="w-8 h-8 text-[#3B82F6]" />
-                GymApp
+                GymSystem
             </div>
 
             <nav className="flex-1 space-y-2">
