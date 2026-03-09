@@ -1,5 +1,6 @@
 import './index.css'
 import React from 'react';
+import { useNavigate } from "react-router";
 import {
     Home,
     CalendarDays,
@@ -10,12 +11,12 @@ import {
     Dumbbell,
     Activity,
     ChevronRight,
-    Award, Gift
+    Award, Gift,
+    LogOut
 } from 'lucide-react';
+import {useAuth} from "../auth/useAuth.ts";
+import {useAxiosPrivate} from "../hooks/useAxiosPrivate.ts";
 
-// --- Atrapy danych (Docelowo będą pochodzić z API) ---
-
-// Interfejs dla pojedynczych zajęć
 interface ClassItem {
     id: number;
     name: string;
@@ -30,36 +31,6 @@ const todaysClasses: ClassItem[] = [
     { id: 3, name: 'Pilates', time: '20:45', duration: '45 min', icon: <Dumbbell className="text-blue-400" /> },
 ];
 
-
-// --- Główne Komponenty ---
-
-// 1. Komponent Nawigacji Bocznej (Sidebar)
-const Sidebar = () => (
-    <div className="fixed left-0 top-0 h-full w-64 bg-[#0F172A]/95 border-r border-slate-800 p-6 flex flex-col">
-        <div className="text-2xl font-bold text-white mb-10 flex items-center gap-2">
-            <Dumbbell className="w-8 h-8 text-[#3B82F6]" />
-            GymApp
-        </div>
-
-        <nav className="flex-1 space-y-2">
-            <NavButton icon={<Home />} label="Pulpit" active />
-            <NavButton icon={<CalendarDays />} label="Grafik" />
-            <NavButton icon={<CreditCard />} label="Mój Karnet" />
-            <NavButton icon={<User />} label="Profil" />
-        </nav>
-    </div>
-);
-
-// Pomocniczy komponent przycisku nawigacji
-const NavButton = ({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) => (
-    <button className={`flex items-center gap-4 w-full p-3 rounded-xl transition-colors ${active ? 'bg-[#3B82F6] text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-        {icon}
-        <span className="font-medium">{label}</span>
-    </button>
-);
-
-
-// 2. Komponent Głównej Karty (np. Karnet)
 const MainCard = ({ title, children, icon }: { title: string, children: React.ReactNode, icon?: React.ReactNode }) => (
     <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-3xl p-6">
         <div className="flex justify-between items-center mb-4">
@@ -70,19 +41,62 @@ const MainCard = ({ title, children, icon }: { title: string, children: React.Re
     </div>
 );
 
-
-// --- Główny Widok Dashboardu ---
 export const Dashboard: React.FC = () => {
+    const navigate = useNavigate();
+    const {logout} = useAuth();
+    const apiPrivate = useAxiosPrivate()
+
+    const handleLogout = async () => {
+        try {
+            await apiPrivate.post('/auth/logout');
+        } catch (error) {
+            console.error(error);
+        } finally {
+            logout();
+            navigate('/login');
+        }
+    };
+
+    const Sidebar = () => (
+        <div className="fixed left-0 top-0 h-full w-64 bg-[#0F172A]/95 border-r border-slate-800 p-6 flex flex-col">
+            <div className="text-2xl font-bold text-white mb-10 flex items-center gap-2">
+                <Dumbbell className="w-8 h-8 text-[#3B82F6]" />
+                GymApp
+            </div>
+
+            <nav className="flex-1 space-y-2">
+                <NavButton icon={<Home />} label="Pulpit" active />
+                <NavButton icon={<CalendarDays />} label="Grafik" />
+                <NavButton icon={<CreditCard />} label="Mój Karnet" />
+                <NavButton icon={<User />} label="Profil" />
+            </nav>
+
+            <div className="pt-6 border-t border-slate-800">
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-4 w-full p-3 rounded-xl transition-colors text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                >
+                    <LogOut className="w-5 h-5" />
+                    <span className="front-medium">Wyloguj się</span>
+                </button>
+            </div>
+        </div>
+    );
+
+    const NavButton = ({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) => (
+        <button className={`flex items-center gap-4 w-full p-3 rounded-xl transition-colors ${active ? 'bg-[#3B82F6] text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+            {icon}
+            <span className="font-medium">{label}</span>
+        </button>
+    );
+
     return (
-        // Główne tło - używamy Twojego koloru bazowego z lekkim gradientem dla efektu "glow"
-        <div className="min-h-screen bg-slate-900 bg-gradient-to-tr from-slate-900 via-slate-900 to-[#8B5CF6]/10 text-slate-200">
+        <div className="min-h-screen bg-slate-900 bg-linear-to-tr from-slate-900 via-slate-900 to-[#8B5CF6]/10 text-slate-200">
 
             <Sidebar />
 
-            {/* Główna zawartość (odsunięta o szerokość sidebara: ml-64) */}
             <main className="ml-64 p-8">
 
-                {/* Nagłówek (Header) */}
                 <header className="flex justify-between items-center mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-white">Witaj, Jan!</h1>
@@ -92,34 +106,26 @@ export const Dashboard: React.FC = () => {
                             <Bell className="w-6 h-6 text-slate-300" />
                             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                         </button>
-                        {/* Placeholder na avatar */}
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 border-2 border-slate-800"></div>
+                        <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 border-2 border-slate-800"></div>
                     </div>
                 </header>
 
-                {/* Siatka z kartami (Grid Layout) */}
-                {/* Na dużych ekranach (lg) 3 kolumny, na mniejszych 1 kolumna */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                    {/* --- Kolumna 1: Główne info --- */}
                     <div className="lg:col-span-2 space-y-6">
 
-                        {/* Karta Statusu Karnetu (Wzorowana na mobile) */}
                         <MainCard title="Status karnetu" icon={<Award className="text-yellow-500" />}>
                             <div className="mt-2">
                                 <h2 className="text-3xl font-bold text-white mb-4">Aktywny: 12 dni</h2>
-                                {/* Pasek postępu */}
                                 <div className="w-full h-3 bg-slate-700/50 rounded-full overflow-hidden">
-                                    {/* Użyłem koloru szmaragdowego (emerald) bo pasuje do paska ze screena */}
                                     <div className="h-full w-[40%] bg-emerald-500 rounded-full relative">
-                                        <div className="absolute right-0 top-0 h-full w-full bg-gradient-to-r from-transparent to-white/20"></div>
+                                        <div className="absolute right-0 top-0 h-full w-full bg-linear-to-r from-transparent to-white/20"></div>
                                     </div>
                                 </div>
                                 <p className="text-sm text-slate-400 mt-2 text-right">Ważny do 15.03.2026</p>
                             </div>
                         </MainCard>
 
-                        {/* Karta Siłowni (Wzorowana na mobile) */}
                         <MainCard title="Twoja Siłownia">
                             <div className="flex items-start gap-4 mb-6">
                                 <div className="p-3 bg-slate-700/50 rounded-xl">
@@ -131,7 +137,6 @@ export const Dashboard: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Statystyki siłowni */}
                             <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-700/50">
                                 <div>
                                     <p className="text-slate-400 text-sm mb-1">Dystans</p>
@@ -150,7 +155,6 @@ export const Dashboard: React.FC = () => {
 
                     </div>
 
-                    {/* --- Kolumna 2: Boczna (Zajęcia) --- */}
                     <div className="space-y-6">
                         <MainCard title="Dzisiejsze zajęcia">
                             <div className="space-y-4 mt-2">
@@ -174,8 +178,7 @@ export const Dashboard: React.FC = () => {
                             </button>
                         </MainCard>
 
-                        {/* Placeholder na dodatkową kartę, np. reklama albo statystyki */}
-                        <div className="bg-gradient-to-br from-[#3B82F6]/20 to-[#8B5CF6]/20 border border-blue-500/30 rounded-3xl p-6 flex items-center justify-between">
+                        <div className="bg-linear-to-br from-[#3B82F6]/20 to-[#8B5CF6]/20 border border-blue-500/30 rounded-3xl p-6 flex items-center justify-between">
                             <div>
                                 <h3 className="text-white font-bold mb-1">Zaproś znajomego!</h3>
                                 <p className="text-slate-300 text-sm">Odbierzcie oboje po 7 dni gratis.</p>

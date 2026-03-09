@@ -5,7 +5,7 @@ import { Dumbbell, ArrowRight } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
     return (
-        <div className="min-h-screen bg-slate-900 bg-gradient-to-tr from-slate-900 via-slate-900 to-[#3B82F6]/10 flex flex-col">
+        <div className="min-h-screen bg-slate-900 bg-linear-to-tr from-slate-900 via-slate-900 to-[#3B82F6]/10 flex flex-col">
 
             {/* Prosty pasek nawigacji na górze */}
             <nav className="flex justify-between items-center p-6 lg:px-12 border-b border-slate-800/50 backdrop-blur-md">
@@ -30,7 +30,7 @@ export const LandingPage: React.FC = () => {
                     <span className="text-sm text-slate-300 ml-2">Aplikacja mobilna już dostępna!</span>
                 </div>
 
-                <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 mb-6 max-w-3xl">
+                <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-white to-slate-400 mb-6 max-w-3xl">
                     Twój trening, <br /> twoje zasady.
                 </h1>
 

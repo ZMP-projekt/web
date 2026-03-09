@@ -2,29 +2,31 @@ import './index.css'
 import React, { useState } from 'react';
 import { Mail, Lock, ArrowRight, Dumbbell } from 'lucide-react';
 import {Link, useNavigate} from "react-router";
+import {useAuth} from "../auth/useAuth.ts";
+import {api} from "../api/axios.ts";
 
 export const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
     const navigate = useNavigate();
+    const { login } = useAuth();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
-        // Tutaj w przyszłości dodasz logikę wysyłania danych do API
-        console.log('Próba logowania dla:', email);
 
-        navigate('/dashboard');
+        try {
+            const response = await api.post('/auth/login', {email, password});
+            const { token } = response.data;
+            login(token);
+            navigate('/dashboard');
+        } catch (err) {
+            console.error('Błąd logowania:', err);
+        }
     };
 
     return (
-        // Tło identyczne jak w Dashboardzie
-        <div className="min-h-screen flex items-center justify-center bg-slate-900 bg-gradient-to-tr from-slate-900 via-slate-900 to-[#8B5CF6]/10 p-4">
-
-            {/* Karta logowania z efektem "Glassmorphism" */}
+        <div className="min-h-screen flex items-center justify-center bg-slate-900 bg-linear-to-tr from-slate-900 via-slate-900 to-[#8B5CF6]/10 p-4">
             <div className="max-w-md w-full bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-3xl p-8 shadow-2xl">
-
-                {/* Nagłówek i Logo */}
                 <div className="flex flex-col items-center mb-10">
                     <div className="p-4 bg-[#3B82F6]/20 rounded-2xl mb-5 border border-[#3B82F6]/30">
                         <Dumbbell className="w-10 h-10 text-[#3B82F6]" />
@@ -33,10 +35,8 @@ export const Login: React.FC = () => {
                     <p className="text-slate-400 mt-2 text-center">Zaloguj się, aby zarządzać swoim karnetem i treningami.</p>
                 </div>
 
-                {/* Formularz */}
                 <form onSubmit={handleSubmit} className="space-y-6">
 
-                    {/* Pole E-mail */}
                     <div>
                         <label className="block text-sm font-medium text-slate-300 mb-2 ml-1">Adres E-mail</label>
                         <div className="relative">
@@ -54,7 +54,6 @@ export const Login: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Pole Hasło */}
                     <div>
                         <label className="block text-sm font-medium text-slate-300 mb-2 ml-1">Hasło</label>
                         <div className="relative">
@@ -70,7 +69,6 @@ export const Login: React.FC = () => {
                                 required
                             />
                         </div>
-                        {/* Link do resetu hasła */}
                         <div className="flex justify-end mt-3">
                             <button type="button" className="text-sm text-[#3B82F6] hover:text-blue-400 font-medium transition-colors">
                                 Zapomniałeś hasła?
@@ -78,7 +76,6 @@ export const Login: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Przycisk Logowania */}
                     <button
                         type="submit"
                         className="w-full flex justify-center items-center gap-2 py-4 px-4 border border-transparent rounded-2xl shadow-lg text-sm font-bold text-white bg-[#3B82F6] hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-[#3B82F6] transition-all mt-8"
@@ -88,7 +85,6 @@ export const Login: React.FC = () => {
                     </button>
                 </form>
 
-                {/* Sekcja rejestracji */}
                 <div className="mt-8 text-center">
                     <p className="text-sm text-slate-400">
                         Nie masz jeszcze konta?{' '}
