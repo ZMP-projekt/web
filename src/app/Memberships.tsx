@@ -3,15 +3,12 @@ import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import { CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap } from 'lucide-react';
 import {Sidebar} from "../components/Sidebar.tsx";
 
-// Interfejsy
 interface SubscriptionData {
     type: string;
     price: number;
     endDate: string;
     active: boolean;
 }
-
-// Stałe dane dla naszych 3 typów karnetów
 const MEMBERSHIP_PLANS = [
     {
         type: 'STUDENT',
@@ -41,11 +38,8 @@ export const Memberships: React.FC = () => {
 
     const [currentSub, setCurrentSub] = useState<SubscriptionData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-
-    // Stan do śledzenia, który karnet jest w danym momencie kupowany (żeby kręcił się tylko jeden przycisk)
     const [purchasingType, setPurchasingType] = useState<string | null>(null);
 
-    // Funkcja pobierająca obecny karnet (wywoływana na start i po zakupie)
     const fetchCurrentSubscription = async () => {
         try {
             const response = await apiPrivate.get('/api/memberships/me');
@@ -58,21 +52,24 @@ export const Memberships: React.FC = () => {
     };
 
     useEffect(() => {
-
-        fetchCurrentSubscription();
+        const fetchCurrentSubscription = async () => {
+            try {
+                const response = await apiPrivate.get('/api/memberships/me');
+                setCurrentSub(response.data);
+            } catch (error) {
+                console.error("Błąd pobierania karnetu:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchCurrentSubscription()
     }, [apiPrivate]);
 
-    // Funkcja realizująca zakup / przedłużenie
     const handlePurchase = async (type: string) => {
         setPurchasingType(type);
         try {
-            // Wywołanie Twojego endpointu z parametrem query (?type=...)
             await apiPrivate.post(`api/memberships/purchase?type=${type}`);
-
-            // Pokazujemy komunikat sukcesu
             //alert(`Pomyślnie ${currentSub?.type === type ? 'przedłużono' : 'zakupiono'} karnet ${type}!`);
-
-            // Odświeżamy dane o obecnym karnecie z backendu
             await fetchCurrentSubscription();
         } catch (error) {
             console.error("Błąd zakupu:", error);
@@ -82,7 +79,6 @@ export const Memberships: React.FC = () => {
         }
     };
 
-    // Funkcje pomocnicze do dat
     const calculateDaysRemaining = (endDateString: string) => {
         const diffTime = Math.max(new Date(endDateString).getTime() - new Date().getTime(), 0);
         return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -103,14 +99,11 @@ export const Memberships: React.FC = () => {
             <main className="flex-1 ml-64 p-8 min-h-screen">
 
                 <div className="max-w-6xl mx-auto space-y-10">
-
-                    {/* NAGŁÓWEK */}
                     <div>
                         <h1 className="text-3xl font-bold text-white">Zarządzanie Karnetem</h1>
                         <p className="text-slate-400 mt-2">Przeglądaj ofertę i zarządzaj swoją subskrypcją.</p>
                     </div>
 
-                    {/* SEKCJA: OBECNY KARNET */}
                     {currentSub && currentSub.active && (
                         <div className="bg-slate-800/50 backdrop-blur-sm border border-emerald-500/30 rounded-3xl p-6 relative overflow-hidden">
                             <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10">
@@ -130,7 +123,6 @@ export const Memberships: React.FC = () => {
                         </div>
                     )}
 
-                    {/* SEKCJA: OFERTA */}
                     <div className="grid md:grid-cols-3 gap-6">
                         {MEMBERSHIP_PLANS.map((plan) => {
                             const isCurrentPlan = currentSub?.type === plan.type && currentSub?.active;
@@ -139,7 +131,6 @@ export const Memberships: React.FC = () => {
                             return (
                                 <div key={plan.type} className={`relative p-8 rounded-3xl border flex flex-col ${isCurrentPlan ? 'bg-slate-800/80 border-blue-500 shadow-lg shadow-blue-900/20' : 'bg-slate-800/30 border-slate-700/50'}`}>
 
-                                    {/* Plakietka "Obecny plan" */}
                                     {isCurrentPlan && (
                                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md">
                                             Twój plan
@@ -163,7 +154,6 @@ export const Memberships: React.FC = () => {
                                         ))}
                                     </ul>
 
-                                    {/* Inteligentny Przycisk */}
                                     <button
                                         onClick={() => handlePurchase(plan.type)}
                                         disabled={purchasingType !== null} // Blokujemy WSZYSTKIE przyciski, gdy trwa JAKIKOLWIEK zakup
