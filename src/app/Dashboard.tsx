@@ -1,21 +1,15 @@
 import './index.css'
 import React, {useEffect} from 'react';
-import { useNavigate } from "react-router";
 import {
-    Home,
-    CalendarDays,
-    CreditCard,
-    User,
     Bell,
     MapPin,
     Dumbbell,
     Activity,
     ChevronRight,
     Award, Gift,
-    LogOut
 } from 'lucide-react';
-import {useAuth} from "../auth/useAuth.ts";
 import {useAxiosPrivate} from "../hooks/useAxiosPrivate.ts";
+import {Sidebar} from "../components/Sidebar.tsx";
 
 interface ClassItem {
     id: number;
@@ -49,8 +43,6 @@ const MainCard = ({ title, children, icon }: { title: string, children: React.Re
 );
 
 export const Dashboard: React.FC = () => {
-    const navigate = useNavigate();
-    const {logout} = useAuth();
     const apiPrivate = useAxiosPrivate()
 
     const [membership, setMembership] = React.useState<MembershipData | null>(null);
@@ -86,50 +78,6 @@ export const Dashboard: React.FC = () => {
             year: 'numeric',
         });
     };
-
-    const handleLogout = async () => {
-        try {
-            await apiPrivate.post('/auth/logout');
-        } catch (error) {
-            console.error(error);
-        } finally {
-            logout();
-            navigate('/login');
-        }
-    };
-
-    const Sidebar = () => (
-        <div className="fixed left-0 top-0 h-full w-64 bg-[#0F172A]/95 border-r border-slate-800 p-6 flex flex-col">
-            <div className="text-2xl font-bold text-white mb-10 flex items-center gap-2">
-                <Dumbbell className="w-8 h-8 text-[#3B82F6]" />
-                GymSystem
-            </div>
-
-            <nav className="flex-1 space-y-2">
-                <NavButton icon={<Home />} label="Pulpit" active />
-                <NavButton icon={<CalendarDays />} label="Grafik" />
-                <NavButton icon={<CreditCard />} label="Mój Karnet" />
-                <NavButton icon={<User />} label="Profil" />
-            </nav>
-
-            <div className="pt-6 border-t border-slate-800">
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-4 w-full p-3 rounded-xl transition-colors text-red-400 hover:bg-red-500/10 hover:text-red-300"
-                >
-                    <LogOut className="w-5 h-5" />
-                    <span className="front-medium">Wyloguj się</span>
-                </button>
-            </div>
-        </div>
-    );
-
-    const NavButton = ({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) => (
-        <button className={`flex items-center gap-4 w-full p-3 rounded-xl transition-colors ${active ? 'bg-[#3B82F6] text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-            {icon}
-            <span className="font-medium">{label}</span>
-        </button>
-    );
 
     return (
         <div className="min-h-screen bg-slate-900 bg-linear-to-tr from-slate-900 via-slate-900 to-[#8B5CF6]/10 text-slate-200">

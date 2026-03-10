@@ -5,6 +5,7 @@ import { Dashboard } from './Dashboard.tsx';
 import {Register} from './Register.tsx';
 import { AuthProvider} from "../auth/AuthProvider.tsx";
 import {ProtectedRoute} from "../components/ProtectedRoute.tsx";
+import {Memberships} from "./Memberships.tsx";
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                             <Dashboard />
                         </ProtectedRoute>
                     }/>
+                    <Route path="/memberships" element={<ProtectedRoute><Memberships /></ProtectedRoute>}/>
                 </Routes>
             </Router>
         </AuthProvider>

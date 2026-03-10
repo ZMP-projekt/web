@@ -1,0 +1,192 @@
+import React, { useEffect, useState } from 'react';
+import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
+import { CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap } from 'lucide-react';
+import {Sidebar} from "../components/Sidebar.tsx";
+
+// Interfejsy
+interface SubscriptionData {
+    type: string;
+    price: number;
+    endDate: string;
+    active: boolean;
+}
+
+// Stałe dane dla naszych 3 typów karnetów
+const MEMBERSHIP_PLANS = [
+    {
+        type: 'STUDENT',
+        title: 'Karnet Student',
+        price: '89 PLN',
+        icon: <GraduationCap className="w-8 h-8 text-blue-400" />,
+        features: ['Ważna legitymacja studencka', 'Dostęp do 16:00', 'Podstawowy sprzęt']
+    },
+    {
+        type: 'OPEN',
+        title: 'Karnet Open',
+        price: '149 PLN',
+        icon: <Sun className="w-8 h-8 text-yellow-400" />,
+        features: ['Dostęp 24/7', 'Wszystkie strefy', 'Zajęcia grupowe']
+    },
+    {
+        type: 'NIGHT',
+        title: 'Karnet Night',
+        price: '99 PLN',
+        icon: <Moon className="w-8 h-8 text-purple-400" />,
+        features: ['Dostęp od 22:00 do 6:00', 'Brak tłumów', 'Dostęp do sauny']
+    }
+];
+
+export const Memberships: React.FC = () => {
+    const apiPrivate = useAxiosPrivate();
+
+    const [currentSub, setCurrentSub] = useState<SubscriptionData | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Stan do śledzenia, który karnet jest w danym momencie kupowany (żeby kręcił się tylko jeden przycisk)
+    const [purchasingType, setPurchasingType] = useState<string | null>(null);
+
+    // Funkcja pobierająca obecny karnet (wywoływana na start i po zakupie)
+    const fetchCurrentSubscription = async () => {
+        try {
+            const response = await apiPrivate.get('/api/memberships/me');
+            setCurrentSub(response.data);
+        } catch (error) {
+            console.error("Błąd pobierania karnetu:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+
+        fetchCurrentSubscription();
+    }, [apiPrivate]);
+
+    // Funkcja realizująca zakup / przedłużenie
+    const handlePurchase = async (type: string) => {
+        setPurchasingType(type);
+        try {
+            // Wywołanie Twojego endpointu z parametrem query (?type=...)
+            await apiPrivate.post(`api/memberships/purchase?type=${type}`);
+
+            // Pokazujemy komunikat sukcesu
+            //alert(`Pomyślnie ${currentSub?.type === type ? 'przedłużono' : 'zakupiono'} karnet ${type}!`);
+
+            // Odświeżamy dane o obecnym karnecie z backendu
+            await fetchCurrentSubscription();
+        } catch (error) {
+            console.error("Błąd zakupu:", error);
+            alert("Wystąpił błąd podczas transakcji.");
+        } finally {
+            setPurchasingType(null);
+        }
+    };
+
+    // Funkcje pomocnicze do dat
+    const calculateDaysRemaining = (endDateString: string) => {
+        const diffTime = Math.max(new Date(endDateString).getTime() - new Date().getTime(), 0);
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    };
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    };
+
+    if (isLoading) {
+        return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white"><Loader2 className="w-10 h-10 animate-spin text-blue-500" /></div>;
+    }
+
+    return (
+        <div className="min-h-screen bg-slate-900 bg-linear-to-tr from-slate-900 via-slate-900 to-[#8B5CF6]/10 text-slate-200 p-8">
+
+            <Sidebar />
+            <main className="flex-1 ml-64 p-8 min-h-screen">
+
+                <div className="max-w-6xl mx-auto space-y-10">
+
+                    {/* NAGŁÓWEK */}
+                    <div>
+                        <h1 className="text-3xl font-bold text-white">Zarządzanie Karnetem</h1>
+                        <p className="text-slate-400 mt-2">Przeglądaj ofertę i zarządzaj swoją subskrypcją.</p>
+                    </div>
+
+                    {/* SEKCJA: OBECNY KARNET */}
+                    {currentSub && currentSub.active && (
+                        <div className="bg-slate-800/50 backdrop-blur-sm border border-emerald-500/30 rounded-3xl p-6 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10">
+                                AKTYWNY
+                            </div>
+                            <div className="flex items-center gap-6 relative z-10">
+                                <div className="p-4 bg-emerald-500/20 rounded-2xl border border-emerald-500/30">
+                                    <Award className="w-10 h-10 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold text-white">Mój plan: {currentSub.type}</h2>
+                                    <p className="text-slate-400 mt-1">
+                                        Pozostało: <span className="text-white font-bold">{calculateDaysRemaining(currentSub.endDate)} dni</span> (ważny do {formatDate(currentSub.endDate)})
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* SEKCJA: OFERTA */}
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {MEMBERSHIP_PLANS.map((plan) => {
+                            const isCurrentPlan = currentSub?.type === plan.type && currentSub?.active;
+                            const isPurchasingThis = purchasingType === plan.type;
+
+                            return (
+                                <div key={plan.type} className={`relative p-8 rounded-3xl border flex flex-col ${isCurrentPlan ? 'bg-slate-800/80 border-blue-500 shadow-lg shadow-blue-900/20' : 'bg-slate-800/30 border-slate-700/50'}`}>
+
+                                    {/* Plakietka "Obecny plan" */}
+                                    {isCurrentPlan && (
+                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md">
+                                            Twój plan
+                                        </div>
+                                    )}
+
+                                    <div className="flex justify-between items-start mb-6 mt-2">
+                                        {plan.icon}
+                                        <div className="text-right">
+                                            <h3 className="text-xl font-bold text-white">{plan.title}</h3>
+                                            <div className="text-2xl font-extrabold text-[#3B82F6]">{plan.price}</div>
+                                        </div>
+                                    </div>
+
+                                    <ul className="space-y-4 mb-8 flex-1">
+                                        {plan.features.map((feature, idx) => (
+                                            <li key={idx} className="flex items-center gap-3 text-slate-300 text-sm">
+                                                <CheckCircle2 className="w-5 h-5 text-[#8B5CF6] shrink-0" />
+                                                <span>{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    {/* Inteligentny Przycisk */}
+                                    <button
+                                        onClick={() => handlePurchase(plan.type)}
+                                        disabled={purchasingType !== null} // Blokujemy WSZYSTKIE przyciski, gdy trwa JAKIKOLWIEK zakup
+                                        className={`w-full flex justify-center items-center gap-2 py-4 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed
+                        ${isCurrentPlan
+                                            ? 'bg-transparent border-2 border-[#3B82F6] text-[#3B82F6] hover:bg-[#3B82F6]/10'
+                                            : 'bg-[#3B82F6] text-white hover:bg-blue-600'
+                                        }`}
+                                    >
+                                        {isPurchasingThis ? (
+                                            <><Loader2 className="w-5 h-5 animate-spin" /> Przetwarzanie...</>
+                                        ) : isCurrentPlan ? (
+                                            'Przedłuż karnet'
+                                        ) : (
+                                            currentSub?.active ? 'Zmień plan' : 'Kup karnet'
+                                        )}
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </main>
+        </div>
+    );
+};
