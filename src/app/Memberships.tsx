@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import { CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap } from 'lucide-react';
-import {Sidebar} from "../components/Sidebar.tsx";
 
 interface SubscriptionData {
     type: string;
@@ -93,90 +92,83 @@ export const Memberships: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-slate-900 bg-linear-to-tr from-slate-900 via-slate-900 to-[#8B5CF6]/10 text-slate-200 p-8">
+        <div className="max-w-6xl mx-auto space-y-10">
+            <div>
+                <h1 className="text-3xl font-bold text-white">Zarządzanie Karnetem</h1>
+                <p className="text-slate-400 mt-2">Przeglądaj ofertę i zarządzaj swoją subskrypcją.</p>
+            </div>
 
-            <Sidebar />
-            <main className="flex-1 ml-64 p-8 min-h-screen">
-
-                <div className="max-w-6xl mx-auto space-y-10">
-                    <div>
-                        <h1 className="text-3xl font-bold text-white">Zarządzanie Karnetem</h1>
-                        <p className="text-slate-400 mt-2">Przeglądaj ofertę i zarządzaj swoją subskrypcją.</p>
+            {currentSub && currentSub.active && (
+                <div className="bg-slate-800/50 backdrop-blur-sm border border-emerald-500/30 rounded-3xl p-6 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10">
+                        AKTYWNY
                     </div>
-
-                    {currentSub && currentSub.active && (
-                        <div className="bg-slate-800/50 backdrop-blur-sm border border-emerald-500/30 rounded-3xl p-6 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10">
-                                AKTYWNY
-                            </div>
-                            <div className="flex items-center gap-6 relative z-10">
-                                <div className="p-4 bg-emerald-500/20 rounded-2xl border border-emerald-500/30">
-                                    <Award className="w-10 h-10 text-emerald-400" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold text-white">Mój plan: {currentSub.type}</h2>
-                                    <p className="text-slate-400 mt-1">
-                                        Pozostało: <span className="text-white font-bold">{calculateDaysRemaining(currentSub.endDate)} dni</span> (ważny do {formatDate(currentSub.endDate)})
-                                    </p>
-                                </div>
-                            </div>
+                    <div className="flex items-center gap-6 relative z-10">
+                        <div className="p-4 bg-emerald-500/20 rounded-2xl border border-emerald-500/30">
+                            <Award className="w-10 h-10 text-emerald-400" />
                         </div>
-                    )}
-
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {MEMBERSHIP_PLANS.map((plan) => {
-                            const isCurrentPlan = currentSub?.type === plan.type && currentSub?.active;
-                            const isPurchasingThis = purchasingType === plan.type;
-
-                            return (
-                                <div key={plan.type} className={`relative p-8 rounded-3xl border flex flex-col ${isCurrentPlan ? 'bg-slate-800/80 border-blue-500 shadow-lg shadow-blue-900/20' : 'bg-slate-800/30 border-slate-700/50'}`}>
-
-                                    {isCurrentPlan && (
-                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md">
-                                            Twój plan
-                                        </div>
-                                    )}
-
-                                    <div className="flex justify-between items-start mb-6 mt-2">
-                                        {plan.icon}
-                                        <div className="text-right">
-                                            <h3 className="text-xl font-bold text-white">{plan.title}</h3>
-                                            <div className="text-2xl font-extrabold text-[#3B82F6]">{plan.price}</div>
-                                        </div>
-                                    </div>
-
-                                    <ul className="space-y-4 mb-8 flex-1">
-                                        {plan.features.map((feature, idx) => (
-                                            <li key={idx} className="flex items-center gap-3 text-slate-300 text-sm">
-                                                <CheckCircle2 className="w-5 h-5 text-[#8B5CF6] shrink-0" />
-                                                <span>{feature}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    <button
-                                        onClick={() => handlePurchase(plan.type)}
-                                        disabled={purchasingType !== null} // Blokujemy WSZYSTKIE przyciski, gdy trwa JAKIKOLWIEK zakup
-                                        className={`w-full flex justify-center items-center gap-2 py-4 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed
-                        ${isCurrentPlan
-                                            ? 'bg-transparent border-2 border-[#3B82F6] text-[#3B82F6] hover:bg-[#3B82F6]/10'
-                                            : 'bg-[#3B82F6] text-white hover:bg-blue-600'
-                                        }`}
-                                    >
-                                        {isPurchasingThis ? (
-                                            <><Loader2 className="w-5 h-5 animate-spin" /> Przetwarzanie...</>
-                                        ) : isCurrentPlan ? (
-                                            'Przedłuż karnet'
-                                        ) : (
-                                            currentSub?.active ? 'Zmień plan' : 'Kup karnet'
-                                        )}
-                                    </button>
-                                </div>
-                            );
-                        })}
+                        <div>
+                            <h2 className="text-2xl font-bold text-white">Mój plan: {currentSub.type}</h2>
+                            <p className="text-slate-400 mt-1">
+                                Pozostało: <span className="text-white font-bold">{calculateDaysRemaining(currentSub.endDate)} dni</span> (ważny do {formatDate(currentSub.endDate)})
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </main>
+            )}
+
+            <div className="grid md:grid-cols-3 gap-6">
+                {MEMBERSHIP_PLANS.map((plan) => {
+                    const isCurrentPlan = currentSub?.type === plan.type && currentSub?.active;
+                    const isPurchasingThis = purchasingType === plan.type;
+
+                    return (
+                        <div key={plan.type} className={`relative p-8 rounded-3xl border flex flex-col ${isCurrentPlan ? 'bg-slate-800/80 border-blue-500 shadow-lg shadow-blue-900/20' : 'bg-slate-800/30 border-slate-700/50'}`}>
+
+                            {isCurrentPlan && (
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md">
+                                    Twój plan
+                                </div>
+                            )}
+
+                            <div className="flex justify-between items-start mb-6 mt-2">
+                                {plan.icon}
+                                <div className="text-right">
+                                    <h3 className="text-xl font-bold text-white">{plan.title}</h3>
+                                    <div className="text-2xl font-extrabold text-[#3B82F6]">{plan.price}</div>
+                                </div>
+                            </div>
+
+                            <ul className="space-y-4 mb-8 flex-1">
+                                {plan.features.map((feature, idx) => (
+                                    <li key={idx} className="flex items-center gap-3 text-slate-300 text-sm">
+                                        <CheckCircle2 className="w-5 h-5 text-[#8B5CF6] shrink-0" />
+                                        <span>{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <button
+                                onClick={() => handlePurchase(plan.type)}
+                                disabled={purchasingType !== null} // Blokujemy WSZYSTKIE przyciski, gdy trwa JAKIKOLWIEK zakup
+                                className={`w-full flex justify-center items-center gap-2 py-4 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed
+                ${isCurrentPlan
+                                    ? 'bg-transparent border-2 border-[#3B82F6] text-[#3B82F6] hover:bg-[#3B82F6]/10'
+                                    : 'bg-[#3B82F6] text-white hover:bg-blue-600'
+                                }`}
+                            >
+                                {isPurchasingThis ? (
+                                    <><Loader2 className="w-5 h-5 animate-spin" /> Przetwarzanie...</>
+                                ) : isCurrentPlan ? (
+                                    'Przedłuż karnet'
+                                ) : (
+                                    currentSub?.active ? 'Zmień plan' : 'Kup karnet'
+                                )}
+                            </button>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 };

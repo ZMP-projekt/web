@@ -6,6 +6,7 @@ import {Register} from './Register.tsx';
 import { AuthProvider} from "../auth/AuthProvider.tsx";
 import {ProtectedRoute} from "../components/ProtectedRoute.tsx";
 import {Memberships} from "./Memberships.tsx";
+import {DashboardLayout} from "../components/DashboardLayout.tsx";
 
 function App() {
     return (
@@ -15,12 +16,10 @@ function App() {
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/dashboard" element={
-                        <ProtectedRoute>
-                            <Dashboard />
-                        </ProtectedRoute>
-                    }/>
-                    <Route path="/memberships" element={<ProtectedRoute><Memberships /></ProtectedRoute>}/>
+                    <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+                        <Route path="/dashboard" element={<Dashboard />}/>
+                        <Route path="/memberships" element={<Memberships />}/>
+                    </Route>
                 </Routes>
             </Router>
         </AuthProvider>
