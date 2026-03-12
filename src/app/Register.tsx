@@ -1,18 +1,36 @@
 import React, { useState } from 'react';
-import { Mail, Lock, User, ArrowRight, Dumbbell } from 'lucide-react';
+import {Mail, Lock, User, ArrowRight, Dumbbell, User2, Loader2, AlertCircle} from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
+import { useAuth } from "../auth/useAuth.ts";
+import { api } from "../api/axios.ts";
 
 export const Register: React.FC = () => {
-    const [name, setName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const role = "ROLE_USER";
+    const { login } = useAuth();
 
-    const handleSubmit = (e: React.SubmitEvent) => {
+    const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
-        console.log('Rejestracja:', { name, email, password });
+        setError('');
+        setIsLoading(true);
 
-        navigate('/login');
+        try {
+            const response = await api.post('/auth/register', {firstName, lastName, email, password, role});
+            const { token } = response.data;
+            login(token);
+            navigate('/dashboard');
+        } catch (err) {
+            console.error('Błąd logowania:', err);
+            setError('Błąd rejestracji')
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -31,20 +49,44 @@ export const Register: React.FC = () => {
                     <p className="text-slate-400 mt-2 text-center text-sm">Dołącz do GymSystem i zacznij swój trening już dziś.</p>
                 </div>
 
+                {error && (
+                    <div className="mb-6 flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400">
+                        <AlertCircle className="w-5 h-5 shrink-0" />
+                        <p className="text-sm font-medium">{error}</p>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1 ml-1">Imię i nazwisko</label>
+                        <label className="block text-sm font-medium text-slate-300 mb-1 ml-1">Imię</label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <User className="h-5 w-5 text-slate-500" />
                             </div>
                             <input
                                 type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
                                 className="block w-full pl-11 pr-4 py-3 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent transition-all"
-                                placeholder="Jan Kowalski"
+                                placeholder="Jan"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1 ml-1">Nazwisko</label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <User2 className="h-5 w-5 text-slate-500"/>
+                            </div>
+                            <input
+                                type="text"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                className="block w-full pl-11 pr-4 py-3 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent transition-all"
+                                placeholder="Kowalski"
                                 required
                             />
                         </div>
@@ -87,10 +129,20 @@ export const Register: React.FC = () => {
 
                     <button
                         type="submit"
-                        className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-[#3B82F6] hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-[#3B82F6] transition-all mt-6"
+                        disabled={isLoading}
+                        className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-[#3B82F6] hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-[#3B82F6] transition-all mt-6 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        Zarejestruj się
-                        <ArrowRight className="w-5 h-5" />
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <span>Rejestrowanie...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>Zarejestruj się</span>
+                                <ArrowRight className="w-5 h-5" />
+                            </>
+                        )}
                     </button>
                 </form>
 
