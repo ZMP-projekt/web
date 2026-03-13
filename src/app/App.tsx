@@ -7,6 +7,8 @@ import { AuthProvider} from "../auth/AuthProvider.tsx";
 import {ProtectedRoute} from "../components/ProtectedRoute.tsx";
 import {Memberships} from "./Memberships.tsx";
 import {DashboardLayout} from "../components/DashboardLayout.tsx";
+import { TrainerLayout } from "../components/TrainerLayout.tsx";
+import { TrainerDashboard } from "./TrainerDashboard.tsx";
 
 function App() {
     return (
@@ -19,6 +21,9 @@ function App() {
                     <Route element={<ProtectedRoute roles={['ROLE_USER']}><DashboardLayout /></ProtectedRoute>}>
                         <Route path="/dashboard" element={<Dashboard />}/>
                         <Route path="/memberships" element={<Memberships />}/>
+                    </Route>
+                    <Route element={<ProtectedRoute roles={['ROLE_TRAINER']}><TrainerLayout /></ProtectedRoute>}>
+                        <Route path="/trainer/dashboard" element={<TrainerDashboard />}/>
                     </Route>
                 </Routes>
             </Router>
