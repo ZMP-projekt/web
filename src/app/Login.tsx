@@ -1,9 +1,17 @@
 import './index.css'
 import React, { useState } from 'react';
-import {Mail, Lock, ArrowRight, Dumbbell, AlertCircle, Loader2} from 'lucide-react';
+import { Mail, Lock, ArrowRight, Dumbbell, AlertCircle, Loader2 } from 'lucide-react';
 import {Link, useNavigate} from "react-router";
-import {useAuth} from "../auth/useAuth.ts";
-import {api} from "../api/axios.ts";
+import { useAuth } from "../auth/useAuth.ts";
+import { api } from "../api/axios.ts";
+import { jwtDecode } from "jwt-decode";
+
+interface JwtPayload {
+    sub: string;
+    role: string;
+    iat: number;
+    exp: number;
+}
 
 export const Login: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -21,8 +29,20 @@ export const Login: React.FC = () => {
         try {
             const response = await api.post('/auth/login', {email, password});
             const { token } = response.data;
-            login(token);
-            navigate('/dashboard');
+            const role = jwtDecode<JwtPayload>(token).role;
+
+            if (role === 'ROLE_ADMIN') {
+                setError('Konta administratorów są obsługiwane wyłącznie w aplikacji Desktopowej.');
+                setIsLoading(false);
+                return;
+            }
+
+            login(token, role);
+
+            navigate(
+                role === 'ROLE_USER' ? '/dashboard'
+                : role === 'ROLE_TRAINER' ? '/trainer/dashboard'
+                : 'unauthorised')
         } catch (err) {
             console.error('Błąd logowania:', err);
             setError("Niepoprawny email lub hasło");
