@@ -25,6 +25,12 @@ interface MembershipData {
     active: boolean;
 }
 
+interface UserProfile {
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+
 const todayClasses: ClassItem[] = [
     { id: 1, name: 'Yoga', time: '18:00', duration: '45 min', icon: <Dumbbell className="text-blue-400" /> },
     { id: 2, name: 'Crossfit', time: '19:30', duration: '60 min', icon: <Activity className="text-purple-400" /> },
@@ -47,21 +53,44 @@ export const Dashboard: React.FC = () => {
     const [membership, setMembership] = React.useState<MembershipData | null>(null);
     const [isLoading, setIsLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
+    const [profileData, setProfileData] = React.useState<UserProfile | null>(null);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
             try{
-                const response = await apiPrivate.get("/api/memberships/me");
-                setMembership(response.data);
+                const [ membership, profile] = await Promise.all([
+                    apiPrivate.get('/api/memberships/me'),
+                    apiPrivate.get('/api/users/me'),
+                ])
+
+                setMembership(membership.data)
+                setProfileData(profile.data)
             } catch (err) {
                 console.error(err);
-                setError("Nie udało się załadować danych karnetu.");
+                setError("Nie udało się załadować niektórych danych.");
             } finally {
                 setIsLoading(false);
             }
         };
         fetchDashboardData();
     }, [apiPrivate]);
+
+    const calculateProgress = (endDateString: string) => {
+        const end = new Date(endDateString);
+        const start = new Date(endDateString);
+        start.setMonth(start.getMonth() - 1);
+        const now = new Date();
+
+        const totalDuration = end.getTime() - start.getTime();
+        const passedDuration = now.getTime() - start.getTime();
+
+        let percent = (passedDuration / totalDuration) * 100;
+
+        if (percent < 0) percent = 0;
+        if (percent > 100) percent = 100;
+
+        return 100 - percent;
+    }
 
     const calculateDaysRemaining = (endDateString: string) => {
         const end = new Date(endDateString);
@@ -82,7 +111,7 @@ export const Dashboard: React.FC = () => {
         <>
             <header className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Witaj, Jan!</h1>
+                    <h1 className="text-3xl font-bold text-white">Witaj, {profileData?.firstName || 'użytkowniku'}!</h1>
                 </div>
                 <div className="flex items-center gap-4">
                     <button className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 relative">
@@ -115,8 +144,8 @@ export const Dashboard: React.FC = () => {
 
                                 <div className="w-full h-3 bg-slate-700/50 rounded-full overflow-hidden">
                                     <div
-                                        className={`h-full relative ${membership.active ? 'bg-emerald-500' : 'bg-red-500'}`}
-                                        style={{ width: membership.active ? '100%' : '0%' }}
+                                        className={`h-full relative transition-all duration-1000 ease-out ${membership.active ? 'bg-emerald-500' : 'bg-red-500'}`}
+                                        style={{ width: `${membership.active ? calculateProgress(membership.endDate) : 0}%` }}
                                     >
                                         <div className="absolute right-0 top-0 h-full w-full bg-linear-to-r from-transparent to-white/20"></div>
                                     </div>
