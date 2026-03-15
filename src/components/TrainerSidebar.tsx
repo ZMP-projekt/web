@@ -48,7 +48,7 @@ export const TrainerSidebar: React.FC = () => {
             <nav className="flex-1 space-y-2">
                 <NavButton to="/trainer/dashboard" icon={<CalendarClock />} label="Mój Grafik" />
                 <NavButton to="/trainer/clients" icon={<Users />} label="Moi Kursanci" />
-                <NavButton to="/profile" icon={<User />} label="Profil" />
+                <NavButton to="/trainer/profile" icon={<User />} label="Profil" />
             </nav>
 
             <div className="pt-6 border-t border-slate-800">

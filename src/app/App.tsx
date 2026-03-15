@@ -9,6 +9,7 @@ import {Memberships} from "./Memberships.tsx";
 import {DashboardLayout} from "../components/DashboardLayout.tsx";
 import { TrainerLayout } from "../components/TrainerLayout.tsx";
 import { TrainerDashboard } from "./TrainerDashboard.tsx";
+import {Profile} from "./Profile.tsx";
 
 function App() {
     return (
@@ -21,9 +22,11 @@ function App() {
                     <Route element={<ProtectedRoute roles={['ROLE_USER']}><DashboardLayout /></ProtectedRoute>}>
                         <Route path="/dashboard" element={<Dashboard />}/>
                         <Route path="/memberships" element={<Memberships />}/>
+                        <Route path="/profile" element={<Profile />}/>
                     </Route>
                     <Route element={<ProtectedRoute roles={['ROLE_TRAINER']}><TrainerLayout /></ProtectedRoute>}>
                         <Route path="/trainer/dashboard" element={<TrainerDashboard />}/>
+                        <Route path="/trainer/profile" element={<Profile />}/>
                     </Route>
                 </Routes>
             </Router>
