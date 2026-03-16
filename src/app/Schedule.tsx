@@ -13,8 +13,6 @@ import {
     Activity
 } from 'lucide-react';
 
-// --- INTERFEJSY ---
-// Tak prawdopodobnie będzie wyglądać (mniej więcej) odpowiedź z API w przyszłości
 interface GymClass {
     id: string;
     name: string;
@@ -28,18 +26,15 @@ interface GymClass {
     type: 'STRENGTH' | 'CARDIO' | 'YOGA' | 'CROSSFIT';
 }
 
-// Funkcja pomocnicza: generuje 7 kolejnych dni począwszy od dzisiaj
 const generateNext7Days = () => {
     const days = [];
     for (let i = 0; i < 7; i++) {
         const date = new Date();
         date.setDate(date.getDate() + i);
-        days.push(date.toISOString().split('T')[0]); // Zwraca YYYY-MM-DD
+        days.push(date.toISOString().split('T')[0]);
     }
     return days;
 };
-
-// --- ATRYBUTY WIZUALNE DLA TYPÓW ZAJĘĆ ---
 const getClassStyle = (type: string) => {
     switch (type) {
         case 'STRENGTH': return { icon: <Dumbbell className="w-5 h-5" />, color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-500/30' };
@@ -58,13 +53,10 @@ export const Schedule: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
-    // --- SYMULACJA POBIERANIA DANYCH Z API ---
     useEffect(() => {
         const fetchClasses = async () => {
             setIsLoading(true);
             try {
-                // Docelowo: await apiPrivate.get(`/classes?date=${selectedDate}`);
-                // Na razie symulujemy opóźnienie sieci (pół sekundy) i wstawiamy sztuczne dane:
                 await new Promise(resolve => setTimeout(resolve, 500));
 
                 const mockData: GymClass[] = [
@@ -84,14 +76,10 @@ export const Schedule: React.FC = () => {
         fetchClasses();
     }, [selectedDate, apiPrivate]);
 
-    // --- AKCJE UŻYTKOWNIKA ---
     const handleEnrollment = async (classId: string, isEnrolling: boolean) => {
         setActionLoadingId(classId);
         try {
-            // Docelowo: await apiPrivate.post(`/classes/${classId}/${isEnrolling ? 'enroll' : 'cancel'}`);
             await new Promise(resolve => setTimeout(resolve, 800)); // Symulacja ładowania
-
-            // Optymistyczna aktualizacja UI (zmieniamy stan lokalnie bez przeładowywania całej listy)
             setClasses(prev => prev.map(c => {
                 if (c.id === classId) {
                     return { ...c, isUserEnrolled: isEnrolling, enrolled: isEnrolling ? c.enrolled + 1 : c.enrolled - 1 };
@@ -108,7 +96,6 @@ export const Schedule: React.FC = () => {
         }
     };
 
-    // --- FORMATOWANIE DATY ---
     const formatDayButton = (dateStr: string) => {
         const date = new Date(dateStr);
         const dayName = date.toLocaleDateString('pl-PL', { weekday: 'short' });
@@ -118,13 +105,11 @@ export const Schedule: React.FC = () => {
 
     return (
         <div className="max-w-5xl mx-auto space-y-8">
-            {/* Nagłówek */}
             <header>
                 <h1 className="text-3xl font-bold text-white">Grafik zajęć</h1>
                 <p className="text-slate-400 mt-2">Wybierz dzień i zapisz się na trening grupowy.</p>
             </header>
 
-            {/* --- WYBIERAK DNIA (Pasek) --- */}
             <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
                 {availableDays.map((dateStr) => {
                     const { dayName, dayNum } = formatDayButton(dateStr);
@@ -134,7 +119,7 @@ export const Schedule: React.FC = () => {
                         <button
                             key={dateStr}
                             onClick={() => setSelectedDate(dateStr)}
-                            className={`flex flex-col items-center justify-center min-w-[80px] py-4 rounded-2xl border transition-all ${
+                            className={`flex flex-col items-center justify-center min-w-20 py-4 rounded-2xl border transition-all ${
                                 isSelected
                                     ? 'bg-[#3B82F6] border-[#3B82F6] text-white shadow-lg shadow-blue-500/20'
                                     : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white'
@@ -147,8 +132,7 @@ export const Schedule: React.FC = () => {
                 })}
             </div>
 
-            {/* --- LISTA ZAJĘĆ --- */}
-            <div className="space-y-4 relative min-h-[300px]">
+            <div className="space-y-4 relative min-h-75">
                 {isLoading ? (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
                         <Loader2 className="w-10 h-10 animate-spin text-[#3B82F6] mb-4" />
@@ -162,8 +146,6 @@ export const Schedule: React.FC = () => {
 
                         return (
                             <div key={gymClass.id} className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/80 rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-slate-600 transition-colors">
-
-                                {/* Lewa strona: Info o zajęciach */}
                                 <div className="flex gap-5 items-start">
                                     <div className={`p-4 rounded-2xl border ${style.bg} ${style.border} ${style.color} shrink-0`}>
                                         {style.icon}
@@ -187,7 +169,6 @@ export const Schedule: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Prawa strona: Przycisk akcji */}
                                 <div className="w-full md:w-auto mt-4 md:mt-0">
                                     {gymClass.isUserEnrolled ? (
                                         <button
