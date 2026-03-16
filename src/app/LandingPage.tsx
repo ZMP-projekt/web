@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as L from "leaflet";
+import {Link} from "react-router";
 
 interface NavLink {
     label: string;
@@ -210,8 +211,6 @@ const GymMap: React.FC<GymMapProps> = ({ locations, activeIndex, onPinClick }) =
     );
 };
 
-// ── Main Component ─────────────────────────────────────────────────────────
-
 export const LandingPage: React.FC = () => {
     const [scrolled, setScrolled] = useState<boolean>(false);
     const [activePin, setActivePin] = useState<number | null>(null);
@@ -301,7 +300,6 @@ export const LandingPage: React.FC = () => {
 
             <div className="grain" />
 
-            {/* ── NAV ── */}
             <nav className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 transition-all duration-300 ${
                 scrolled ? "h-15 bg-slate-900/90 backdrop-blur-md border-b border-white/5" : "h-18 bg-transparent"
             }`}>
@@ -322,20 +320,19 @@ export const LandingPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <a href="/login" className="text-slate-400 hover:text-white text-sm font-medium no-underline transition-colors">
+                    <Link to="/login" className="text-slate-400 hover:text-white text-sm font-medium no-underline transition-colors">
                         Zaloguj się
-                    </a>
-                    <a
-                        href="/register"
+                    </Link>
+                    <Link
+                        to="/register"
                         className="text-white text-sm font-bold no-underline px-5 py-2 rounded-xl transition-opacity hover:opacity-90"
                         style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)", boxShadow: "0 0 20px rgba(59,130,246,0.3)" }}
                     >
                         Dołącz teraz →
-                    </a>
+                    </Link>
                 </div>
             </nav>
 
-            {/* ── HERO ── */}
             <section
                 className="hero-bg diagonal-bottom relative flex flex-col justify-center overflow-hidden"
                 style={{ minHeight: "100vh", padding: "120px 2rem 80px" }}
@@ -362,20 +359,20 @@ export const LandingPage: React.FC = () => {
                     </h1>
 
                     <div className="flex flex-wrap gap-4">
-                        <a
-                            href="/register"
+                        <Link
+                            to="/register"
                             className="inline-flex items-center gap-2.5 text-white font-bold text-base no-underline px-8 py-4 rounded-2xl transition-all hover:-translate-y-0.5"
                             style={{ background: "#3B82F6", boxShadow: "0 8px 32px rgba(59,130,246,0.35)" }}
                         >
                             Rozpocznij za darmo <span className="text-xl">→</span>
-                        </a>
-                        <a
-                            href="#cennik"
+                        </Link>
+                        <Link
+                            to="#cennik"
                             className="inline-flex items-center text-slate-200 font-semibold text-base no-underline px-8 py-4 rounded-2xl border transition-all hover:bg-white/10"
                             style={{ background: "rgba(226,232,240,0.06)", borderColor: "rgba(226,232,240,0.12)" }}
                         >
                             Sprawdź cennik
-                        </a>
+                        </Link>
                     </div>
                 </div>
 
@@ -466,9 +463,9 @@ export const LandingPage: React.FC = () => {
                             <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)", lineHeight: 1 }}>
                                 Co gra dzisiaj?
                             </h2>
-                            <a href="/register" className="text-sm text-blue-400 no-underline font-semibold tracking-wide hover:text-blue-300 transition-colors">
-                                Pełny harmonogram po rejestracji →
-                            </a>
+                            <Link to="/schedule" className="text-sm text-blue-400 no-underline font-semibold tracking-wide hover:text-blue-300 transition-colors">
+                                Pełny harmonogram →
+                            </Link>
                         </div>
                     </div>
 
@@ -554,8 +551,8 @@ export const LandingPage: React.FC = () => {
                                         </li>
                                     ))}
                                 </ul>
-                                <a
-                                    href="/register"
+                                <Link
+                                    to="/register"
                                     className="block text-center no-underline py-3.5 rounded-xl font-bold text-sm text-white transition-opacity hover:opacity-85"
                                     style={{
                                         background: plan.popular ? "linear-gradient(135deg, #3B82F6, #7C3AED)" : "rgba(226,232,240,0.06)",
@@ -564,7 +561,7 @@ export const LandingPage: React.FC = () => {
                                     }}
                                 >
                                     Wybierz plan
-                                </a>
+                                </Link>
                             </div>
                         ))}
                     </div>
@@ -639,13 +636,13 @@ export const LandingPage: React.FC = () => {
                     <p className="text-slate-400 text-base leading-relaxed max-w-125 mx-auto mb-10">
                         Dołącz do ponad 1200 osób, które już trenują z GymSystem. Pierwszych 30 dni bez opłat.
                     </p>
-                    <a
-                        href="/register"
+                    <Link
+                        to="/register"
                         className="inline-flex items-center gap-3 text-white font-black text-lg no-underline px-10 py-5 rounded-2xl tracking-wide transition-all hover:-translate-y-0.5"
                         style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)", boxShadow: "0 8px 40px rgba(59,130,246,0.4)" }}
                     >
                         Zacznij za darmo →
-                    </a>
+                    </Link>
                     <p className="text-xs text-slate-700 mt-5 tracking-wider">
                         Bez karty kredytowej · Anuluj w każdej chwili · Pełny dostęp przez 30 dni
                     </p>

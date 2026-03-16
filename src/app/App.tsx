@@ -11,6 +11,7 @@ import { TrainerLayout } from "../components/TrainerLayout.tsx";
 import { TrainerDashboard } from "./TrainerDashboard.tsx";
 import {Profile} from "./Profile.tsx";
 import {Schedule} from "./Schedule.tsx";
+import {PublicSchedule} from "./PublicSchedule.tsx";
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/schedule" element={<PublicSchedule />} />
                     <Route element={<ProtectedRoute roles={['ROLE_USER']}><DashboardLayout /></ProtectedRoute>}>
                         <Route path="/dashboard" element={<Dashboard />}/>
                         <Route path="/memberships" element={<Memberships />}/>
