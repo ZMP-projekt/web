@@ -10,6 +10,7 @@ import {DashboardLayout} from "../components/DashboardLayout.tsx";
 import { TrainerLayout } from "../components/TrainerLayout.tsx";
 import { TrainerDashboard } from "./TrainerDashboard.tsx";
 import {Profile} from "./Profile.tsx";
+import {Schedule} from "./Schedule.tsx";
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                         <Route path="/dashboard" element={<Dashboard />}/>
                         <Route path="/memberships" element={<Memberships />}/>
                         <Route path="/profile" element={<Profile />}/>
+                        <Route path="/schedule" element={<Schedule />}/>
                     </Route>
                     <Route element={<ProtectedRoute roles={['ROLE_TRAINER']}><TrainerLayout /></ProtectedRoute>}>
                         <Route path="/trainer/dashboard" element={<TrainerDashboard />}/>
