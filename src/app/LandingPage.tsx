@@ -1,160 +1,674 @@
-import React from 'react';
-import { Link } from 'react-router';
-import { Dumbbell, ArrowRight, CheckCircle2, MapPin, Users, Calendar } from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import * as L from "leaflet";
+
+interface NavLink {
+    label: string;
+    href: string;
+}
+
+interface Stat {
+    value: string;
+    label: string;
+}
+
+interface ScheduleItem {
+    time: string;
+    name: string;
+    trainer: string;
+    spots: number;
+    tag: string;
+    color: string;
+}
+
+interface PricingPlan {
+    title: string;
+    price: string;
+    features: string[];
+    popular: boolean;
+}
+
+interface GymLocation {
+    name: string;
+    address: string;
+    hours: string;
+    lat: number;
+    lng: number;
+}
+
+const NAV_LINKS: NavLink[] = [
+    { label: "O nas", href: "#o-nas" },
+    { label: "Zajęcia", href: "#harmonogram" },
+    { label: "Cennik", href: "#cennik" },
+    { label: "Lokalizacje", href: "#mapa" },
+];
+
+const STATS: Stat[] = [
+    { value: "1 200+", label: "Aktywnych członków" },
+    { value: "3", label: "Lokalizacje w mieście" },
+    { value: "24", label: "Trenerów personalnych" },
+    { value: "40+", label: "Zajęć tygodniowo" },
+];
+
+const SCHEDULE: ScheduleItem[] = [
+    { time: "06:30", name: "Morning HIIT", trainer: "Karolina Wiśniewska", spots: 4, tag: "Cardio", color: "#3B82F6" },
+    { time: "09:00", name: "Yoga Flow", trainer: "Marek Zając", spots: 8, tag: "Mindfulness", color: "#8B5CF6" },
+    { time: "12:15", name: "CrossFit RX", trainer: "Tomasz Nowak", spots: 2, tag: "Siła", color: "#10B981" },
+    { time: "18:00", name: "Boxing Basics", trainer: "Anna Kowalska", spots: 6, tag: "Boks", color: "#F59E0B" },
+    { time: "19:30", name: "Body Pump", trainer: "Piotr Malinowski", spots: 10, tag: "Siła", color: "#3B82F6" },
+    { time: "20:30", name: "Night Stretch", trainer: "Karolina Wiśniewska", spots: 12, tag: "Mobilność", color: "#8B5CF6" },
+];
+
+const PRICING: PricingPlan[] = [
+    {
+        title: "Student",
+        price: "89",
+        features: ["Dostęp do 16:00", "Strefy podstawowe", "Aplikacja mobilna", "Szafka w cenie"],
+        popular: false,
+    },
+    {
+        title: "Open",
+        price: "149",
+        features: ["Dostęp 24/7", "Wszystkie strefy", "Zajęcia grupowe", "1 trening personalny", "Aplikacja mobilna"],
+        popular: true,
+    },
+    {
+        title: "VIP",
+        price: "249",
+        features: ["Dostęp 24/7", "Zajęcia Premium", "Ręcznik i woda", "Nielimitowane konsultacje", "Strefa SPA"],
+        popular: false,
+    },
+];
+
+const LOCATIONS: GymLocation[] = [
+    {
+        name: "GymSystem Centrum",
+        address: "ul. Marszałkowska 44",
+        hours: "Pon–Pt 6:00–23:00 / Sob–Ndz 8:00–21:00",
+        lat: 52.2297,
+        lng: 21.0122,
+    },
+    {
+        name: "GymSystem Północ",
+        address: "ul. Żoliborska 12",
+        hours: "Pon–Pt 6:00–22:00 / Sob 8:00–20:00",
+        lat: 52.265,
+        lng: 20.998,
+    },
+    {
+        name: "GymSystem Południe",
+        address: "ul. Puławska 88",
+        hours: "Pon–Pt 6:00–23:00 / Sob–Ndz 8:00–22:00",
+        lat: 52.195,
+        lng: 21.02,
+    },
+];
+
+interface GymMapProps {
+    locations: GymLocation[];
+    activeIndex: number | null;
+    onPinClick: (index: number) => void;
+}
+
+const GymMap: React.FC<GymMapProps> = ({ locations, activeIndex, onPinClick }) => {
+    const mapContainerRef = useRef<HTMLDivElement>(null);
+    const mapInstanceRef = useRef<L.Map | null>(null);
+    const markersRef = useRef<L.Marker[]>([]);
+
+    const createMarkerIcon = (isActive: boolean): L.DivIcon =>
+        L.divIcon({
+            className: "",
+            html: `
+        <div style="display:flex;flex-direction:column;align-items:center;
+          filter:drop-shadow(0 0 8px ${isActive ? "#60A5FA" : "#3B82F6"});
+          transform:${isActive ? "scale(1.3)" : "scale(1)"};transition:transform 0.2s ease;">
+          <div style="width:16px;height:16px;border-radius:50%;
+            background:${isActive ? "#60A5FA" : "#3B82F6"};border:2px solid white;
+            box-shadow:0 0 0 3px ${isActive ? "rgba(96,165,250,0.4)" : "rgba(59,130,246,0.3)"};">
+          </div>
+          <div style="width:0;height:0;border-left:5px solid transparent;
+            border-right:5px solid transparent;
+            border-top:8px solid margin-top:-1px; ${isActive ? "#60A5FA" : "#3B82F6"};">
+          </div>
+        </div>`,
+            iconSize: [16, 24],
+            iconAnchor: [8, 24],
+            popupAnchor: [0, -28],
+        });
+
+    useEffect(() => {
+        if (!mapContainerRef.current || mapInstanceRef.current) return;
+
+        const avgLat = locations.reduce((sum, l) => sum + l.lat, 0) / locations.length;
+        const avgLng = locations.reduce((sum, l) => sum + l.lng, 0) / locations.length;
+
+        const map = L.map(mapContainerRef.current, {
+            center: [avgLat, avgLng],
+            zoom: 12,
+            zoomControl: false,
+        });
+
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+            attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: "abcd",
+            maxZoom: 19,
+        }).addTo(map);
+
+        L.control.zoom({ position: "bottomright" }).addTo(map);
+
+        markersRef.current = locations.map((loc, i) => {
+            const marker = L.marker([loc.lat, loc.lng], { icon: createMarkerIcon(false) })
+                .addTo(map)
+                .bindPopup(
+                    `<div style="font-family:'Outfit',sans-serif;padding:4px 2px;">
+            <div style="font-weight:700;font-size:13px;color:#fff;margin-bottom:4px;">${loc.name}</div>
+            <div style="font-size:11px;color:#94A3B8;margin-bottom:2px;">📍 ${loc.address}</div>
+            <div style="font-size:11px;color:#64748B;">🕐 ${loc.hours}</div>
+          </div>`,
+                    { className: "gym-popup", maxWidth: 240 }
+                );
+
+            marker.on("click", () => onPinClick(i));
+            return marker;
+        });
+
+        mapInstanceRef.current = map;
+
+        return () => {
+            map.remove();
+            mapInstanceRef.current = null;
+            markersRef.current = [];
+        };
+
+    }, [locations, onPinClick]);
+
+    useEffect(() => {
+        markersRef.current.forEach((marker, i) => {
+            marker.setIcon(createMarkerIcon(i === activeIndex));
+            if (i === activeIndex) {
+                marker.openPopup();
+                mapInstanceRef.current?.panTo(marker.getLatLng(), { animate: true });
+            }
+        });
+    }, [activeIndex]);
+
+    return (
+        <>
+            <style>{`
+        .gym-popup .leaflet-popup-content-wrapper {
+          background: #1E293B;
+          border: 1px solid rgba(59,130,246,0.3);
+          border-radius: 10px;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+          color: #E2E8F0;
+        }
+        .gym-popup .leaflet-popup-tip { background: #1E293B; }
+        .gym-popup .leaflet-popup-close-button { color: #64748B !important; }
+      `}</style>
+            <div ref={mapContainerRef} className="w-full h-full" />
+        </>
+    );
+};
+
+// ── Main Component ─────────────────────────────────────────────────────────
 
 export const LandingPage: React.FC = () => {
-    return (
-        <div className="min-h-screen bg-slate-900 text-slate-200 font-sans selection:bg-blue-500/30">
+    const [scrolled, setScrolled] = useState<boolean>(false);
+    const [activePin, setActivePin] = useState<number | null>(null);
+    const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
+    const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
-            <nav className="flex justify-between items-center p-6 lg:px-12 border-b border-slate-800/50 backdrop-blur-md sticky top-0 z-50 bg-slate-900/80">
-                <div className="text-2xl font-bold text-white flex items-center gap-2">
-                    <Dumbbell className="w-8 h-8 text-[#3B82F6]" />
-                    GymSystem
+    useEffect(() => {
+        const onScroll = (): void => setScrolled(window.scrollY > 40);
+        window.addEventListener("scroll", onScroll);
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries: IntersectionObserverEntry[]) => {
+                entries.forEach((e) => {
+                    if (e.isIntersecting) {
+                        setVisibleSections((prev) => ({ ...prev, [e.target.id]: true }));
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+        Object.values(sectionRefs.current).forEach((el) => el && observer.observe(el));
+        return () => observer.disconnect();
+    }, []);
+
+    const registerRef = (id: string) => (el: HTMLElement | null): void => {
+        sectionRefs.current[id] = el;
+    };
+
+    const handlePinClick = (index: number): void => {
+        setActivePin((prev) => (prev === index ? null : index));
+    };
+
+    return (
+        <div className="min-h-screen bg-slate-900 text-slate-200 overflow-x-hidden" style={{ fontFamily: "'Outfit', sans-serif" }}>
+            <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+        .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; }
+        html { scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0F172A; }
+        ::-webkit-scrollbar-thumb { background: #3B82F6; border-radius: 2px; }
+
+        .fade-up { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+        .stagger-4 { transition-delay: 0.4s; }
+        .stagger-5 { transition-delay: 0.5s; }
+        .stagger-6 { transition-delay: 0.6s; }
+
+        .schedule-row { transition: background 0.2s ease, transform 0.2s ease; }
+        .schedule-row:hover { background: rgba(59,130,246,0.06) !important; transform: translateX(4px); }
+
+        .price-card { transition: transform 0.25s ease; }
+        .price-card:hover { transform: translateY(-6px); }
+
+        .nav-link { position: relative; transition: color 0.2s; }
+        .nav-link::after { content:''; position:absolute; bottom:-2px; left:0; width:0; height:2px; background:#3B82F6; transition:width 0.25s ease; }
+        .nav-link:hover { color: white; }
+        .nav-link:hover::after { width: 100%; }
+
+        .grain { position:fixed; inset:0; pointer-events:none; z-index:100; opacity:0.025;
+          background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+          background-size:200px 200px; }
+
+        .hero-bg {
+          background:
+            radial-gradient(ellipse 80% 60% at 20% 10%, rgba(59,130,246,0.15) 0%, transparent 60%),
+            radial-gradient(ellipse 60% 50% at 80% 80%, rgba(139,92,246,0.12) 0%, transparent 60%),
+            #0F172A;
+        }
+        .diagonal-bottom { clip-path: polygon(0 0%, 100% 0%, 100% 96%, 0% 100%); padding-bottom: 4%; }
+
+        @media (max-width: 768px) {
+          .hero-title { font-size: 14vw !important; line-height: 0.95 !important; }
+          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .pricing-grid { grid-template-columns: 1fr !important; }
+          .schedule-grid { grid-template-columns: 1fr !important; }
+          .map-grid { grid-template-columns: 1fr !important; }
+          .about-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+
+            <div className="grain" />
+
+            {/* ── NAV ── */}
+            <nav className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 transition-all duration-300 ${
+                scrolled ? "h-15 bg-slate-900/90 backdrop-blur-md border-b border-white/5" : "h-18 bg-transparent"
+            }`}>
+                <div className="flex items-center gap-2.5">
+                    <div
+                        className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-lg display"
+                        style={{ background: "linear-gradient(135deg, #3B82F6, #8B5CF6)" }}
+                    >GS</div>
+                    <span className="font-bold text-lg text-white">GymSystem</span>
                 </div>
-                <div className="hidden md:flex gap-8 font-medium text-slate-300">
-                    <a href="#o-nas" className="hover:text-white transition-colors">O nas</a>
-                    <a href="#cennik" className="hover:text-white transition-colors">Cennik</a>
-                    <a href="#harmonogram" className="hover:text-white transition-colors">Zajęcia</a>
+
+                <div className="hidden md:flex gap-10">
+                    {NAV_LINKS.map((link) => (
+                        <a key={link.href} href={link.href} className="nav-link text-slate-400 text-sm font-medium no-underline">
+                            {link.label}
+                        </a>
+                    ))}
                 </div>
-                <div className="flex gap-4">
-                    <Link to="/login" className="text-slate-300 hover:text-white px-4 py-2 font-medium transition-colors">
+
+                <div className="flex items-center gap-3">
+                    <a href="/login" className="text-slate-400 hover:text-white text-sm font-medium no-underline transition-colors">
                         Zaloguj się
-                    </Link>
-                    <Link to="/register" className="bg-[#8B5CF6] hover:bg-purple-500 text-white px-5 py-2 rounded-xl font-bold shadow-lg shadow-purple-500/30 transition-all">
-                        Dołącz teraz
-                    </Link>
+                    </a>
+                    <a
+                        href="/register"
+                        className="text-white text-sm font-bold no-underline px-5 py-2 rounded-xl transition-opacity hover:opacity-90"
+                        style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)", boxShadow: "0 0 20px rgba(59,130,246,0.3)" }}
+                    >
+                        Dołącz teraz →
+                    </a>
                 </div>
             </nav>
 
-            <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden flex flex-col items-center text-center px-4">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-125 bg-[#3B82F6]/20 blur-[120px] rounded-full pointer-events-none"></div>
+            {/* ── HERO ── */}
+            <section
+                className="hero-bg diagonal-bottom relative flex flex-col justify-center overflow-hidden"
+                style={{ minHeight: "100vh", padding: "120px 2rem 80px" }}
+            >
+                <div className="absolute top-[15%] right-[8%] w-px h-[40%]" style={{ background: "linear-gradient(to bottom, transparent, rgba(59,130,246,0.3), transparent)" }} />
+                <div className="absolute top-[30%] right-[12%] w-px h-[30%]" style={{ background: "linear-gradient(to bottom, transparent, rgba(139,92,246,0.2), transparent)" }} />
 
-                <div className="relative z-10">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800/50 border border-slate-700 text-sm text-[#3B82F6] font-medium mb-8">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-            </span>
+                <div className="max-w-300 w-full mx-auto">
+                    <div
+                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-xs font-semibold mb-8 uppercase tracking-widest"
+                        style={{ borderColor: "rgba(59,130,246,0.3)", background: "rgba(59,130,246,0.08)", color: "#60A5FA" }}
+                    >
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block" style={{ boxShadow: "0 0 8px #3B82F6" }} />
                         Twój nowy standard treningu
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight">
-                        Przestań planować. <br className="hidden md:block" />
-                        <span className="text-transparent bg-clip-text bg-linear-to-r from-[#3B82F6] to-[#8B5CF6]">
-              Zacznij trenować.
-            </span>
+                    <h1 className="hero-title display text-white mb-8" style={{ fontSize: "clamp(72px, 12vw, 160px)", lineHeight: 0.9 }}>
+                        Przestań<br />
+                        <span style={{ WebkitTextStroke: "2px #3B82F6", color: "transparent" }}>planować.</span><br />
+                        <span style={{ background: "linear-gradient(90deg, #3B82F6, #8B5CF6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Zacznij</span>
+                    </h1>
+                    <h1 className="hero-title display text-white mb-12" style={{ fontSize: "clamp(72px, 12vw, 160px)", lineHeight: 0.9 }}>
+                        trenować.
                     </h1>
 
-                    <p className="text-lg text-slate-400 mb-10 max-w-2xl mx-auto">
-                        Zarządzaj swoim karnetem, rezerwuj zajęcia z najlepszymi trenerami i śledź swoje postępy. Wszystko z poziomu nowoczesnej aplikacji.
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link to="/register" className="flex items-center justify-center gap-2 bg-[#3B82F6] hover:bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all">
-                            Rozpocznij za darmo
-                            <ArrowRight className="w-5 h-5" />
-                        </Link>
-                        <a href="#cennik" className="flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-2xl font-bold text-lg border border-slate-700 transition-all">
+                    <div className="flex flex-wrap gap-4">
+                        <a
+                            href="/register"
+                            className="inline-flex items-center gap-2.5 text-white font-bold text-base no-underline px-8 py-4 rounded-2xl transition-all hover:-translate-y-0.5"
+                            style={{ background: "#3B82F6", boxShadow: "0 8px 32px rgba(59,130,246,0.35)" }}
+                        >
+                            Rozpocznij za darmo <span className="text-xl">→</span>
+                        </a>
+                        <a
+                            href="#cennik"
+                            className="inline-flex items-center text-slate-200 font-semibold text-base no-underline px-8 py-4 rounded-2xl border transition-all hover:bg-white/10"
+                            style={{ background: "rgba(226,232,240,0.06)", borderColor: "rgba(226,232,240,0.12)" }}
+                        >
                             Sprawdź cennik
                         </a>
                     </div>
                 </div>
+
+                <div className="absolute bottom-[8%] left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-600 text-[11px] font-semibold uppercase tracking-widest">
+                    <span>Przewiń</span>
+                    <div className="w-px h-10" style={{ background: "linear-gradient(to bottom, #475569, transparent)" }} />
+                </div>
             </section>
 
-            <section id="o-nas" className="py-20 bg-slate-900/50 border-y border-slate-800/50">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-white mb-4">Dlaczego GymSystem?</h2>
-                        <p className="text-slate-400 max-w-xl mx-auto">Zbudowaliśmy system, który stawia Twój komfort na pierwszym miejscu. Koniec z papierowymi umowami i staniem w kolejkach do recepcji.</p>
+            <section className="border-b border-blue-500/20 py-12 px-8" style={{ background: "linear-gradient(135deg, #1E293B, #1E3A5F)" }}>
+                <div
+                    className="stats-grid max-w-300 mx-auto grid grid-cols-4 rounded-2xl overflow-hidden"
+                    style={{ gap: "1px", background: "rgba(226,232,240,0.06)" }}
+                >
+                    {STATS.map((stat, i) => (
+                        <div key={i} className="text-center px-6 py-9" style={{ background: "rgba(15,23,42,0.7)" }}>
+                            <div className="display text-[52px] leading-none" style={{ color: i % 2 === 0 ? "#3B82F6" : "#8B5CF6" }}>
+                                {stat.value}
+                            </div>
+                            <div className="text-slate-500 text-xs font-medium mt-1.5 uppercase tracking-wider">{stat.label}</div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            <section id="o-nas" ref={registerRef("o-nas")} className="py-24 px-8">
+                <div className="about-grid max-w-300 mx-auto grid grid-cols-2 gap-20 items-center">
+
+                    <div className={`fade-up ${visibleSections["o-nas"] ? "visible" : ""}`}>
+                        <div className="text-xs font-bold tracking-[0.16em] text-blue-500 uppercase mb-4">O nas</div>
+                        <h2 className="display text-white mb-6" style={{ fontSize: "clamp(40px, 5vw, 72px)", lineHeight: 0.95 }}>
+                            Nie jesteśmy<br />zwykłą siłownią.
+                        </h2>
+                        <p className="text-slate-400 leading-relaxed text-base mb-6">
+                            GymSystem to ekosystem, który łączy trzy nowoczesne obiekty z jedną, spójną platformą cyfrową. Rezerwujesz, płacisz i śledzisz postępy — wszystko w jednym miejscu.
+                        </p>
+                        <p className="text-slate-500 leading-relaxed text-sm">
+                            Koniec z papierowymi umowami, staniem w kolejkach i gubieniem karnetów. Twój dostęp jest zawsze w telefonie.
+                        </p>
+                        <div className="flex gap-8 mt-10">
+                            {(["Siłownia", "Cardio", "Spa & Sauna"] as const).map((t, i) => (
+                                <div key={t}>
+                                    <div className="text-sm font-bold text-white">{t}</div>
+                                    <div className="text-xs text-slate-500 mt-0.5">{["Sprzęt premium", "Pełna strefa", "Strefy VIP"][i]}</div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8">
-                        <FeatureCard
-                            icon={<MapPin className="w-8 h-8 text-blue-400" />}
-                            title="3 Nowoczesne Lokalizacje"
-                            desc="Trenuj blisko domu. Nasze siłownie znajdują się w kluczowych punktach miasta, zawsze blisko Ciebie."
-                        />
-                        <FeatureCard
-                            icon={<Calendar className="w-8 h-8 text-purple-400" />}
-                            title="Elastyczny Harmonogram"
-                            desc="Zapisuj się na zajęcia jednym kliknięciem. Joga, Crossfit, czy boks - wszystko w zasięgu ręki."
-                        />
-                        <FeatureCard
-                            icon={<Users className="w-8 h-8 text-emerald-400" />}
-                            title="Najlepsi Trenerzy"
-                            desc="Nasz zespół to certyfikowani profesjonaliści, którzy pomogą Ci osiągnąć Twoje cele szybciej i bezpieczniej."
-                        />
+                    <div className={`fade-up stagger-2 ${visibleSections["o-nas"] ? "visible" : ""}`}>
+                        <div className="grid grid-cols-2 gap-4">
+                            {[
+                                { icon: "📍", title: "3 Lokalizacje", desc: "W kluczowych punktach miasta, zawsze blisko Ciebie.", color: "#3B82F6" },
+                                { icon: "🗓", title: "Elastyczny plan", desc: "Zapisuj się na zajęcia jednym dotknięciem.", color: "#8B5CF6" },
+                                { icon: "🏆", title: "Top trenerzy", desc: "Certyfikowani specjaliści, realne efekty.", color: "#10B981" },
+                                { icon: "📱", title: "Aplikacja mobilna", desc: "Twój karnet, harmonogram i postępy — w kieszeni.", color: "#F59E0B" },
+                            ].map((card, i) => (
+                                <div
+                                    key={i}
+                                    className="rounded-2xl p-6 border transition-colors duration-200 cursor-default"
+                                    style={{ background: "rgba(30,41,59,0.6)", borderColor: "rgba(226,232,240,0.07)" }}
+                                    onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => (e.currentTarget.style.borderColor = card.color + "55")}
+                                    onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => (e.currentTarget.style.borderColor = "rgba(226,232,240,0.07)")}
+                                >
+                                    <div className="text-3xl mb-3">{card.icon}</div>
+                                    <div className="text-sm font-bold text-white mb-1.5">{card.title}</div>
+                                    <div className="text-xs text-slate-500 leading-relaxed">{card.desc}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section
+                id="harmonogram"
+                ref={registerRef("harmonogram")}
+                className="py-24 px-8 border-t border-b border-white/5"
+                style={{ background: "rgba(15,23,42,0.8)" }}
+            >
+                <div className="max-w-300 mx-auto">
+                    <div className={`fade-up ${visibleSections["harmonogram"] ? "visible" : ""} mb-14`}>
+                        <div className="text-xs font-bold tracking-[0.16em] uppercase mb-3" style={{ color: "#8B5CF6" }}>
+                            Zajęcia grupowe
+                        </div>
+                        <div className="flex justify-between items-end flex-wrap gap-4">
+                            <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)", lineHeight: 1 }}>
+                                Co gra dzisiaj?
+                            </h2>
+                            <a href="/register" className="text-sm text-blue-400 no-underline font-semibold tracking-wide hover:text-blue-300 transition-colors">
+                                Pełny harmonogram po rejestracji →
+                            </a>
+                        </div>
+                    </div>
+
+                    <div className="schedule-grid grid grid-cols-2 gap-3">
+                        {SCHEDULE.map((cls, i) => (
+                            <div
+                                key={i}
+                                className={`schedule-row fade-up stagger-${Math.min(i + 1, 6)} ${visibleSections["harmonogram"] ? "visible" : ""} flex items-center gap-5 px-6 py-5 rounded-2xl border border-white/5`}
+                                style={{ background: "rgba(30,41,59,0.4)" }}
+                            >
+                                <div className="text-center min-w-12">
+                                    <div className="display text-[22px] leading-none" style={{ color: cls.color }}>
+                                        {cls.time.split(":")[0]}
+                                    </div>
+                                    <div className="text-[11px] text-slate-600 font-semibold">:{cls.time.split(":")[1]}</div>
+                                </div>
+                                <div className="w-0.5 h-10 rounded-sm" style={{ background: `linear-gradient(to bottom, ${cls.color}88, transparent)` }} />
+                                <div className="flex-1">
+                                    <div className="text-sm font-bold text-white mb-0.5">{cls.name}</div>
+                                    <div className="text-xs text-slate-500">{cls.trainer}</div>
+                                </div>
+                                <div className="flex flex-col items-end gap-1.5">
+                  <span
+                      className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                      style={{ background: cls.color + "22", color: cls.color, border: `1px solid ${cls.color}44` }}
+                  >
+                    {cls.tag}
+                  </span>
+                                    <span className={`text-[11px] font-semibold ${cls.spots <= 3 ? "text-red-400" : "text-slate-500"}`}>
+                    {cls.spots <= 3 ? `⚠ ${cls.spots} miejsc` : `${cls.spots} miejsc`}
+                  </span>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            <section id="cennik" className="py-24 max-w-6xl mx-auto px-6">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl font-bold text-white mb-4">Wybierz swój karnet</h2>
-                    <p className="text-slate-400">Przejrzyste ceny, brak ukrytych opłat. Zrezygnuj w dowolnym momencie.</p>
-                </div>
+            <section id="cennik" ref={registerRef("cennik")} className="py-24 px-8">
+                <div className="max-w-300 mx-auto">
+                    <div className={`fade-up ${visibleSections["cennik"] ? "visible" : ""} text-center mb-16`}>
+                        <div className="text-xs font-bold tracking-[0.16em] text-blue-500 uppercase mb-3">Karnety</div>
+                        <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)" }}>Wybierz swój plan</h2>
+                        <p className="text-slate-500 mt-3 text-sm">Przejrzyste ceny. Brak ukrytych opłat. Rezygnuj kiedy chcesz.</p>
+                    </div>
 
-                <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                    <PricingCard
-                        title="Student"
-                        price="89 PLN"
-                        features={['Dostęp do 16:00', 'Podstawowy sprzęt', 'Aplikacja mobilna']}
-                    />
-
-                    <PricingCard
-                        title="Open"
-                        price="149 PLN"
-                        isPopular
-                        features={['Dostęp 24/7', 'Wszystkie strefy', 'Zajęcia grupowe', 'Aplikacja mobilna', '1 trening personalny']}
-                    />
-
-                    <PricingCard
-                        title="VIP"
-                        price="249 PLN"
-                        features={['Dostęp 24/7', 'Zajęcia grupowe Premium', 'Ręcznik i woda gratis', 'Nielimitowane konsultacje']}
-                    />
+                    <div className="pricing-grid grid grid-cols-3 gap-6 max-w-225 mx-auto">
+                        {PRICING.map((plan, i) => (
+                            <div
+                                key={i}
+                                className={`price-card fade-up stagger-${i + 1} ${visibleSections["cennik"] ? "visible" : ""} relative rounded-3xl p-9`}
+                                style={{
+                                    background: plan.popular ? "linear-gradient(160deg, #1E3A5F 0%, #1a1a2e 100%)" : "rgba(30,41,59,0.5)",
+                                    border: plan.popular ? "1px solid #3B82F6" : "1px solid rgba(226,232,240,0.07)",
+                                    boxShadow: plan.popular ? "0 0 60px rgba(59,130,246,0.12)" : "none",
+                                }}
+                            >
+                                {plan.popular && (
+                                    <div
+                                        className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-white text-[10px] font-black tracking-[0.12em] uppercase px-4 py-1 rounded-full whitespace-nowrap"
+                                        style={{ background: "linear-gradient(90deg, #3B82F6, #7C3AED)" }}
+                                    >
+                                        Najpopularniejszy
+                                    </div>
+                                )}
+                                <div className="text-[11px] font-bold tracking-widest uppercase mb-2" style={{ color: plan.popular ? "#60A5FA" : "#64748B" }}>
+                                    {plan.title}
+                                </div>
+                                <div className="flex items-baseline gap-1 mb-7">
+                                    <span className="display text-[56px] text-white leading-none">{plan.price}</span>
+                                    <span className="text-sm text-slate-500 font-medium">PLN / msc</span>
+                                </div>
+                                <div className="h-px mb-6" style={{ background: "rgba(226,232,240,0.06)" }} />
+                                <ul className="list-none mb-8 p-0">
+                                    {plan.features.map((feature, fi) => (
+                                        <li
+                                            key={fi}
+                                            className="flex items-center gap-2.5 py-2 text-sm text-slate-300"
+                                            style={{ borderBottom: fi < plan.features.length - 1 ? "1px solid rgba(226,232,240,0.04)" : "none" }}
+                                        >
+                                            <span className="text-base" style={{ color: plan.popular ? "#3B82F6" : "#8B5CF6" }}>✓</span>
+                                            {feature}
+                                        </li>
+                                    ))}
+                                </ul>
+                                <a
+                                    href="/register"
+                                    className="block text-center no-underline py-3.5 rounded-xl font-bold text-sm text-white transition-opacity hover:opacity-85"
+                                    style={{
+                                        background: plan.popular ? "linear-gradient(135deg, #3B82F6, #7C3AED)" : "rgba(226,232,240,0.06)",
+                                        border: plan.popular ? "none" : "1px solid rgba(226,232,240,0.12)",
+                                        boxShadow: plan.popular ? "0 4px 20px rgba(59,130,246,0.3)" : "none",
+                                    }}
+                                >
+                                    Wybierz plan
+                                </a>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            <footer className="border-t border-slate-800 py-8 text-center text-slate-500 text-sm">
-                <p>&copy; 2026 GymSystem. Projekt studencki.</p>
+            <section
+                id="mapa"
+                ref={registerRef("mapa")}
+                className="py-24 px-8 border-t border-white/5"
+                style={{ background: "rgba(15,23,42,0.6)" }}
+            >
+                <div className="max-w-300 mx-auto">
+                    <div className={`fade-up ${visibleSections["mapa"] ? "visible" : ""} mb-12`}>
+                        <div className="text-xs font-bold tracking-[0.16em] text-emerald-400 uppercase mb-3">Lokalizacje</div>
+                        <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)" }}>Znajdź nas blisko siebie</h2>
+                    </div>
+
+                    <div className="map-grid grid gap-8" style={{ gridTemplateColumns: "1fr 340px" }}>
+                        <div
+                            className={`fade-up stagger-2 ${visibleSections["mapa"] ? "visible" : ""} rounded-3xl overflow-hidden border`}
+                            style={{ height: 420, borderColor: "rgba(59,130,246,0.2)" }}
+                        >
+                            <GymMap locations={LOCATIONS} activeIndex={activePin} onPinClick={handlePinClick} />
+                        </div>
+
+                        <div className={`fade-up stagger-3 ${visibleSections["mapa"] ? "visible" : ""} flex flex-col gap-4`}>
+                            {LOCATIONS.map((loc, i) => (
+                                <div
+                                    key={i}
+                                    onClick={() => handlePinClick(i)}
+                                    className="rounded-2xl p-5 cursor-pointer transition-all duration-200 border"
+                                    style={{
+                                        background: activePin === i ? "rgba(59,130,246,0.1)" : "rgba(30,41,59,0.5)",
+                                        borderColor: activePin === i ? "rgba(59,130,246,0.4)" : "rgba(226,232,240,0.07)",
+                                    }}
+                                >
+                                    <div className="flex items-center gap-2.5 mb-2">
+                                        <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0" style={{ boxShadow: "0 0 8px #3B82F6" }} />
+                                        <span className="text-sm font-bold text-white">{loc.name}</span>
+                                    </div>
+                                    <div className="text-xs text-slate-500 mb-1">📍 {loc.address}</div>
+                                    <div className="text-[11px] text-slate-600">🕐 {loc.hours}</div>
+                                </div>
+                            ))}
+                            <p className="text-xs text-slate-700 mt-1 leading-relaxed">
+                                Kliknij na lokalizację lub pinezkę na mapie, aby zobaczyć szczegóły.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section ref={registerRef("cta")} id="cta" className="relative py-24 px-8 overflow-hidden">
+                <div
+                    className="absolute inset-0"
+                    style={{ background: "radial-gradient(ellipse 80% 80% at 50% 50%, rgba(59,130,246,0.12) 0%, rgba(139,92,246,0.06) 50%, transparent 100%)" }}
+                />
+                <div
+                    className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px"
+                    style={{ background: "linear-gradient(90deg, transparent, rgba(59,130,246,0.4), rgba(139,92,246,0.4), transparent)" }}
+                />
+
+                <div className="relative max-w-200 mx-auto text-center">
+                    <div className="display text-white mb-6" style={{ fontSize: "clamp(48px, 8vw, 96px)", lineHeight: 0.95 }}>
+                        Twoja metamorfoza<br />
+                        <span style={{ background: "linear-gradient(90deg, #3B82F6, #8B5CF6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              zaczyna się dziś.
+            </span>
+                    </div>
+                    <p className="text-slate-400 text-base leading-relaxed max-w-125 mx-auto mb-10">
+                        Dołącz do ponad 1200 osób, które już trenują z GymSystem. Pierwszych 30 dni bez opłat.
+                    </p>
+                    <a
+                        href="/register"
+                        className="inline-flex items-center gap-3 text-white font-black text-lg no-underline px-10 py-5 rounded-2xl tracking-wide transition-all hover:-translate-y-0.5"
+                        style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)", boxShadow: "0 8px 40px rgba(59,130,246,0.4)" }}
+                    >
+                        Zacznij za darmo →
+                    </a>
+                    <p className="text-xs text-slate-700 mt-5 tracking-wider">
+                        Bez karty kredytowej · Anuluj w każdej chwili · Pełny dostęp przez 30 dni
+                    </p>
+                </div>
+            </section>
+
+            <footer className="border-t border-white/5 py-8 px-8 flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-2">
+                    <div
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm display"
+                        style={{ background: "linear-gradient(135deg, #3B82F6, #8B5CF6)" }}
+                    >GS</div>
+                    <span className="font-bold text-sm text-slate-200">GymSystem</span>
+                </div>
+                <p className="text-xs text-slate-700">© 2026 GymSystem — Projekt studencki</p>
+                <div className="flex gap-6">
+                    {["Regulamin", "Prywatność", "Kontakt"].map((label) => (
+                        <a key={label} href="#" className="text-xs text-slate-600 hover:text-slate-400 no-underline transition-colors">
+                            {label}
+                        </a>
+                    ))}
+                </div>
             </footer>
         </div>
     );
 };
-
-const FeatureCard = ({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) => (
-    <div className="bg-slate-800/30 border border-slate-700/50 p-8 rounded-3xl hover:bg-slate-800/50 transition-colors">
-        <div className="bg-slate-900 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-slate-800">
-            {icon}
-        </div>
-        <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
-        <p className="text-slate-400 leading-relaxed">{desc}</p>
-    </div>
-);
-
-const PricingCard = ({ title, price, features, isPopular = false }: { title: string, price: string, features: string[], isPopular?: boolean }) => (
-    <div className={`relative p-8 rounded-3xl border flex flex-col ${isPopular ? 'bg-linear-to-b from-slate-800 to-slate-900 border-[#3B82F6] shadow-xl shadow-blue-900/20' : 'bg-slate-800/30 border-slate-700/50'}`}>
-        {isPopular && (
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#3B82F6] text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                Najpopularniejszy
-            </div>
-        )}
-        <h3 className="text-2xl font-bold text-white mb-2">{title}</h3>
-        <div className="flex items-baseline gap-1 mb-6">
-            <span className="text-4xl font-extrabold text-white">{price}</span>
-            <span className="text-slate-400">/ msc</span>
-        </div>
-        <ul className="space-y-4 mb-8 flex-1">
-            {features.map((feature, idx) => (
-                <li key={idx} className="flex items-center gap-3 text-slate-300">
-                    <CheckCircle2 className="w-5 h-5 text-[#8B5CF6] shrink-0" />
-                    <span>{feature}</span>
-                </li>
-            ))}
-        </ul>
-        <Link to="/register" className={`w-full py-3 rounded-xl font-bold text-center transition-colors ${isPopular ? 'bg-[#3B82F6] hover:bg-blue-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-white'}`}>
-            Wybierz plan
-        </Link>
-    </div>
-);
