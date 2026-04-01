@@ -7,23 +7,20 @@ import {
     CheckCircle,
     XCircle,
     Loader2,
-    Dumbbell,
-    Zap,
-    Heart,
     Activity
 } from 'lucide-react';
 
 interface GymClass {
-    id: string;
+    id: number;
     name: string;
-    trainer: string;
+    trainerName: string;
     startTime: string;
     endTime: string;
-    date: string; // Format np. YYYY-MM-DD
-    capacity: number;
-    enrolled: number;
-    isUserEnrolled: boolean;
-    type: 'STRENGTH' | 'CARDIO' | 'YOGA' | 'CROSSFIT';
+    currentParticipants: number;
+    maxParticipants: number;
+    description: string;
+    userEnrolled: boolean;
+    personalTraining: boolean;
 }
 
 const generateNext7Days = () => {
@@ -35,14 +32,19 @@ const generateNext7Days = () => {
     }
     return days;
 };
-const getClassStyle = (type: string) => {
-    switch (type) {
-        case 'STRENGTH': return { icon: <Dumbbell className="w-5 h-5" />, color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-500/30' };
-        case 'CROSSFIT': return { icon: <Zap className="w-5 h-5" />, color: 'text-orange-400', bg: 'bg-orange-400/10', border: 'border-orange-500/30' };
-        case 'YOGA': return { icon: <Heart className="w-5 h-5" />, color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-500/30' };
-        default: return { icon: <Activity className="w-5 h-5" />, color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-500/30' };
+const getClassStyle = (isPersonal: boolean) => {
+    if (isPersonal) {
+        return { icon: <User className="w5 h-5" />, color: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-500/30', tag: 'Personalny' }
+    }
+    else {
+        return { icon: <Activity className="w5 h-5" />, color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-500/30', tag: 'Fitness' };
     }
 };
+
+const formatTime = (isoString: string) => {
+    const date = new Date(isoString);
+    return date.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit'});
+}
 
 export const Schedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
@@ -51,21 +53,15 @@ export const Schedule: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState<string>(availableDays[0]);
     const [classes, setClasses] = useState<GymClass[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+    const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchClasses = async () => {
             setIsLoading(true);
             try {
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                const mockData: GymClass[] = [
-                    { id: '1', name: 'Trening Funkcjonalny', trainer: 'Marek Kowalski', startTime: '16:00', endTime: '17:00', date: selectedDate, capacity: 15, enrolled: 12, isUserEnrolled: false, type: 'CROSSFIT' },
-                    { id: '2', name: 'Joga dla początkujących', trainer: 'Anna Nowak', startTime: '17:30', endTime: '18:30', date: selectedDate, capacity: 20, enrolled: 20, isUserEnrolled: true, type: 'YOGA' },
-                    { id: '3', name: 'Sztangi & Siła', trainer: 'Piotr Wiśniewski', startTime: '19:00', endTime: '20:30', date: selectedDate, capacity: 12, enrolled: 5, isUserEnrolled: false, type: 'STRENGTH' },
-                ];
-
-                setClasses(mockData);
+                const formattedDate = `${selectedDate}T00:00:00`;
+                const response = await apiPrivate.get('/api/classes?date=' + formattedDate);
+                setClasses(response.data);
             } catch (error) {
                 console.error("Błąd pobierania grafiku:", error);
             } finally {
@@ -76,18 +72,23 @@ export const Schedule: React.FC = () => {
         fetchClasses();
     }, [selectedDate, apiPrivate]);
 
-    const handleEnrollment = async (classId: string, isEnrolling: boolean) => {
+    const handleEnrollment = async (classId: number, isEnrolling: boolean) => {
         setActionLoadingId(classId);
         try {
-            await new Promise(resolve => setTimeout(resolve, 800)); // Symulacja ładowania
+            if (isEnrolling) {
+                await apiPrivate.post(`/api/classes/${classId}/book`);
+            }
+            else {
+                await apiPrivate.delete(`/api/classes/${classId}/cancel`);
+            }
             setClasses(prev => prev.map(c => {
                 if (c.id === classId) {
-                    return { ...c, isUserEnrolled: isEnrolling, enrolled: isEnrolling ? c.enrolled + 1 : c.enrolled - 1 };
+                    return { ...c, userEnrolled: isEnrolling, currentParticipants: isEnrolling ? c.currentParticipants + 1 : c.currentParticipants - 1 };
                 }
                 return c;
             }));
 
-            alert(isEnrolling ? 'Pomyślnie zapisano na zajęcia!' : 'Zrezygnowano z zajęć.');
+            //alert(isEnrolling ? 'Pomyślnie zapisano na zajęcia!' : 'Zrezygnowano z zajęć.');
         } catch (error) {
             alert('Wystąpił błąd. Spróbuj ponownie.');
             console.log(error);
@@ -140,8 +141,8 @@ export const Schedule: React.FC = () => {
                     </div>
                 ) : classes.length > 0 ? (
                     classes.map((gymClass) => {
-                        const style = getClassStyle(gymClass.type);
-                        const isFull = gymClass.enrolled >= gymClass.capacity;
+                        const style = getClassStyle(gymClass.personalTraining);
+                        const isFull = gymClass.currentParticipants >= gymClass.maxParticipants;
                         const isActionLoading = actionLoadingId === gymClass.id;
 
                         return (
@@ -152,25 +153,25 @@ export const Schedule: React.FC = () => {
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-3 mb-1">
-                                            <span className="text-xl font-bold text-white">{gymClass.startTime} - {gymClass.endTime}</span>
-                                            {gymClass.isUserEnrolled && (
+                                            <span className="text-xl font-bold text-white">{formatTime(gymClass.startTime)} - {formatTime(gymClass.endTime)}</span>
+                                            {gymClass.userEnrolled && (
                                                 <span className="flex items-center gap-1 text-xs font-bold bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">
-                          <CheckCircle className="w-3 h-3" /> Zapisany
-                        </span>
+                                                    <CheckCircle className="w-3 h-3" /> Zapisany
+                                                </span>
                                             )}
                                         </div>
                                         <h3 className="text-lg font-bold text-slate-200 mb-2">{gymClass.name}</h3>
                                         <div className="flex flex-wrap gap-4 text-sm text-slate-400 font-medium">
-                                            <span className="flex items-center gap-1.5"><User className="w-4 h-4" /> {gymClass.trainer}</span>
+                                            <span className="flex items-center gap-1.5"><User className="w-4 h-4" /> {gymClass.trainerName}</span>
                                             <span className={`flex items-center gap-1.5 ${isFull ? 'text-red-400' : ''}`}>
-                        <Users className="w-4 h-4" /> {gymClass.enrolled}/{gymClass.capacity} miejsc
-                      </span>
+                                                <Users className="w-4 h-4" /> {gymClass.currentParticipants}/{gymClass.maxParticipants} miejsc
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="w-full md:w-auto mt-4 md:mt-0">
-                                    {gymClass.isUserEnrolled ? (
+                                    {gymClass.userEnrolled ? (
                                         <button
                                             onClick={() => handleEnrollment(gymClass.id, false)}
                                             disabled={isActionLoading}

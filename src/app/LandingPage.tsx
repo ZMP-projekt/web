@@ -463,7 +463,7 @@ export const LandingPage: React.FC = () => {
                             <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)", lineHeight: 1 }}>
                                 Co gra dzisiaj?
                             </h2>
-                            <Link to="/schedule" className="text-sm text-blue-400 no-underline font-semibold tracking-wide hover:text-blue-300 transition-colors">
+                            <Link to="/public/schedule" className="text-sm text-blue-400 no-underline font-semibold tracking-wide hover:text-blue-300 transition-colors">
                                 Pełny harmonogram →
                             </Link>
                         </div>
