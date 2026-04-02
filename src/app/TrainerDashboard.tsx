@@ -13,6 +13,8 @@ import {
     FileText,
     Clock, Dumbbell
 } from 'lucide-react';
+import {ConfirmModal} from "../components/ConfirmModal.tsx";
+import toast from "react-hot-toast";
 
 interface ApiGymClass {
     id: number;
@@ -71,6 +73,13 @@ export const TrainerDashboard: React.FC = () => {
         personalTraining: false,
     });
 
+    const [confirmDialog, setConfirmDialog] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
+    });
+
     const fetchTrainerClasses = async () => {
         setIsLoading(true);
         try {
@@ -117,10 +126,16 @@ export const TrainerDashboard: React.FC = () => {
     };
 
     const handleCancelClass = async (classId: number, className: string) => {
-        if (window.confirm(`Czy na pewno chcesz odwołać zajęcia: ${className}?`)) {
-            await apiPrivate.delete(`/api/classes/${classId}`);
-            alert(`Zajęcia ${classId} odwołane!`);
-        }
+        setConfirmDialog({
+            isOpen: true,
+            title: 'Odwołaj zajęcia',
+            message: `Czy na pewno chcesz odwołać zajęcia: ${className}?`,
+            onConfirm: async () => {
+                await apiPrivate.delete(`/api/classes/${classId}`);
+                toast.success(`Zajęcia ${className} zostały odwołane!`);
+                fetchTrainerClasses()
+            }
+        });
     };
 
     const handleCreateSubmit = async (e: React.SyntheticEvent) => {
@@ -141,7 +156,7 @@ export const TrainerDashboard: React.FC = () => {
             };
             await apiPrivate.post('/api/classes', payload);
 
-            alert('Zajęcia zostały pomyślnie dodane!');
+            toast.success('Zajęcia zostały pomyślnie dodane!');
             setIsCreateModalOpen(false);
             setCreateForm({
                 name: '', description: '', startTimeStr: '12:00', endTimeStr: '13:00', maxParticipants: 15, personalTraining: false
@@ -151,7 +166,7 @@ export const TrainerDashboard: React.FC = () => {
 
         } catch (error) {
             console.error("Błąd tworzenia zajęć:", error);
-            alert('Nie udało się utworzyć zajęć. Sprawdź poprawność danych.');
+            toast.error('Nie udało się utworzyć zajęć. Sprawdź poprawność danych.');
         } finally {
             setIsCreating(false);
         }
@@ -216,7 +231,6 @@ export const TrainerDashboard: React.FC = () => {
                 })}
             </div>
 
-            {/* Lista Zajęć Trenera */}
             <div className="space-y-4 relative min-h-75">
                 {isLoading ? (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
@@ -226,23 +240,20 @@ export const TrainerDashboard: React.FC = () => {
                 ) : classes.length > 0 ? (
                     classes.map((gymClass) => (
                         <div key={gymClass.id} className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/80 rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-slate-600 transition-colors">
-
-                            {/* Info o zajęciach */}
                             <div>
                                 <div className="flex items-center gap-3 mb-1">
-                  <span className="text-xl font-bold text-emerald-400">
-                    {formatTime(gymClass.startTime)} - {formatTime(gymClass.endTime)}
-                  </span>
+                                    <span className="text-xl font-bold text-emerald-400">
+                                        {formatTime(gymClass.startTime)} - {formatTime(gymClass.endTime)}
+                                    </span>
                                     {gymClass.personalTraining && (
                                         <span className="text-xs font-bold bg-amber-500/20 text-amber-400 px-2 py-1 rounded-full border border-amber-500/30">
-                      Trening Personalny
-                    </span>
+                                            Trening Personalny
+                                        </span>
                                     )}
                                 </div>
                                 <h3 className="text-lg font-bold text-slate-200 mb-1">{gymClass.name}</h3>
                                 <p className="text-sm text-slate-500 line-clamp-1 mb-3">{gymClass.description}</p>
 
-                                {/* KLIKALNY PRZYCISK UCZESTNIKÓW */}
                                 <button
                                     onClick={() => handleOpenParticipants(gymClass)}
                                     className="flex items-center gap-2 text-sm font-medium bg-slate-900/50 hover:bg-slate-900 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors"
@@ -253,7 +264,6 @@ export const TrainerDashboard: React.FC = () => {
                                 </button>
                             </div>
 
-                            {/* Akcje trenera */}
                             <div className="flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
                                 <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-sm font-bold transition-colors">
                                     <Edit className="w-4 h-4" /> Edytuj
@@ -295,7 +305,6 @@ export const TrainerDashboard: React.FC = () => {
                         <div className="p-6 overflow-y-auto">
                             <form id="createClassForm" onSubmit={handleCreateSubmit} className="space-y-5">
 
-                                {/* Checkbox: Trening Personalny */}
                                 <label className="flex items-center gap-3 p-4 border border-emerald-500/30 bg-emerald-500/10 rounded-xl cursor-pointer hover:bg-emerald-500/20 transition-colors">
                                     <input
                                         type="checkbox"
@@ -310,7 +319,6 @@ export const TrainerDashboard: React.FC = () => {
                                     </div>
                                 </label>
 
-                                {/* Nazwa i Limit Miejsc */}
                                 <div className="grid grid-cols-3 gap-4">
                                     <div className="col-span-2">
                                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nazwa zajęć</label>
@@ -337,7 +345,6 @@ export const TrainerDashboard: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Godziny */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Od</label>
@@ -361,7 +368,6 @@ export const TrainerDashboard: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Opis */}
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Opis</label>
                                     <div className="relative">
@@ -391,13 +397,9 @@ export const TrainerDashboard: React.FC = () => {
                 </div>
             )}
 
-            {/* --- MODAL (Okienko) Z LISTĄ UCZESTNIKÓW --- */}
             {isParticipantsModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
-                    {/* Tło klikalne do zamykania modala */}
                     <div className="absolute inset-0" onClick={() => setIsParticipantsModalOpen(false)}></div>
-
-                    {/* Zawartość modala */}
                     <div className="relative bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden z-10">
 
                         <div className="flex justify-between items-center p-6 border-b border-slate-700">
@@ -440,6 +442,14 @@ export const TrainerDashboard: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal
+                isOpen={confirmDialog.isOpen}
+                title={confirmDialog.title}
+                message={confirmDialog.message}
+                onConfirm={confirmDialog.onConfirm}
+                onCancel={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}
+            />
 
         </div>
     );

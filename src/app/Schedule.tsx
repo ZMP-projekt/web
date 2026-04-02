@@ -9,6 +9,7 @@ import {
     Loader2,
     Activity
 } from 'lucide-react';
+import toast from "react-hot-toast";
 
 interface GymClass {
     id: number;
@@ -88,9 +89,9 @@ export const Schedule: React.FC = () => {
                 return c;
             }));
 
-            //alert(isEnrolling ? 'Pomyślnie zapisano na zajęcia!' : 'Zrezygnowano z zajęć.');
+            toast.success(isEnrolling ? 'Pomyślnie zapisano na zajęcia!' : 'Zrezygnowano z zajęć.');
         } catch (error) {
-            alert('Wystąpił błąd. Spróbuj ponownie.');
+            toast.error('Wystąpił błąd. Spróbuj ponownie.');
             console.log(error);
         } finally {
             setActionLoadingId(null);

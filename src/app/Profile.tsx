@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from "../auth/useAuth.ts";
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import { User, Mail, Camera, Edit2, Save, X, Loader2, AlertCircle } from 'lucide-react';
+import toast from "react-hot-toast";
 
 interface ProfileData {
     firstName: string;
@@ -21,7 +22,6 @@ export const Profile: React.FC = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState('');
 
-    // Stan lokalny dla formularza podczas edycji
     const [formData, setFormData] = useState<ProfileData>({
         firstName: '',
         lastName: '',
@@ -30,20 +30,17 @@ export const Profile: React.FC = () => {
         photoUrl: ''
     });
 
-    // Dynamiczny wybór endpointu w zależności od roli
     const apiEndpoint = role === 'ROLE_TRAINER' ? '/api/trainers/me' : '/user/profile';
     const isTrainer = role === 'ROLE_TRAINER';
 
-    // 1. POBIERANIE PROFILU (Defensywne podejście)
     useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const response = await apiPrivate.get(apiEndpoint);
                 setProfile(response.data);
-                setFormData(response.data); // Kopiujemy dane do formularza edycji
+                setFormData(response.data);
             } catch (err) {
                 console.warn('Profil nie istnieje (lub backend zwrócił 403). Inicjalizowanie pustego profilu.', err);
-                // Tworzymy pusty profil, żeby użytkownik mógł go uzupełnić
                 const emptyProfile = { firstName: '', lastName: '', specialization: '', bio: '', photoUrl: '' };
                 setProfile(emptyProfile);
                 setFormData(emptyProfile);
@@ -55,16 +52,14 @@ export const Profile: React.FC = () => {
         fetchProfile();
     }, [apiEndpoint, apiPrivate]);
 
-    // 2. ZAPISYWANIE PROFILU
     const handleSave = async () => {
         setIsSaving(true);
         setError('');
         try {
-            // Wysyłamy cały obiekt formData, żeby zaspokoić obecne wymagania backendu (brakujące pola psują PUT)
             await apiPrivate.put(apiEndpoint, formData);
-            setProfile(formData); // Aktualizujemy widok
-            setIsEditing(false);  // Wychodzimy z trybu edycji
-            alert('Profil został zaktualizowany!');
+            setProfile(formData);
+            setIsEditing(false);
+            toast.success('Profil został zaktualizowany!');
         } catch (err) {
             console.error('Błąd zapisu profilu:', err);
             setError('Wystąpił błąd podczas zapisywania zmian. Upewnij się, że wypełniłeś wszystkie wymagane pola.');
@@ -73,7 +68,6 @@ export const Profile: React.FC = () => {
         }
     };
 
-    // 3. OBSŁUGA ZMIAN W FORMULARZU
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -86,11 +80,8 @@ export const Profile: React.FC = () => {
     return (
         <div className="max-w-4xl mx-auto space-y-8">
 
-            {/* Nagłówek ze zdjęciem */}
             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-3xl p-8 relative overflow-hidden flex flex-col md:flex-row items-center gap-8">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#3B82F6]/10 rounded-full blur-3xl pointer-events-none"></div>
-
-                {/* Awatar */}
                 <div className="relative group">
                     <div className="w-32 h-32 rounded-full bg-slate-700 border-4 border-slate-800 overflow-hidden flex items-center justify-center relative z-10">
                         {formData.photoUrl ? (
@@ -106,7 +97,6 @@ export const Profile: React.FC = () => {
                     )}
                 </div>
 
-                {/* Podstawowe info nagłówkowe */}
                 <div className="flex-1 text-center md:text-left z-10">
                     <h1 className="text-3xl font-bold text-white mb-2">
                         {profile?.firstName || profile?.lastName ? `${profile.firstName} ${profile.lastName}` : 'Nieznajomy'}
@@ -120,7 +110,6 @@ export const Profile: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Przycisk trybu edycji */}
                 <div className="z-10">
                     {!isEditing ? (
                         <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-5 py-2.5 rounded-xl font-medium transition-colors">
@@ -134,7 +123,6 @@ export const Profile: React.FC = () => {
                 </div>
             </div>
 
-            {/* Komunikat błędu */}
             {error && (
                 <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400">
                     <AlertCircle className="w-5 h-5 shrink-0" />
@@ -142,16 +130,13 @@ export const Profile: React.FC = () => {
                 </div>
             )}
 
-            {/* Formularz / Dane Szczegółowe */}
             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-3xl p-8">
                 <h2 className="text-xl font-bold text-white mb-6">Dane szczegółowe</h2>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                    {/* Wspólne pola dla wszystkich */}
                     <InputField label="Imię" name="firstName" value={formData.firstName} isEditing={isEditing} onChange={handleChange} />
                     <InputField label="Nazwisko" name="lastName" value={formData.lastName} isEditing={isEditing} onChange={handleChange} />
 
-                    {/* Pola specyficzne dla Trenera */}
                     {isTrainer && (
                         <>
                             <div className="md:col-span-2">
@@ -177,8 +162,6 @@ export const Profile: React.FC = () => {
                         </>
                     )}
                 </div>
-
-                {/* Przycisk Zapisz (widoczny tylko w trybie edycji) */}
                 {isEditing && (
                     <div className="mt-8 flex justify-end">
                         <button
@@ -196,7 +179,6 @@ export const Profile: React.FC = () => {
     );
 };
 
-// --- Mały sub-komponent pomocniczy dla czystości kodu ---
 const InputField = ({ label, name, value, isEditing, onChange }: { label: string, name: string, value: string, isEditing: boolean, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
     <div>
         <label className="block text-sm font-medium text-slate-400 mb-2">{label}</label>
