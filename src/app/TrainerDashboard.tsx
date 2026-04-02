@@ -63,6 +63,13 @@ export const TrainerDashboard: React.FC = () => {
     const [isParticipantsLoading, setIsParticipantsLoading] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+    const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
+    const [isRescheduling, setIsRescheduling] = useState(false);
+
+    const [rescheduleForm, setRescheduleForm] = useState({
+        newDate: '',
+        newTime: ''
+    });
     
     const [createForm, setCreateForm] = useState({
         name: '',
@@ -79,6 +86,40 @@ export const TrainerDashboard: React.FC = () => {
         message: '',
         onConfirm: () => {}
     });
+
+    const handleOpenReschedule = (gymClass: ApiGymClass) => {
+        setSelectedClassForModal(gymClass);
+
+        const startDate = new Date(gymClass.startTime);
+        const dateStr = startDate.toISOString().split('T')[0];
+        const timeStr = startDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+
+        setRescheduleForm({
+            newDate: dateStr,
+            newTime: timeStr
+        })
+
+        setIsRescheduleModalOpen(true);
+    }
+
+    const handleRescheduleSubmit = async (e: React.SubmitEvent)=> {
+        e.preventDefault();
+        if (!selectedClassForModal) return;
+
+        setIsRescheduling(true);
+        try {
+            const newStartDateTime = `${rescheduleForm.newDate}T${rescheduleForm.newTime}:00`;
+            await apiPrivate.patch(`/api/classes/${selectedClassForModal.id}/reschedule?newTime=${newStartDateTime}`)
+            toast.success('Zajęcia zostały pomyślnie przełożone!');
+            setIsRescheduleModalOpen(false);
+            await fetchTrainerClasses();
+        } catch (error) {
+            console.error("Błąd przekładania zajęć:", error)
+            toast.error('Nie udało się  przełożyć zajęć.')
+        } finally {
+            setIsRescheduling(false);
+        }
+    }
 
     const fetchTrainerClasses = async () => {
         setIsLoading(true);
@@ -133,7 +174,7 @@ export const TrainerDashboard: React.FC = () => {
             onConfirm: async () => {
                 await apiPrivate.delete(`/api/classes/${classId}`);
                 toast.success(`Zajęcia ${className} zostały odwołane!`);
-                fetchTrainerClasses()
+                await fetchTrainerClasses()
             }
         });
     };
@@ -265,8 +306,10 @@ export const TrainerDashboard: React.FC = () => {
                             </div>
 
                             <div className="flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
-                                <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-sm font-bold transition-colors">
-                                    <Edit className="w-4 h-4" /> Edytuj
+                                <button
+                                    onClick={() => handleOpenReschedule(gymClass)}
+                                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-sm font-bold transition-colors">
+                                    <Edit className="w-4 h-4" /> Przełóż
                                 </button>
                                 <button
                                     onClick={() => handleCancelClass(gymClass.id, gymClass.name)}
@@ -437,6 +480,68 @@ export const TrainerDashboard: React.FC = () => {
                                     <p>Nikt jeszcze nie zapisał się na te zajęcia.</p>
                                 </div>
                             )}
+                        </div>
+
+                    </div>
+                </div>
+            )}
+
+            {isRescheduleModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+                    <div className="absolute inset-0" onClick={() => !isRescheduling && setIsRescheduleModalOpen(false)}></div>
+
+                    <div className="relative bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden z-10">
+
+                        <div className="flex justify-between items-center p-6 border-b border-slate-700">
+                            <div>
+                                <h3 className="text-xl font-bold text-white">Przełóż zajęcia</h3>
+                                <p className="text-sm text-slate-400 mt-1 line-clamp-1">{selectedClassForModal?.name}</p>
+                            </div>
+                            <button onClick={() => !isRescheduling && setIsRescheduleModalOpen(false)} className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition-colors">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="p-6">
+                            <form id="rescheduleForm" onSubmit={handleRescheduleSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nowa data</label>
+                                    <div className="relative">
+                                        <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                        <input
+                                            type="date" required
+                                            value={rescheduleForm.newDate}
+                                            onChange={(e) => setRescheduleForm(prev => ({ ...prev, newDate: e.target.value }))}
+                                            className="w-full pl-9 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm [&::-webkit-calendar-picker-indicator]:invert"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nowa godzina rozpoczęcia</label>
+                                    <div className="relative">
+                                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                        <input
+                                            type="time" required
+                                            value={rescheduleForm.newTime}
+                                            onChange={(e) => setRescheduleForm(prev => ({ ...prev, newTime: e.target.value }))}
+                                            className="w-full pl-9 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm [&::-webkit-calendar-picker-indicator]:invert"
+                                        />
+                                    </div>
+                                    <p className="text-xs text-slate-500 mt-2">Czas zakończenia zostanie przeliczony automatycznie.</p>
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <div className="p-6 border-t border-slate-700 bg-slate-800/80">
+                            <button
+                                type="submit" form="rescheduleForm" disabled={isRescheduling}
+                                className="w-full flex justify-center items-center gap-2 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all disabled:opacity-70 shadow-lg shadow-emerald-900/20"
+                            >
+                                {isRescheduling ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                                {isRescheduling ? 'Zapisywanie...' : 'Przełóż zajęcia'}
+                            </button>
                         </div>
 
                     </div>
