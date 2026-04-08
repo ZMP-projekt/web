@@ -11,7 +11,9 @@ import {
     X,
     Save,
     FileText,
-    Clock, Dumbbell
+    Clock, Dumbbell,
+    ArrowLeft,
+    ArrowRight
 } from 'lucide-react';
 import {ConfirmModal} from "../components/ConfirmModal.tsx";
 import toast from "react-hot-toast";
@@ -36,11 +38,11 @@ interface Participant {
     role: string;
 }
 
-const generateNext7Days = () => {
+const generateNext7Days = (offset: number) => {
     const days = [];
     for (let i = 0; i < 7; i++) {
         const date = new Date();
-        date.setDate(date.getDate() + i);
+        date.setDate(date.getDate() + i + offset);
         days.push(date.toISOString().split('T')[0]);
     }
     return days;
@@ -53,7 +55,8 @@ const formatTime = (isoString: string) => {
 export const TrainerDashboard: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
 
-    const [availableDays] = useState<string[]>(generateNext7Days());
+    const [daysOffset, setDayOffset] = useState(0);
+    const [availableDays, setAvailableDays] = useState<string[]>([]);
     const [selectedDate, setSelectedDate] = useState<string>(availableDays[0]);
     const [classes, setClasses] = useState<ApiGymClass[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -86,6 +89,10 @@ export const TrainerDashboard: React.FC = () => {
         message: '',
         onConfirm: () => {}
     });
+
+    useEffect(() => {
+        setAvailableDays(generateNext7Days(daysOffset))
+    }, [daysOffset]);
 
     const handleOpenReschedule = (gymClass: ApiGymClass) => {
         setSelectedClassForModal(gymClass);
@@ -251,6 +258,12 @@ export const TrainerDashboard: React.FC = () => {
             </header>
 
             <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                <button
+                    onClick={() => setDayOffset(daysOffset - 7)}
+                    className={`flex flex-col items-center justify-center min-w-20 py-4 rounded-2xl border transition-all bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-500/20`}
+                >
+                    <ArrowLeft className="w-10 h-10 text-white" />
+                </button>
                 {availableDays.map((dateStr) => {
                     const { dayName, dayNum } = formatDayButton(dateStr);
                     const isSelected = selectedDate === dateStr;
@@ -270,6 +283,12 @@ export const TrainerDashboard: React.FC = () => {
                         </button>
                     );
                 })}
+                <button
+                    onClick={() => setDayOffset(daysOffset + 7)}
+                    className={`flex flex-col items-center justify-center min-w-20 py-4 rounded-2xl border transition-all bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-500/20`}
+                >
+                    <ArrowRight className="w-10 h-10 text-white" />
+                </button>
             </div>
 
             <div className="space-y-4 relative min-h-75">

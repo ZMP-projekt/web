@@ -7,7 +7,9 @@ import {
     CheckCircle,
     XCircle,
     Loader2,
-    Activity
+    Activity,
+    ArrowLeft,
+    ArrowRight
 } from 'lucide-react';
 import toast from "react-hot-toast";
 
@@ -24,11 +26,11 @@ interface GymClass {
     personalTraining: boolean;
 }
 
-const generateNext7Days = () => {
+const generateNext7Days = (o: number) => {
     const days = [];
     for (let i = 0; i < 7; i++) {
         const date = new Date();
-        date.setDate(date.getDate() + i);
+        date.setDate(date.getDate() + i + o);
         days.push(date.toISOString().split('T')[0]);
     }
     return days;
@@ -50,7 +52,8 @@ const formatTime = (isoString: string) => {
 export const Schedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
 
-    const [availableDays] = useState<string[]>(generateNext7Days());
+    const [daysOffset, setDaysOffset] = React.useState<number>(0);
+    const [availableDays, setAvailableDays] = useState<string[]>([]);
     const [selectedDate, setSelectedDate] = useState<string>(availableDays[0]);
     const [classes, setClasses] = useState<GymClass[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -72,6 +75,10 @@ export const Schedule: React.FC = () => {
 
         fetchClasses();
     }, [selectedDate, apiPrivate]);
+
+    useEffect(() => {
+        setAvailableDays(generateNext7Days(daysOffset))
+    }, [daysOffset]);
 
     const handleEnrollment = async (classId: number, isEnrolling: boolean) => {
         setActionLoadingId(classId);
@@ -113,8 +120,14 @@ export const Schedule: React.FC = () => {
             </header>
 
             <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                <button
+                    onClick={() => setDaysOffset(daysOffset - 7)}
+                    className={`flex items-center justify-center min-w-20 py-4 rounded-2xl border transition-all bg-[#3B82F6] border-[#3B82F6] text-white shadow-lg shadow-blue-500/20}`}
+                >
+                    <ArrowLeft className="w-10 h-10 text-white" />
+                </button>
                 {availableDays.map((dateStr) => {
-                    const { dayName, dayNum } = formatDayButton(dateStr);
+                    const {dayName, dayNum} = formatDayButton(dateStr);
                     const isSelected = selectedDate === dateStr;
 
                     return (
@@ -132,6 +145,12 @@ export const Schedule: React.FC = () => {
                         </button>
                     );
                 })}
+                <button
+                    onClick={() => setDaysOffset(daysOffset + 7)}
+                    className={`flex items-center justify-center min-w-20 py-4 rounded-2xl border transition-all bg-[#3B82F6] border-[#3B82F6] text-white shadow-lg shadow-blue-500/20}`}
+                >
+                    <ArrowRight className="w-10 h-10 text-white" />
+                </button>
             </div>
 
             <div className="space-y-4 relative min-h-75">
