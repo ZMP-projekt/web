@@ -53,7 +53,7 @@ export const Schedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
 
     const [daysOffset, setDaysOffset] = React.useState<number>(0);
-    const [availableDays, setAvailableDays] = useState<string[]>([]);
+    const [availableDays, setAvailableDays] = useState<string[]>(generateNext7Days(daysOffset));
     const [selectedDate, setSelectedDate] = useState<string>(availableDays[0]);
     const [classes, setClasses] = useState<GymClass[]>([]);
     const [isLoading, setIsLoading] = useState(true);

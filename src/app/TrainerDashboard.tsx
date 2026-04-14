@@ -56,7 +56,7 @@ export const TrainerDashboard: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
 
     const [daysOffset, setDayOffset] = useState(0);
-    const [availableDays, setAvailableDays] = useState<string[]>([]);
+    const [availableDays, setAvailableDays] = useState<string[]>(generateNext7Days(daysOffset));
     const [selectedDate, setSelectedDate] = useState<string>(availableDays[0]);
     const [classes, setClasses] = useState<ApiGymClass[]>([]);
     const [isLoading, setIsLoading] = useState(true);
