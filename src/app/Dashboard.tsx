@@ -1,5 +1,5 @@
 import './index.css'
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
     Bell,
     MapPin,
@@ -8,7 +8,9 @@ import {
     ChevronRight,
     Award, Gift,
 } from 'lucide-react';
-import {useAxiosPrivate} from "../hooks/useAxiosPrivate.ts";
+import { useAxiosPrivate } from "../hooks/useAxiosPrivate.ts";
+import { NotificationDropdown } from "../components/NotificationDropdown.tsx";
+import { useNotifications } from "../hooks/useNotifications.ts";
 
 interface ClassItem {
     id: number;
@@ -54,6 +56,8 @@ export const Dashboard: React.FC = () => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
     const [profileData, setProfileData] = React.useState<UserProfile | null>(null);
+    const { unreadCount } = useNotifications();
+    const [isNotifOpen, setIsNotifOpen] = React.useState(false);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -114,10 +118,26 @@ export const Dashboard: React.FC = () => {
                     <h1 className="text-3xl font-bold text-white">Witaj, {profileData?.firstName || 'użytkowniku'}!</h1>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 relative">
-                        <Bell className="w-6 h-6 text-slate-300" />
-                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
+                    <div className="relative">
+                        <button
+                            onClick={() => setIsNotifOpen(!isNotifOpen)}
+                            className={`flex items-center justify-between w-full p-3 rounded-xl transition-colors ${
+                                isNotifOpen ? 'bg-slate-800 text-white' : 'hover:bg-slate-800 text-slate-400'
+                            }`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <Bell className="6 h-6 text-slate-300" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                                )}
+                            </div>
+                        </button>
+
+                        <NotificationDropdown
+                            isOpen={isNotifOpen}
+                            onClose={() => setIsNotifOpen(false)}
+                        />
+                    </div>
                     <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 border-2 border-slate-800"></div>
                 </div>
             </header>

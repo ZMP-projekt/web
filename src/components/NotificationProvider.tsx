@@ -41,13 +41,12 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
                     let newNotification: NotificationData;
 
                     try {
-                        // 1. Próbujemy odczytać to jako poprawny JSON (sytuacja docelowa)
                         newNotification = JSON.parse(message.body);
                     } catch (error) {
                         console.warn("Otrzymano zwykły tekst zamiast JSON. Tworzę tymczasowy obiekt.", error);
                         newNotification = {
-                            id: Date.now(), // Tymczasowe, losowe ID
-                            content: message.body, // Cała treść to po prostu ten tekst
+                            id: Date.now(),
+                            content: message.body,
                             createdAt: new Date().toISOString(),
                             read: false
                         };
@@ -74,18 +73,28 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         };
     }, [token, isAuthenticated, apiPrivate]);
 
-    // Funkcja do oznaczania powiadomienia jako przeczytane (w przyszłości podepniesz tu API)
     const markAsRead = async (id: number) => {
         try {
-            // await apiPrivate.patch(`/notifications/${id}/read`);
+            await apiPrivate.patch(`/api/notifications/${id}/read`);
             setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
         } catch (error) {
             console.error("Nie udało się oznaczyć powiadomienia", error);
         }
     };
 
+    const deleteNotification = async (id: number) => {
+        try {
+            await apiPrivate.delete(`/api/notifications/${id}`);
+            setNotifications(prev => prev.filter(n => n.id !== id));
+        } catch (error) {
+            console.error(error);
+            toast.error("Nie udało się usunąć");
+        }
+
+    }
+
     return (
-        <NotificationContext.Provider value={{ notifications, unreadCount, markAsRead }}>
+        <NotificationContext.Provider value={{ notifications, unreadCount, markAsRead, deleteNotification }}>
             {children}
         </NotificationContext.Provider>
     );

@@ -13,10 +13,12 @@ import {
     FileText,
     Clock, Dumbbell,
     ArrowLeft,
-    ArrowRight
+    ArrowRight, Bell
 } from 'lucide-react';
 import {ConfirmModal} from "../components/ConfirmModal.tsx";
 import toast from "react-hot-toast";
+import { NotificationDropdown } from "../components/NotificationDropdown.tsx";
+import { useNotifications } from "../hooks/useNotifications.ts";
 
 interface ApiGymClass {
     id: number;
@@ -68,6 +70,8 @@ export const TrainerDashboard: React.FC = () => {
     const [isCreating, setIsCreating] = useState(false);
     const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
     const [isRescheduling, setIsRescheduling] = useState(false);
+    const { unreadCount } = useNotifications();
+    const [isNotifOpen, setIsNotifOpen] = useState(false);
 
     const [rescheduleForm, setRescheduleForm] = useState({
         newDate: '',
@@ -249,12 +253,34 @@ export const TrainerDashboard: React.FC = () => {
                     <h1 className="text-3xl font-bold text-white">Twój Grafik</h1>
                     <p className="text-slate-400 mt-2">Zarządzaj swoimi zajęciami i przeglądaj listy obecności.</p>
                 </div>
-                <button
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-emerald-900/20"
-                >
-                    <Plus className="w-5 h-5" /> Dodaj zajęcia
-                </button>
+                <div className="inline-flex space-x-5">
+                    <div className="relative">
+                        <button
+                            onClick={() => setIsNotifOpen(!isNotifOpen)}
+                            className={`flex items-center justify-between w-full p-3 rounded-xl transition-colors ${
+                                isNotifOpen ? 'bg-slate-800 text-white' : 'hover:bg-slate-800 text-slate-400'
+                            }`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <Bell className="6 h-6 text-slate-300" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                                )}
+                            </div>
+                        </button>
+
+                        <NotificationDropdown
+                            isOpen={isNotifOpen}
+                            onClose={() => setIsNotifOpen(false)}
+                        />
+                    </div>
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-emerald-900/20"
+                    >
+                        <Plus className="w-5 h-5"/> Dodaj zajęcia
+                    </button>
+                </div>
             </header>
 
             <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
