@@ -19,6 +19,7 @@ import {ConfirmModal} from "../components/ConfirmModal.tsx";
 import toast from "react-hot-toast";
 import { NotificationDropdown } from "../components/NotificationDropdown.tsx";
 import { useNotifications } from "../hooks/useNotifications.ts";
+import {api} from "../api/axios.ts";
 
 interface ApiGymClass {
     id: number;
@@ -38,6 +39,13 @@ interface Participant {
     lastName: string;
     email: string;
     role: string;
+}
+
+interface Location {
+    id: number;
+    name: string;
+    city: string;
+    address: string;
 }
 
 const generateNext7Days = (offset: number) => {
@@ -72,6 +80,7 @@ export const TrainerDashboard: React.FC = () => {
     const [isRescheduling, setIsRescheduling] = useState(false);
     const { unreadCount } = useNotifications();
     const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const [locations, setLocations] = useState<Location[]>([]);
 
     const [rescheduleForm, setRescheduleForm] = useState({
         newDate: '',
@@ -85,6 +94,7 @@ export const TrainerDashboard: React.FC = () => {
         endTimeStr: '13:00',
         maxParticipants: 15,
         personalTraining: false,
+        locationId: ''
     });
 
     const [confirmDialog, setConfirmDialog] = useState({
@@ -162,6 +172,19 @@ export const TrainerDashboard: React.FC = () => {
         fetchTrainerClasses();
     }, [selectedDate, apiPrivate]);
 
+    useEffect(() => {
+        const fetchLocations = async () => {
+            try {
+                const response = await api.get('/api/locations');
+                setLocations(response.data);
+            } catch (error) {
+                console.error("Błąd pobierania lokalizacji:", error);
+            }
+        };
+
+        fetchLocations();
+    }, []);
+
     const handleOpenParticipants = async (gymClass: ApiGymClass) => {
         setSelectedClassForModal(gymClass);
         setIsParticipantsModalOpen(true);
@@ -204,14 +227,15 @@ export const TrainerDashboard: React.FC = () => {
                 startTime: startDateTime,
                 endTime: endDateTime,
                 maxParticipants: createForm.personalTraining ? 1 : createForm.maxParticipants,
-                personalTraining: createForm.personalTraining
+                personalTraining: createForm.personalTraining,
+                locationId: Number(createForm.locationId),
             };
             await apiPrivate.post('/api/classes', payload);
 
             toast.success('Zajęcia zostały pomyślnie dodane!');
             setIsCreateModalOpen(false);
             setCreateForm({
-                name: '', description: '', startTimeStr: '12:00', endTimeStr: '13:00', maxParticipants: 15, personalTraining: false
+                name: '', description: '', startTimeStr: '12:00', endTimeStr: '13:00', maxParticipants: 15, personalTraining: false, locationId: ''
             });
 
             await fetchTrainerClasses();
@@ -224,7 +248,7 @@ export const TrainerDashboard: React.FC = () => {
         }
     };
 
-    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
 
         if (type === 'checkbox') {
@@ -454,6 +478,26 @@ export const TrainerDashboard: React.FC = () => {
                                             />
                                         </div>
                                     </div>
+                                </div>
+
+                                <div className="mt-4">
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                                        Lokalizacja (Klub)
+                                    </label>
+                                    <select
+                                        required
+                                        name="locationId"
+                                        value={createForm.locationId}
+                                        onChange={handleFormChange}
+                                        className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm appearance-none"
+                                    >
+                                        <option value="" disabled>Wybierz klub z listy...</option>
+                                        {locations.map((loc) => (
+                                            <option key={loc.id} value={loc.id}>
+                                                {loc.city} - {loc.name} ({loc.address})
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div>

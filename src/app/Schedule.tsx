@@ -9,7 +9,8 @@ import {
     Loader2,
     Activity,
     ArrowLeft,
-    ArrowRight
+    ArrowRight,
+    MapPinIcon
 } from 'lucide-react';
 import toast from "react-hot-toast";
 
@@ -24,6 +25,9 @@ interface GymClass {
     description: string;
     userEnrolled: boolean;
     personalTraining: boolean;
+    city: string;
+    address: string;
+    locationName: string;
 }
 
 const generateNext7Days = (o: number) => {
@@ -64,7 +68,7 @@ export const Schedule: React.FC = () => {
             setIsLoading(true);
             try {
                 const formattedDate = `${selectedDate}T00:00:00`;
-                const response = await apiPrivate.get('/api/classes?date=' + formattedDate);
+                const response = await apiPrivate.get('/api/classes/by-date?date=' + formattedDate);
                 setClasses(response.data);
             } catch (error) {
                 console.error("Błąd pobierania grafiku:", error);
@@ -183,6 +187,9 @@ export const Schedule: React.FC = () => {
                                         <h3 className="text-lg font-bold text-slate-200 mb-2">{gymClass.name}</h3>
                                         <div className="flex flex-wrap gap-4 text-sm text-slate-400 font-medium">
                                             <span className="flex items-center gap-1.5"><User className="w-4 h-4" /> {gymClass.trainerName}</span>
+                                            <span className="flex items-center gap-1.5">
+                                                <MapPinIcon className="w-4 h-4"/> {gymClass.city}, {gymClass.locationName}
+                                            </span>
                                             <span className={`flex items-center gap-1.5 ${isFull ? 'text-red-400' : ''}`}>
                                                 <Users className="w-4 h-4" /> {gymClass.currentParticipants}/{gymClass.maxParticipants} miejsc
                                             </span>
