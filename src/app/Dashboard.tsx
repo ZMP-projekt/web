@@ -11,6 +11,8 @@ import {
 import { useAxiosPrivate } from "../hooks/useAxiosPrivate.ts";
 import { NotificationDropdown } from "../components/NotificationDropdown.tsx";
 import { useNotifications } from "../hooks/useNotifications.ts";
+import { useMembership } from "../hooks/useMembership.ts";
+import {Link} from "react-router";
 
 interface ClassItem {
     id: number;
@@ -18,13 +20,6 @@ interface ClassItem {
     time: string;
     duration: string;
     icon: React.ReactNode;
-}
-
-interface MembershipData {
-    type: string;
-    price: number;
-    endDate: string;
-    active: boolean;
 }
 
 interface UserProfile {
@@ -52,9 +47,8 @@ const MainCard = ({ title, children, icon }: { title: string, children: React.Re
 export const Dashboard: React.FC = () => {
     const apiPrivate = useAxiosPrivate()
 
-    const [membership, setMembership] = React.useState<MembershipData | null>(null);
+    const { membership, isValid } = useMembership();
     const [isLoading, setIsLoading] = React.useState(true);
-    const [error, setError] = React.useState<string | null>(null);
     const [profileData, setProfileData] = React.useState<UserProfile | null>(null);
     const { unreadCount } = useNotifications();
     const [isNotifOpen, setIsNotifOpen] = React.useState(false);
@@ -62,16 +56,13 @@ export const Dashboard: React.FC = () => {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try{
-                const [ membership, profile] = await Promise.all([
-                    apiPrivate.get('/api/memberships/me'),
+                const [ profile ] = await Promise.all([
                     apiPrivate.get('/api/users/me'),
                 ])
 
-                setMembership(membership.data)
                 setProfileData(profile.data)
             } catch (err) {
                 console.error(err);
-                setError("Nie udało się załadować niektórych danych.");
             } finally {
                 setIsLoading(false);
             }
@@ -152,8 +143,8 @@ export const Dashboard: React.FC = () => {
                                 <div className="w-8 h-8 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin"></div>
                                 <p className="text-slate-400 text-sm">Pobieranie danych...</p>
                             </div>
-                        ) : error ? (
-                            <div className="mt-4 text-red-400 text-sm">{error}</div>
+                        ) : membership && !isValid ? (
+                            <div className="mt-4 text-red-400 text-md">Twój karnet wygasł!</div>
                         ) : membership ? (
                             <div className="mt-2 text-white">
                                 <h2 className="text-3xl font-bold mb-4">
@@ -184,9 +175,9 @@ export const Dashboard: React.FC = () => {
 
                             <div className="mt-4 flex flex-col items-start">
                                 <p className="text-slate-400 mb-4">Nie masz jeszcze żadnego aktywnego karnetu.</p>
-                                <button className="bg-[#3B82F6] hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors">
+                                <Link to={"/memberships"} className="bg-[#3B82F6] hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors">
                                     Kup karnet
-                                </button>
+                                </Link>
                             </div>
                         )}
                     </MainCard>
