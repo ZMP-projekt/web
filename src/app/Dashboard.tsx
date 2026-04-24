@@ -47,7 +47,7 @@ const MainCard = ({ title, children, icon }: { title: string, children: React.Re
 export const Dashboard: React.FC = () => {
     const apiPrivate = useAxiosPrivate()
 
-    const { membership, isValid } = useMembership();
+    const { membership, isValid, isMembershipLoading } = useMembership();
     const [isLoading, setIsLoading] = React.useState(true);
     const [profileData, setProfileData] = React.useState<UserProfile | null>(null);
     const { unreadCount } = useNotifications();
@@ -106,7 +106,10 @@ export const Dashboard: React.FC = () => {
         <>
             <header className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Witaj, {profileData?.firstName || 'użytkowniku'}!</h1>
+                    {isLoading ? (
+                        <h1 className="text-3xl font-bold text-white">...</h1>
+                    ) :
+                        <h1 className="text-3xl font-bold text-white">Witaj, {profileData?.firstName || 'użytkowniku'}!</h1>}
                 </div>
                 <div className="flex items-center gap-4">
                     <div className="relative">
@@ -138,7 +141,7 @@ export const Dashboard: React.FC = () => {
                 <div className="lg:col-span-2 space-y-6">
 
                     <MainCard title="Status karnetu" icon={<Award className="text-yellow-500" />}>
-                        {isLoading ? (
+                        {isMembershipLoading ? (
                             <div className="mt-4 flex flex-col items-center justify-center space-y-3">
                                 <div className="w-8 h-8 border-4 border-[#3B82F6] border-t-transparent rounded-full animate-spin"></div>
                                 <p className="text-slate-400 text-sm">Pobieranie danych...</p>
