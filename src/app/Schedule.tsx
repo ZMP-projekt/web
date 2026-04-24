@@ -13,6 +13,7 @@ import {
     MapPinIcon
 } from 'lucide-react';
 import toast from "react-hot-toast";
+import { useMembership } from "../hooks/useMembership.ts";
 
 interface GymClass {
     id: number;
@@ -55,6 +56,7 @@ const formatTime = (isoString: string) => {
 
 export const Schedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
+    const { isValid } = useMembership();
 
     const [daysOffset, setDaysOffset] = React.useState<number>(0);
     const [availableDays, setAvailableDays] = useState<string[]>(generateNext7Days(daysOffset));
@@ -86,6 +88,12 @@ export const Schedule: React.FC = () => {
 
     const handleEnrollment = async (classId: number, isEnrolling: boolean) => {
         setActionLoadingId(classId);
+
+        if (!isValid){
+            setActionLoadingId(null);
+            toast.error("Musisz posiadać aktywny karnet, aby zapisać się na zajęcia!");
+            return;
+        }
         try {
             if (isEnrolling) {
                 await apiPrivate.post(`/api/classes/${classId}/book`);
