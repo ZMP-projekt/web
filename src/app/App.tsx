@@ -14,6 +14,7 @@ import {Schedule} from "./Schedule.tsx";
 import {PublicSchedule} from "./PublicSchedule.tsx";
 import {Toaster} from "react-hot-toast";
 import {NotificationProvider} from "../components/NotificationProvider.tsx";
+import {LocationsPage} from "./LocationsPage.tsx";
 
 function App() {
     return (
@@ -52,6 +53,7 @@ function App() {
                             <Route path="/login" element={<Login/>}/>
                             <Route path="/register" element={<Register/>}/>
                             <Route path="/public/schedule" element={<PublicSchedule/>}/>
+                            <Route path="/locations" element={<LocationsPage/>}/>
                             <Route element={<ProtectedRoute roles={['ROLE_USER']}><DashboardLayout/></ProtectedRoute>}>
                                 <Route path="/dashboard" element={<Dashboard/>}/>
                                 <Route path="/memberships" element={<Memberships/>}/>

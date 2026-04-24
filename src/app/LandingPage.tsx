@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import * as L from "leaflet";
 import {Link} from "react-router";
+import {Navigation} from "lucide-react";
 
 interface NavLink {
     label: string;
@@ -26,14 +26,6 @@ interface PricingPlan {
     price: string;
     features: string[];
     popular: boolean;
-}
-
-interface GymLocation {
-    name: string;
-    address: string;
-    hours: string;
-    lat: number;
-    lng: number;
 }
 
 const NAV_LINKS: NavLink[] = [
@@ -80,140 +72,8 @@ const PRICING: PricingPlan[] = [
     },
 ];
 
-const LOCATIONS: GymLocation[] = [
-    {
-        name: "GymSystem Centrum",
-        address: "ul. Marszałkowska 44",
-        hours: "Pon–Pt 6:00–23:00 / Sob–Ndz 8:00–21:00",
-        lat: 52.2297,
-        lng: 21.0122,
-    },
-    {
-        name: "GymSystem Północ",
-        address: "ul. Żoliborska 12",
-        hours: "Pon–Pt 6:00–22:00 / Sob 8:00–20:00",
-        lat: 52.265,
-        lng: 20.998,
-    },
-    {
-        name: "GymSystem Południe",
-        address: "ul. Puławska 88",
-        hours: "Pon–Pt 6:00–23:00 / Sob–Ndz 8:00–22:00",
-        lat: 52.195,
-        lng: 21.02,
-    },
-];
-
-interface GymMapProps {
-    locations: GymLocation[];
-    activeIndex: number | null;
-    onPinClick: (index: number) => void;
-}
-
-const GymMap: React.FC<GymMapProps> = ({ locations, activeIndex, onPinClick }) => {
-    const mapContainerRef = useRef<HTMLDivElement>(null);
-    const mapInstanceRef = useRef<L.Map | null>(null);
-    const markersRef = useRef<L.Marker[]>([]);
-
-    const createMarkerIcon = (isActive: boolean): L.DivIcon =>
-        L.divIcon({
-            className: "",
-            html: `
-        <div style="display:flex;flex-direction:column;align-items:center;
-          filter:drop-shadow(0 0 8px ${isActive ? "#60A5FA" : "#3B82F6"});
-          transform:${isActive ? "scale(1.3)" : "scale(1)"};transition:transform 0.2s ease;">
-          <div style="width:16px;height:16px;border-radius:50%;
-            background:${isActive ? "#60A5FA" : "#3B82F6"};border:2px solid white;
-            box-shadow:0 0 0 3px ${isActive ? "rgba(96,165,250,0.4)" : "rgba(59,130,246,0.3)"};">
-          </div>
-          <div style="width:0;height:0;border-left:5px solid transparent;
-            border-right:5px solid transparent;
-            border-top:8px solid margin-top:-1px; ${isActive ? "#60A5FA" : "#3B82F6"};">
-          </div>
-        </div>`,
-            iconSize: [16, 24],
-            iconAnchor: [8, 24],
-            popupAnchor: [0, -28],
-        });
-
-    useEffect(() => {
-        if (!mapContainerRef.current || mapInstanceRef.current) return;
-
-        const avgLat = locations.reduce((sum, l) => sum + l.lat, 0) / locations.length;
-        const avgLng = locations.reduce((sum, l) => sum + l.lng, 0) / locations.length;
-
-        const map = L.map(mapContainerRef.current, {
-            center: [avgLat, avgLng],
-            zoom: 12,
-            zoomControl: false,
-        });
-
-        L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-            attribution:
-                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: "abcd",
-            maxZoom: 19,
-        }).addTo(map);
-
-        L.control.zoom({ position: "bottomright" }).addTo(map);
-
-        markersRef.current = locations.map((loc, i) => {
-            const marker = L.marker([loc.lat, loc.lng], { icon: createMarkerIcon(false) })
-                .addTo(map)
-                .bindPopup(
-                    `<div style="font-family:'Outfit',sans-serif;padding:4px 2px;">
-            <div style="font-weight:700;font-size:13px;color:#fff;margin-bottom:4px;">${loc.name}</div>
-            <div style="font-size:11px;color:#94A3B8;margin-bottom:2px;">📍 ${loc.address}</div>
-            <div style="font-size:11px;color:#64748B;">🕐 ${loc.hours}</div>
-          </div>`,
-                    { className: "gym-popup", maxWidth: 240 }
-                );
-
-            marker.on("click", () => onPinClick(i));
-            return marker;
-        });
-
-        mapInstanceRef.current = map;
-
-        return () => {
-            map.remove();
-            mapInstanceRef.current = null;
-            markersRef.current = [];
-        };
-
-    }, [locations, onPinClick]);
-
-    useEffect(() => {
-        markersRef.current.forEach((marker, i) => {
-            marker.setIcon(createMarkerIcon(i === activeIndex));
-            if (i === activeIndex) {
-                marker.openPopup();
-                mapInstanceRef.current?.panTo(marker.getLatLng(), { animate: true });
-            }
-        });
-    }, [activeIndex]);
-
-    return (
-        <>
-            <style>{`
-        .gym-popup .leaflet-popup-content-wrapper {
-          background: #1E293B;
-          border: 1px solid rgba(59,130,246,0.3);
-          border-radius: 10px;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-          color: #E2E8F0;
-        }
-        .gym-popup .leaflet-popup-tip { background: #1E293B; }
-        .gym-popup .leaflet-popup-close-button { color: #64748B !important; }
-      `}</style>
-            <div ref={mapContainerRef} className="w-full h-full" />
-        </>
-    );
-};
-
 export const LandingPage: React.FC = () => {
     const [scrolled, setScrolled] = useState<boolean>(false);
-    const [activePin, setActivePin] = useState<number | null>(null);
     const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -240,10 +100,6 @@ export const LandingPage: React.FC = () => {
 
     const registerRef = (id: string) => (el: HTMLElement | null): void => {
         sectionRefs.current[id] = el;
-    };
-
-    const handlePinClick = (index: number): void => {
-        setActivePin((prev) => (prev === index ? null : index));
     };
 
     return (
@@ -574,45 +430,13 @@ export const LandingPage: React.FC = () => {
                 className="py-24 px-8 border-t border-white/5"
                 style={{ background: "rgba(15,23,42,0.6)" }}
             >
-                <div className="max-w-300 mx-auto">
-                    <div className={`fade-up ${visibleSections["mapa"] ? "visible" : ""} mb-12`}>
-                        <div className="text-xs font-bold tracking-[0.16em] text-emerald-400 uppercase mb-3">Lokalizacje</div>
-                        <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)" }}>Znajdź nas blisko siebie</h2>
-                    </div>
-
-                    <div className="map-grid grid gap-8" style={{ gridTemplateColumns: "1fr 340px" }}>
-                        <div
-                            className={`fade-up stagger-2 ${visibleSections["mapa"] ? "visible" : ""} rounded-3xl overflow-hidden border`}
-                            style={{ height: 420, borderColor: "rgba(59,130,246,0.2)" }}
-                        >
-                            <GymMap locations={LOCATIONS} activeIndex={activePin} onPinClick={handlePinClick} />
-                        </div>
-
-                        <div className={`fade-up stagger-3 ${visibleSections["mapa"] ? "visible" : ""} flex flex-col gap-4`}>
-                            {LOCATIONS.map((loc, i) => (
-                                <div
-                                    key={i}
-                                    onClick={() => handlePinClick(i)}
-                                    className="rounded-2xl p-5 cursor-pointer transition-all duration-200 border"
-                                    style={{
-                                        background: activePin === i ? "rgba(59,130,246,0.1)" : "rgba(30,41,59,0.5)",
-                                        borderColor: activePin === i ? "rgba(59,130,246,0.4)" : "rgba(226,232,240,0.07)",
-                                    }}
-                                >
-                                    <div className="flex items-center gap-2.5 mb-2">
-                                        <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0" style={{ boxShadow: "0 0 8px #3B82F6" }} />
-                                        <span className="text-sm font-bold text-white">{loc.name}</span>
-                                    </div>
-                                    <div className="text-xs text-slate-500 mb-1">📍 {loc.address}</div>
-                                    <div className="text-[11px] text-slate-600">🕐 {loc.hours}</div>
-                                </div>
-                            ))}
-                            <p className="text-xs text-slate-700 mt-1 leading-relaxed">
-                                Kliknij na lokalizację lub pinezkę na mapie, aby zobaczyć szczegóły.
-                            </p>
-                        </div>
-
-                    </div>
+                <div className="text-center mt-12">
+                    <a
+                        href="/locations"
+                        className="inline-flex items-center gap-2 bg-blue-500 px-8 py-4 rounded-2xl font-bold text-white hover:bg-blue-600 transition-all"
+                    >
+                        Znajdź swój klub na mapie (60 lokalizacji) <Navigation className="w-5 h-5" />
+                    </a>
                 </div>
             </section>
 
