@@ -1,4 +1,4 @@
-import {type ReactNode, useEffect, useMemo, useState} from "react";
+import {type ReactNode, useCallback, useEffect, useMemo, useState} from "react";
 import {useAxiosPrivate} from "../hooks/useAxiosPrivate.ts";
 import {useAuth} from "../auth/useAuth.ts";
 import {MembershipContext, type Membership} from "../context/MembershipContext.tsx";
@@ -10,14 +10,13 @@ export const MembershipProvider = ({ children }: { children: ReactNode }) => {
     const [membership, setMembership] = useState<Membership | null>(null);
     const [isMembershipLoading, setIsMembershipLoading] = useState(true);
 
-    const fetchMembership = async () => {
+    const fetchMembership = useCallback(async () => {
         if (!isAuthenticated || !token) {
             setMembership(null);
             setIsMembershipLoading(false);
             return;
         }
 
-        setIsMembershipLoading(true);
         try {
             const response = await apiPrivate.get('/api/memberships/me');
             setMembership(response.data);
@@ -27,14 +26,12 @@ export const MembershipProvider = ({ children }: { children: ReactNode }) => {
         } finally {
             setIsMembershipLoading(false);
         }
-    };
-
-    // Odświeżamy dane przy zmianie statusu logowania
+    }, [apiPrivate, isAuthenticated, token] );
+    
     useEffect(() => {
-        fetchMembership();
-    }, [isAuthenticated, token]);
-
-    // Obliczamy ważność karnetu (useMemo optymalizuje wydajność)
+        void fetchMembership();
+    }, [fetchMembership, isAuthenticated, token]);
+    
     const isValid = useMemo(() => {
         if (!membership || !membership.active) return false;
 
