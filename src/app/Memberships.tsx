@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import { CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap } from 'lucide-react';
 import toast from "react-hot-toast";
+import {useMembership} from "../hooks/useMembership.ts";
 
 interface SubscriptionData {
     type: string;
@@ -36,6 +37,7 @@ const MEMBERSHIP_PLANS = [
 export const Memberships: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
 
+    const { refreshMembership } = useMembership()
     const [currentSub, setCurrentSub] = useState<SubscriptionData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [purchasingType, setPurchasingType] = useState<string | null>(null);
@@ -71,6 +73,7 @@ export const Memberships: React.FC = () => {
             await apiPrivate.post(`api/memberships/purchase?type=${type}`);
             toast.success(`Pomyślnie ${currentSub?.type === type ? 'przedłużono' : 'zakupiono'} karnet ${type}!`);
             await fetchCurrentSubscription();
+            await refreshMembership();
         } catch (error) {
             console.error("Błąd zakupu:", error);
             alert("Wystąpił błąd podczas transakcji.");
