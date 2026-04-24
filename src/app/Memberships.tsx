@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import { CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap } from 'lucide-react';
 import toast from "react-hot-toast";
 import {useMembership} from "../hooks/useMembership.ts";
 
-interface SubscriptionData {
-    type: string;
-    price: number;
-    endDate: string;
-    active: boolean;
-}
 const MEMBERSHIP_PLANS = [
     {
         type: 'STUDENT',
@@ -37,42 +31,14 @@ const MEMBERSHIP_PLANS = [
 export const Memberships: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
 
-    const { refreshMembership } = useMembership()
-    const [currentSub, setCurrentSub] = useState<SubscriptionData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const { membership, isValid, isMembershipLoading, refreshMembership } = useMembership()
     const [purchasingType, setPurchasingType] = useState<string | null>(null);
-
-    const fetchCurrentSubscription = async () => {
-        try {
-            const response = await apiPrivate.get('/api/memberships/me');
-            setCurrentSub(response.data);
-        } catch (error) {
-            console.error("Błąd pobierania karnetu:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        const fetchCurrentSubscription = async () => {
-            try {
-                const response = await apiPrivate.get('/api/memberships/me');
-                setCurrentSub(response.data);
-            } catch (error) {
-                console.error("Błąd pobierania karnetu:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchCurrentSubscription()
-    }, [apiPrivate]);
 
     const handlePurchase = async (type: string) => {
         setPurchasingType(type);
         try {
             await apiPrivate.post(`api/memberships/purchase?type=${type}`);
-            toast.success(`Pomyślnie ${currentSub?.type === type ? 'przedłużono' : 'zakupiono'} karnet ${type}!`);
-            await fetchCurrentSubscription();
+            toast.success(`Pomyślnie ${membership?.type === type ? 'przedłużono' : 'zakupiono'} karnet ${type}!`);
             await refreshMembership();
         } catch (error) {
             console.error("Błąd zakupu:", error);
@@ -91,7 +57,7 @@ export const Memberships: React.FC = () => {
         return new Date(dateString).toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
     };
 
-    if (isLoading) {
+    if (isMembershipLoading) {
         return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white"><Loader2 className="w-10 h-10 animate-spin text-blue-500" /></div>;
     }
 
@@ -102,7 +68,7 @@ export const Memberships: React.FC = () => {
                 <p className="text-slate-400 mt-2">Przeglądaj ofertę i zarządzaj swoją subskrypcją.</p>
             </div>
 
-            {currentSub && currentSub.active && (
+            {membership && isValid && (
                 <div className="bg-slate-800/50 backdrop-blur-sm border border-emerald-500/30 rounded-3xl p-6 relative overflow-hidden">
                     <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10">
                         AKTYWNY
@@ -112,9 +78,9 @@ export const Memberships: React.FC = () => {
                             <Award className="w-10 h-10 text-emerald-400" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-white">Mój plan: {currentSub.type}</h2>
+                            <h2 className="text-2xl font-bold text-white">Mój plan: {membership.type}</h2>
                             <p className="text-slate-400 mt-1">
-                                Pozostało: <span className="text-white font-bold">{calculateDaysRemaining(currentSub.endDate)} dni</span> (ważny do {formatDate(currentSub.endDate)})
+                                Pozostało: <span className="text-white font-bold">{calculateDaysRemaining(membership.endDate)} dni</span> (ważny do {formatDate(membership.endDate)})
                             </p>
                         </div>
                     </div>
@@ -123,7 +89,7 @@ export const Memberships: React.FC = () => {
 
             <div className="grid md:grid-cols-3 gap-6">
                 {MEMBERSHIP_PLANS.map((plan) => {
-                    const isCurrentPlan = currentSub?.type === plan.type && currentSub?.active;
+                    const isCurrentPlan = membership?.type === plan.type && membership?.active;
                     const isPurchasingThis = purchasingType === plan.type;
 
                     return (
@@ -154,9 +120,9 @@ export const Memberships: React.FC = () => {
 
                             <button
                                 onClick={() => handlePurchase(plan.type)}
-                                disabled={purchasingType !== null} // Blokujemy WSZYSTKIE przyciski, gdy trwa JAKIKOLWIEK zakup
+                                disabled={purchasingType !== null}
                                 className={`w-full flex justify-center items-center gap-2 py-4 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed
-                ${isCurrentPlan
+                                ${isCurrentPlan
                                     ? 'bg-transparent border-2 border-[#3B82F6] text-[#3B82F6] hover:bg-[#3B82F6]/10'
                                     : 'bg-[#3B82F6] text-white hover:bg-blue-600'
                                 }`}
@@ -166,7 +132,7 @@ export const Memberships: React.FC = () => {
                                 ) : isCurrentPlan ? (
                                     'Przedłuż karnet'
                                 ) : (
-                                    currentSub?.active ? 'Zmień plan' : 'Kup karnet'
+                                    membership?.active ? 'Zmień plan' : 'Kup karnet'
                                 )}
                             </button>
                         </div>
