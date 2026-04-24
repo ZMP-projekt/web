@@ -56,7 +56,7 @@ const formatTime = (isoString: string) => {
 
 export const Schedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
-    const { isValid } = useMembership();
+    const { isValid, isMembershipLoading } = useMembership();
 
     const [daysOffset, setDaysOffset] = React.useState<number>(0);
     const [availableDays, setAvailableDays] = useState<string[]>(generateNext7Days(daysOffset));
@@ -79,7 +79,7 @@ export const Schedule: React.FC = () => {
             }
         };
 
-        fetchClasses();
+        void fetchClasses();
     }, [selectedDate, apiPrivate]);
 
     useEffect(() => {
@@ -88,6 +88,12 @@ export const Schedule: React.FC = () => {
 
     const handleEnrollment = async (classId: number, isEnrolling: boolean) => {
         setActionLoadingId(classId);
+
+        if (isMembershipLoading) {
+            setActionLoadingId(null);
+            toast.loading("Ładowanie danych o karnecie");
+            return;
+        }
 
         if (!isValid){
             setActionLoadingId(null);
