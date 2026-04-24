@@ -15,6 +15,7 @@ import {PublicSchedule} from "./PublicSchedule.tsx";
 import {Toaster} from "react-hot-toast";
 import {NotificationProvider} from "../components/NotificationProvider.tsx";
 import {LocationsPage} from "./LocationsPage.tsx";
+import {MembershipProvider} from "../components/MembershipProvider.tsx";
 
 function App() {
     return (
@@ -46,27 +47,29 @@ function App() {
                 }}
             />
             <AuthProvider>
-                <NotificationProvider>
-                    <Router>
-                        <Routes>
-                            <Route path="/" element={<LandingPage/>}/>
-                            <Route path="/login" element={<Login/>}/>
-                            <Route path="/register" element={<Register/>}/>
-                            <Route path="/public/schedule" element={<PublicSchedule/>}/>
-                            <Route path="/locations" element={<LocationsPage/>}/>
-                            <Route element={<ProtectedRoute roles={['ROLE_USER']}><DashboardLayout/></ProtectedRoute>}>
-                                <Route path="/dashboard" element={<Dashboard/>}/>
-                                <Route path="/memberships" element={<Memberships/>}/>
-                                <Route path="/profile" element={<Profile/>}/>
-                                <Route path="/schedule" element={<Schedule/>}/>
-                            </Route>
-                            <Route element={<ProtectedRoute roles={['ROLE_TRAINER']}><TrainerLayout/></ProtectedRoute>}>
-                                <Route path="/trainer/dashboard" element={<TrainerDashboard/>}/>
-                                <Route path="/trainer/profile" element={<Profile/>}/>
-                            </Route>
-                        </Routes>
-                    </Router>
-                </NotificationProvider>
+                <MembershipProvider>
+                    <NotificationProvider>
+                        <Router>
+                            <Routes>
+                                <Route path="/" element={<LandingPage/>}/>
+                                <Route path="/login" element={<Login/>}/>
+                                <Route path="/register" element={<Register/>}/>
+                                <Route path="/public/schedule" element={<PublicSchedule/>}/>
+                                <Route path="/locations" element={<LocationsPage/>}/>
+                                <Route element={<ProtectedRoute roles={['ROLE_USER']}><DashboardLayout/></ProtectedRoute>}>
+                                    <Route path="/dashboard" element={<Dashboard/>}/>
+                                    <Route path="/memberships" element={<Memberships/>}/>
+                                    <Route path="/profile" element={<Profile/>}/>
+                                    <Route path="/schedule" element={<Schedule/>}/>
+                                </Route>
+                                <Route element={<ProtectedRoute roles={['ROLE_TRAINER']}><TrainerLayout/></ProtectedRoute>}>
+                                    <Route path="/trainer/dashboard" element={<TrainerDashboard/>}/>
+                                    <Route path="/trainer/profile" element={<Profile/>}/>
+                                </Route>
+                            </Routes>
+                        </Router>
+                    </NotificationProvider>
+                </MembershipProvider>
             </AuthProvider></>
     );
 }
