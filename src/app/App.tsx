@@ -61,6 +61,7 @@ function App() {
                                     <Route path="/memberships" element={<Memberships/>}/>
                                     <Route path="/profile" element={<Profile/>}/>
                                     <Route path="/schedule" element={<Schedule/>}/>
+                                    <Route path="/schedule/:classId" element={<Schedule />} />
                                 </Route>
                                 <Route element={<ProtectedRoute roles={['ROLE_TRAINER']}><TrainerLayout/></ProtectedRoute>}>
                                     <Route path="/trainer/dashboard" element={<TrainerDashboard/>}/>
