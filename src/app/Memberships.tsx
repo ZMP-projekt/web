@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
-import { CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap } from 'lucide-react';
+import {CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap, AlertCircle} from 'lucide-react';
 import toast from "react-hot-toast";
 import {useMembership} from "../hooks/useMembership.ts";
 
@@ -68,7 +68,7 @@ export const Memberships: React.FC = () => {
                 <p className="text-slate-400 mt-2">Przeglądaj ofertę i zarządzaj swoją subskrypcją.</p>
             </div>
 
-            {membership && isValid && (
+            {membership && isValid ? (
                 <div className="bg-slate-800/50 backdrop-blur-sm border border-emerald-500/30 rounded-3xl p-6 relative overflow-hidden">
                     <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10">
                         AKTYWNY
@@ -81,6 +81,33 @@ export const Memberships: React.FC = () => {
                             <h2 className="text-2xl font-bold text-white">Mój plan: {membership.type}</h2>
                             <p className="text-slate-400 mt-1">
                                 Pozostało: <span className="text-white font-bold">{calculateDaysRemaining(membership.endDate)} dni</span> (ważny do {formatDate(membership.endDate)})
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className={`backdrop-blur-sm border rounded-3xl p-6 relative overflow-hidden ${
+                    membership ? 'bg-red-500/5 border-red-500/20' : 'bg-slate-800/40 border-slate-700/60'
+                }`}>
+                    <div className={`absolute top-0 right-0 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10 ${
+                        membership ? 'bg-red-500' : 'bg-slate-600'
+                    }`}>
+                        {membership ? 'WYGASŁ' : 'BRAK KARNETU'}
+                    </div>
+                    <div className="flex items-center gap-6 relative z-10">
+                        <div className={`p-4 rounded-2xl border ${
+                            membership ? 'bg-red-500/10 border-red-500/20' : 'bg-slate-700/30 border-slate-600/50'
+                        }`}>
+                            <AlertCircle className={`w-10 h-10 ${membership ? 'text-red-400' : 'text-slate-400'}`} />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-white">
+                                {membership ? 'Twój karnet stracił ważność' : 'Nie masz jeszcze karnetu'}
+                            </h2>
+                            <p className="text-slate-400 mt-1">
+                                {membership
+                                    ? 'Odnów subskrypcję, wybierając jeden z poniższych planów, aby kontynuować treningi.'
+                                    : 'Wybierz plan idealnie dopasowany do Twoich potrzeb i zacznij trenować już dziś.'}
                             </p>
                         </div>
                     </div>
