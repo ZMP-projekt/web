@@ -1,14 +1,19 @@
-import React from "react";
-import { Outlet} from "react-router";
-import { Sidebar } from "./Sidebar.tsx";
+import React from 'react';
+import { Outlet } from 'react-router';
+import { Sidebar } from './Sidebar.tsx';
 
 export const DashboardLayout: React.FC = () => {
     return (
-        <div className="min-h-screen bg-slate-900 bg-linear-to-tr from-slate-900 via-slate-900 to-[#8B5CF6]/10 text-slate-200 flex">
+        <div
+            className="min-h-screen text-slate-200 flex"
+            style={{
+                background: 'radial-gradient(ellipse 80% 60% at 80% 0%, rgba(139,92,246,0.07) 0%, transparent 60%), #0F172A',
+            }}
+        >
             <Sidebar />
-            <main className="flex-1 ml-64 p-8 min-h-screen">
+            <main className="flex-1 ml-64 p-8 min-h-screen max-w-350">
                 <Outlet />
             </main>
         </div>
-    )
-}
+    );
+};
