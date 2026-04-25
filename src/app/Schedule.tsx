@@ -2,250 +2,332 @@ import React, { useState, useEffect } from 'react';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import {
     Calendar as CalendarIcon,
-    User,
-    Users,
-    CheckCircle,
-    XCircle,
-    Loader2,
-    Activity,
     ArrowLeft,
-    ArrowRight,
-    MapPinIcon
+    ArrowRight, Navigation, MapPin, Clock, User, XCircle, CheckCircle
 } from 'lucide-react';
-import toast from "react-hot-toast";
-import { useMembership } from "../hooks/useMembership.ts";
+import toast from 'react-hot-toast';
+import { useMembership } from '../hooks/useMembership.ts';
+import {SkeletonCard} from "../components/SkeletonCard.tsx";
+import {ClassCard, type GymClass} from "../components/ClassCard.tsx";
+import {useNavigate, useParams} from "react-router";
 
-interface GymClass {
-    id: number;
-    name: string;
-    trainerName: string;
-    startTime: string;
-    endTime: string;
-    currentParticipants: number;
-    maxParticipants: number;
-    description: string;
-    userEnrolled: boolean;
-    personalTraining: boolean;
-    city: string;
-    address: string;
-    locationName: string;
-}
-
-const generateNext7Days = (o: number) => {
-    const days = [];
+const generateNext7Days = (offset: number): string[] => {
+    const days: string[] = [];
     for (let i = 0; i < 7; i++) {
         const date = new Date();
-        date.setDate(date.getDate() + i + o);
+        date.setDate(date.getDate() + i + offset);
         days.push(date.toISOString().split('T')[0]);
     }
     return days;
 };
-const getClassStyle = (isPersonal: boolean) => {
-    if (isPersonal) {
-        return { icon: <User className="w5 h-5" />, color: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-500/30', tag: 'Personalny' }
+
+const formatMonthRange = (days: string[]): string => {
+    const first = new Date(days[0]);
+    const last = new Date(days[days.length - 1]);
+    const opts: Intl.DateTimeFormatOptions = { month: 'long', year: 'numeric' };
+    if (first.getMonth() === last.getMonth()) {
+        return first.toLocaleDateString('pl-PL', opts);
     }
-    else {
-        return { icon: <Activity className="w5 h-5" />, color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-500/30', tag: 'Fitness' };
-    }
+    return `${first.toLocaleDateString('pl-PL', { month: 'long' })} – ${last.toLocaleDateString('pl-PL', opts)}`;
 };
 
-const formatTime = (isoString: string) => {
-    const date = new Date(isoString);
-    return date.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit'});
-}
+const isToday = (dateStr: string): boolean =>
+    dateStr === new Date().toISOString().split('T')[0];
+
+const formatTime = (isoString: string): string =>
+    new Date(isoString).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
 
 export const Schedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
     const { isValid, isMembershipLoading } = useMembership();
 
-    const [daysOffset, setDaysOffset] = React.useState<number>(0);
-    const [availableDays, setAvailableDays] = useState<string[]>(generateNext7Days(daysOffset));
+    const [daysOffset, setDaysOffset] = useState<number>(0);
+    const [availableDays, setAvailableDays] = useState<string[]>(generateNext7Days(0));
     const [selectedDate, setSelectedDate] = useState<string>(availableDays[0]);
     const [classes, setClasses] = useState<GymClass[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
+    const { classId } = useParams();
+    const navigate = useNavigate();
+
+    const selectedClassDetails = classId ? classes.find(c => c.id === Number(classId)) : null;
+
+    useEffect(() => {
+        const newDays = generateNext7Days(daysOffset);
+        setAvailableDays(newDays);
+        if (!newDays.includes(selectedDate)) {
+            setSelectedDate(newDays[0]);
+        }
+    }, [daysOffset, selectedDate]);
 
     useEffect(() => {
         const fetchClasses = async () => {
             setIsLoading(true);
             try {
-                const formattedDate = `${selectedDate}T00:00:00`;
-                const response = await apiPrivate.get('/api/classes/by-date?date=' + formattedDate);
+                const response = await apiPrivate.get(`/api/classes/by-date?date=${selectedDate}T00:00:00`);
                 setClasses(response.data);
             } catch (error) {
-                console.error("Błąd pobierania grafiku:", error);
+                console.error('Błąd pobierania grafiku:', error);
             } finally {
                 setIsLoading(false);
             }
         };
-
         void fetchClasses();
     }, [selectedDate, apiPrivate]);
 
-    useEffect(() => {
-        setAvailableDays(generateNext7Days(daysOffset))
-    }, [daysOffset]);
-
-    const handleEnrollment = async (classId: number, isEnrolling: boolean) => {
-        setActionLoadingId(classId);
-
+    const handleEnrollment = async (classId: number, isEnrolling: boolean): Promise<void> => {
         if (isMembershipLoading) {
-            setActionLoadingId(null);
-            toast.loading("Ładowanie danych o karnecie");
+            toast.loading('Ładowanie danych o karnecie…');
             return;
         }
-
-        if (!isValid){
-            setActionLoadingId(null);
-            toast.error("Musisz posiadać aktywny karnet, aby zapisać się na zajęcia!");
+        if (!isValid) {
+            toast.error('Musisz posiadać aktywny karnet, aby zapisać się na zajęcia!');
             return;
         }
+        setActionLoadingId(classId);
         try {
             if (isEnrolling) {
                 await apiPrivate.post(`/api/classes/${classId}/book`);
-            }
-            else {
+            } else {
                 await apiPrivate.delete(`/api/classes/${classId}/cancel`);
             }
-            setClasses(prev => prev.map(c => {
-                if (c.id === classId) {
-                    return { ...c, userEnrolled: isEnrolling, currentParticipants: isEnrolling ? c.currentParticipants + 1 : c.currentParticipants - 1 };
-                }
-                return c;
-            }));
-
+            setClasses((prev) =>
+                prev.map((c) =>
+                    c.id === classId
+                        ? {
+                            ...c,
+                            userEnrolled: isEnrolling,
+                            currentParticipants: isEnrolling
+                                ? c.currentParticipants + 1
+                                : c.currentParticipants - 1,
+                        }
+                        : c
+                )
+            );
             toast.success(isEnrolling ? 'Pomyślnie zapisano na zajęcia!' : 'Zrezygnowano z zajęć.');
-        } catch (error) {
+        } catch {
             toast.error('Wystąpił błąd. Spróbuj ponownie.');
-            console.log(error);
         } finally {
             setActionLoadingId(null);
         }
     };
 
-    const formatDayButton = (dateStr: string) => {
-        const date = new Date(dateStr);
-        const dayName = date.toLocaleDateString('pl-PL', { weekday: 'short' });
-        const dayNum = date.getDate();
-        return { dayName, dayNum };
-    };
+    const selectedDateObj = new Date(selectedDate);
+    const selectedDayFull = selectedDateObj.toLocaleDateString('pl-PL', {
+        weekday: 'long', day: 'numeric', month: 'long',
+    });
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8">
-            <header>
-                <h1 className="text-3xl font-bold text-white">Grafik zajęć</h1>
-                <p className="text-slate-400 mt-2">Wybierz dzień i zapisz się na trening grupowy.</p>
+        <div className="max-w-4xl mx-auto space-y-8">
+            <header className="flex items-start justify-between gap-4 flex-wrap">
+                <div>
+                    <h1 className="text-3xl font-bold text-white">Grafik zajęć</h1>
+                    <p className="text-slate-500 mt-1.5 text-sm">
+                        Wybierz dzień i zapisz się na trening.
+                    </p>
+                </div>
             </header>
 
-            <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
-                <button
-                    onClick={() => setDaysOffset(daysOffset - 7)}
-                    className={`flex items-center justify-center min-w-20 py-4 rounded-2xl border transition-all bg-[#3B82F6] border-[#3B82F6] text-white shadow-lg shadow-blue-500/20}`}
-                >
-                    <ArrowLeft className="w-10 h-10 text-white" />
-                </button>
-                {availableDays.map((dateStr) => {
-                    const {dayName, dayNum} = formatDayButton(dateStr);
-                    const isSelected = selectedDate === dateStr;
+            <div className="bg-slate-800/30 border border-slate-700/50 rounded-3xl p-4">
+                <p className="text-slate-500 text-xs font-semibold uppercase tracking-widest px-1 mb-3">
+                    {formatMonthRange(availableDays)}
+                </p>
 
-                    return (
-                        <button
-                            key={dateStr}
-                            onClick={() => setSelectedDate(dateStr)}
-                            className={`flex flex-col items-center justify-center min-w-20 py-4 rounded-2xl border transition-all ${
-                                isSelected
-                                    ? 'bg-[#3B82F6] border-[#3B82F6] text-white shadow-lg shadow-blue-500/20'
-                                    : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white'
-                            }`}
-                        >
-                            <span className="text-xs uppercase font-bold tracking-wider mb-1">{dayName}</span>
-                            <span className="text-2xl font-black">{dayNum}</span>
-                        </button>
-                    );
-                })}
-                <button
-                    onClick={() => setDaysOffset(daysOffset + 7)}
-                    className={`flex items-center justify-center min-w-20 py-4 rounded-2xl border transition-all bg-[#3B82F6] border-[#3B82F6] text-white shadow-lg shadow-blue-500/20}`}
-                >
-                    <ArrowRight className="w-10 h-10 text-white" />
-                </button>
-            </div>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setDaysOffset((o) => o - 7)}
+                        className="flex items-center justify-center w-12 h-14 rounded-2xl bg-slate-700/50 hover:bg-slate-700 border border-slate-600/50 text-slate-400 hover:text-white transition-all shrink-0"
+                        title="Poprzedni tydzień"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                    </button>
+                    <div className="flex-1 grid grid-cols-7 gap-2">
+                        {availableDays.map((dateStr) => {
+                            const d = new Date(dateStr);
+                            const dayName = d.toLocaleDateString('pl-PL', { weekday: 'short' });
+                            const dayNum = d.getDate();
+                            const today = isToday(dateStr);
+                            const selected = selectedDate === dateStr;
 
-            <div className="space-y-4 relative min-h-75">
-                {isLoading ? (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
-                        <Loader2 className="w-10 h-10 animate-spin text-[#3B82F6] mb-4" />
-                        <p>Wczytywanie grafiku...</p>
-                    </div>
-                ) : classes.length > 0 ? (
-                    classes.map((gymClass) => {
-                        const style = getClassStyle(gymClass.personalTraining);
-                        const isFull = gymClass.currentParticipants >= gymClass.maxParticipants;
-                        const isActionLoading = actionLoadingId === gymClass.id;
-
-                        return (
-                            <div key={gymClass.id} className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/80 rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-slate-600 transition-colors">
-                                <div className="flex gap-5 items-start">
-                                    <div className={`p-4 rounded-2xl border ${style.bg} ${style.border} ${style.color} shrink-0`}>
-                                        {style.icon}
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-3 mb-1">
-                                            <span className="text-xl font-bold text-white">{formatTime(gymClass.startTime)} - {formatTime(gymClass.endTime)}</span>
-                                            {gymClass.userEnrolled && (
-                                                <span className="flex items-center gap-1 text-xs font-bold bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">
-                                                    <CheckCircle className="w-3 h-3" /> Zapisany
-                                                </span>
-                                            )}
-                                        </div>
-                                        <h3 className="text-lg font-bold text-slate-200 mb-2">{gymClass.name}</h3>
-                                        <div className="flex flex-wrap gap-4 text-sm text-slate-400 font-medium">
-                                            <span className="flex items-center gap-1.5"><User className="w-4 h-4" /> {gymClass.trainerName}</span>
-                                            <span className="flex items-center gap-1.5">
-                                                <MapPinIcon className="w-4 h-4"/> {gymClass.city}, {gymClass.locationName}
-                                            </span>
-                                            <span className={`flex items-center gap-1.5 ${isFull ? 'text-red-400' : ''}`}>
-                                                <Users className="w-4 h-4" /> {gymClass.currentParticipants}/{gymClass.maxParticipants} miejsc
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="w-full md:w-auto mt-4 md:mt-0">
-                                    {gymClass.userEnrolled ? (
-                                        <button
-                                            onClick={() => handleEnrollment(gymClass.id, false)}
-                                            disabled={isActionLoading}
-                                            className="w-full md:w-auto px-6 py-3 rounded-xl font-bold bg-slate-700 text-slate-300 hover:bg-red-500/20 hover:text-red-400 transition-colors border border-transparent hover:border-red-500/30 flex items-center justify-center gap-2"
-                                        >
-                                            {isActionLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <XCircle className="w-5 h-5" />}
-                                            Wypisz się
-                                        </button>
-                                    ) : isFull ? (
-                                        <button disabled className="w-full md:w-auto px-6 py-3 rounded-xl font-bold bg-slate-900/50 text-slate-500 border border-slate-700/50 cursor-not-allowed">
-                                            Brak miejsc
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => handleEnrollment(gymClass.id, true)}
-                                            disabled={isActionLoading}
-                                            className="w-full md:w-auto px-6 py-3 rounded-xl font-bold bg-[#3B82F6] hover:bg-blue-600 text-white shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2"
-                                        >
-                                            {isActionLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Zapisz się'}
-                                        </button>
+                            return (
+                                <button
+                                    key={dateStr}
+                                    onClick={() => setSelectedDate(dateStr)}
+                                    className={`flex flex-col items-center justify-center py-3 rounded-2xl border transition-all duration-200 ${
+                                        selected
+                                            ? 'text-white border-blue-500 shadow-lg shadow-blue-500/20'
+                                            : today
+                                                ? 'bg-slate-700/40 border-slate-500/50 text-slate-300 hover:border-slate-400'
+                                                : 'bg-slate-800/30 border-slate-700/30 text-slate-500 hover:bg-slate-700/40 hover:text-slate-300 hover:border-slate-600/50'
+                                    }`}
+                                    style={selected ? { background: 'linear-gradient(135deg, #3B82F6, #6D28D9)' } : {}}
+                                >
+                                    <span className="text-[10px] uppercase font-bold tracking-wider mb-1 opacity-80">
+                                        {today && !selected ? 'Dziś' : dayName}
+                                    </span>
+                                    <span className="text-xl font-black leading-none">{dayNum}</span>
+                                    {today && (
+                                        <span
+                                            className="w-1 h-1 rounded-full mt-1.5"
+                                            style={{ background: selected ? 'rgba(255,255,255,0.6)' : '#3B82F6' }}
+                                        />
                                     )}
-                                </div>
-
-                            </div>
-                        );
-                    })
-                ) : (
-                    <div className="text-center py-20 text-slate-400">
-                        <CalendarIcon className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                        <p className="text-lg">Brak zaplanowanych zajęć w tym dniu.</p>
+                                </button>
+                            );
+                        })}
                     </div>
-                )}
+
+                    <button
+                        onClick={() => setDaysOffset((o) => o + 7)}
+                        className="flex items-center justify-center w-12 h-14 rounded-2xl bg-slate-700/50 hover:bg-slate-700 border border-slate-600/50 text-slate-400 hover:text-white transition-all shrink-0"
+                        title="Następny tydzień"
+                    >
+                        <ArrowRight className="w-4 h-4" />
+                    </button>
+                </div>
             </div>
+
+            <div>
+                <div className="flex items-center gap-3 mb-5">
+                    <h2 className="text-white font-semibold capitalize">
+                        {selectedDayFull}
+                    </h2>
+                    {!isLoading && (
+                        <div className="h-px flex-1 bg-slate-700/50" />
+                    )}
+                </div>
+
+                <div className="space-y-3 relative min-h-64">
+                    {isLoading ? (
+                        <>
+                            <SkeletonCard />
+                            <SkeletonCard />
+                            <SkeletonCard />
+                        </>
+                    ) : classes.length > 0 ? (
+                        classes.map((gymClass) => (
+                            <ClassCard
+                                key={gymClass.id}
+                                gymClass={gymClass}
+                                isActionLoading={actionLoadingId === gymClass.id}
+                                onEnroll={handleEnrollment}
+                            />
+                        ))
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-24 text-center">
+                            <div className="w-16 h-16 rounded-3xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4">
+                                <CalendarIcon className="w-7 h-7 text-slate-600" />
+                            </div>
+                            <p className="text-white font-semibold mb-1">Brak zajęć w tym dniu</p>
+                            <p className="text-slate-500 text-sm">Sprawdź inny dzień lub wróć później.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {selectedClassDetails && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-4 py-6 overflow-y-auto">
+                    <div className="bg-slate-800 border border-slate-700 w-full max-w-xl rounded-4xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+
+                        {/* 1. Header z kolorem zależnym od typu */}
+                        <div className={`p-8 pb-6 ${selectedClassDetails.personalTraining ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
+                            <div className="flex justify-between items-start mb-4">
+                    <span className={`text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${
+                        selectedClassDetails.personalTraining
+                            ? 'border-amber-500/30 text-amber-500 bg-amber-500/5'
+                            : 'border-blue-500/30 text-blue-500 bg-blue-500/5'
+                    }`}>
+                        {selectedClassDetails.personalTraining ? 'Trening Personalny' : 'Zajęcia Grupowe'}
+                    </span>
+                                <button
+                                    onClick={() => navigate('/schedule')}
+                                    className="text-slate-500 hover:text-white transition-colors"
+                                >
+                                    <XCircle className="w-8 h-8" />
+                                </button>
+                            </div>
+                            <h2 className="text-3xl font-black text-white leading-tight">{selectedClassDetails.name}</h2>
+                        </div>
+
+                        <div className="p-8 pt-2 space-y-8">
+                            {/* 2. Siatka detali (Szybkie info) */}
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-1">
+                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Trener</p>
+                                    <div className="flex items-center gap-2 text-white font-semibold">
+                                        <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center">
+                                            <User className="w-4 h-4 text-blue-400" />
+                                        </div>
+                                        {selectedClassDetails.trainerName}
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Czas trwania</p>
+                                    <div className="flex items-center gap-2 text-white font-semibold">
+                                        <Clock className="w-5 h-5 text-slate-400" />
+                                        {formatTime(selectedClassDetails.startTime)} - {formatTime(selectedClassDetails.endTime)}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 3. Lokalizacja z linkiem do mapy */}
+                            <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-4">
+                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-3">Lokalizacja</p>
+                                <div className="flex items-start justify-between gap-4">
+                                    <div className="flex gap-3">
+                                        <MapPin className="w-5 h-5 text-red-500 shrink-0 mt-1" />
+                                        <div>
+                                            <p className="text-white font-bold">{selectedClassDetails.locationName}</p>
+                                            <p className="text-slate-400 text-sm">{selectedClassDetails.address}, {selectedClassDetails.city}</p>
+                                        </div>
+                                    </div>
+                                    <a
+                                        href={`https://www.google.com/maps/search/?api=1&query=${selectedClassDetails.latitude},${selectedClassDetails.longitude}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="bg-slate-800 hover:bg-slate-700 p-2 rounded-xl border border-slate-600 transition-colors"
+                                        title="Otwórz w Mapach Google"
+                                    >
+                                        <Navigation className="w-5 h-5 text-blue-400" />
+                                    </a>
+                                </div>
+                            </div>
+
+                            {/* 4. Opis zajęć */}
+                            <div className="space-y-2">
+                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">O zajęciach</p>
+                                <p className="text-slate-300 leading-relaxed italic">
+                                    "{selectedClassDetails.description || 'Brak dodatkowego opisu dla tych zajęć.'}"
+                                </p>
+                            </div>
+
+                            {/* 5. Obłożenie */}
+                            <div className="pt-4 border-t border-slate-700/50">
+                                <div className="flex justify-between items-end mb-2">
+                                    <span className="text-slate-400 text-sm font-medium">Uczestnicy</span>
+                                    <span className="text-white font-bold">
+                            {selectedClassDetails.currentParticipants} / {selectedClassDetails.maxParticipants}
+                        </span>
+                                </div>
+                                <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-blue-500 rounded-full transition-all duration-1000"
+                                        style={{ width: `${(selectedClassDetails.currentParticipants / selectedClassDetails.maxParticipants) * 100}%` }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* 6. Status zapisu (jeśli użytkownik jest już zapisany) */}
+                            {selectedClassDetails.userEnrolled && (
+                                <div className="flex items-center justify-center gap-2 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+                                    <CheckCircle className="w-5 h-5 text-emerald-500" />
+                                    <span className="text-emerald-500 font-bold text-sm uppercase tracking-wide">Jesteś na liście uczestników</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
