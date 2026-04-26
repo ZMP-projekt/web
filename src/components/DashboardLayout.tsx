@@ -11,7 +11,7 @@ export const DashboardLayout: React.FC = () => {
             }}
         >
             <Sidebar />
-            <main className="flex-1 ml-64 p-8 min-h-screen max-w-350">
+            <main className="flex-1 ml-64 p-8 min-h-screen w-full">
                 <Outlet />
             </main>
         </div>
