@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import {
-    Calendar as CalendarIcon,
+    CalendarClock,
     Users,
-    Edit,
-    XCircle,
-    Plus,
-    Loader2,
+    Clock,
+    MapPin,
+    ChevronRight,
+    Activity,
     User,
-    X,
-    Save,
-    FileText,
-    Clock, Dumbbell,
-    ArrowLeft,
-    ArrowRight, Bell
+    Plus,
 } from 'lucide-react';
-import {ConfirmModal} from "../components/ConfirmModal.tsx";
-import toast from "react-hot-toast";
-import { NotificationDropdown } from "../components/NotificationDropdown.tsx";
-import { useNotifications } from "../hooks/useNotifications.ts";
-import {api} from "../api/axios.ts";
+
+interface TrainerProfile {
+    firstName: string;
+    lastName: string;
+    email: string;
+}
 
 interface ApiGymClass {
     id: number;
@@ -31,620 +28,259 @@ interface ApiGymClass {
     maxParticipants: number;
     description: string;
     personalTraining: boolean;
+    locationName?: string;
+    city?: string;
 }
 
-interface Participant {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-}
+const formatTime = (iso: string): string =>
+    new Date(iso).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
 
-interface Location {
-    id: number;
-    name: string;
-    city: string;
-    address: string;
-}
-
-const generateNext7Days = (offset: number) => {
-    const days = [];
-    for (let i = 0; i < 7; i++) {
-        const date = new Date();
-        date.setDate(date.getDate() + i + offset);
-        days.push(date.toISOString().split('T')[0]);
-    }
-    return days;
+const formatDuration = (start: string, end: string): string => {
+    const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
+    return mins >= 60 ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? ` ${mins % 60} min` : ''}` : `${mins} min`;
 };
 
-const formatTime = (isoString: string) => {
-    return new Date(isoString).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+const getTimeUntil = (iso: string): string => {
+    const diff = new Date(iso).getTime() - Date.now();
+    if (diff <= 0) return 'Trwa teraz';
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    if (h > 0) return `za ${h}h ${m > 0 ? `${m} min` : ''}`.trim();
+    return `za ${m} min`;
 };
+
+const getTodayIso = (): string => new Date().toISOString().split('T')[0];
+
+const greeting = (): string => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Dzień dobry';
+    if (h < 18) return 'Cześć';
+    return 'Dobry wieczór';
+};
+
+const StatTile = ({ value, label, color = 'text-white' }: { value: string | number; label: string; color?: string }) => (
+    <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl px-5 py-4 text-center">
+        <p className={`text-3xl font-extrabold leading-none ${color}`}>{value}</p>
+        <p className="text-slate-500 text-xs mt-1.5 uppercase tracking-wider font-medium">{label}</p>
+    </div>
+);
 
 export const TrainerDashboard: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
 
-    const [daysOffset, setDayOffset] = useState(0);
-    const [availableDays, setAvailableDays] = useState<string[]>(generateNext7Days(daysOffset));
-    const [selectedDate, setSelectedDate] = useState<string>(availableDays[0]);
-    const [classes, setClasses] = useState<ApiGymClass[]>([]);
+    const [profile, setProfile] = useState<TrainerProfile | null>(null);
+    const [todayClasses, setTodayClasses] = useState<ApiGymClass[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isParticipantsModalOpen, setIsParticipantsModalOpen] = useState(false);
-    const [selectedClassForModal, setSelectedClassForModal] = useState<ApiGymClass | null>(null);
-    const [participantsList, setParticipantsList] = useState<Participant[]>([]);
-    const [isParticipantsLoading, setIsParticipantsLoading] = useState(false);
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [isCreating, setIsCreating] = useState(false);
-    const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
-    const [isRescheduling, setIsRescheduling] = useState(false);
-    const { unreadCount } = useNotifications();
-    const [isNotifOpen, setIsNotifOpen] = useState(false);
-    const [locations, setLocations] = useState<Location[]>([]);
-
-    const [rescheduleForm, setRescheduleForm] = useState({
-        newDate: '',
-        newTime: ''
-    });
-    
-    const [createForm, setCreateForm] = useState({
-        name: '',
-        description: '',
-        startTimeStr: '12:00',
-        endTimeStr: '13:00',
-        maxParticipants: 15,
-        personalTraining: false,
-        locationId: ''
-    });
-
-    const [confirmDialog, setConfirmDialog] = useState({
-        isOpen: false,
-        title: '',
-        message: '',
-        onConfirm: () => {}
-    });
 
     useEffect(() => {
-        setAvailableDays(generateNext7Days(daysOffset))
-    }, [daysOffset]);
-
-    const handleOpenReschedule = (gymClass: ApiGymClass) => {
-        setSelectedClassForModal(gymClass);
-
-        const startDate = new Date(gymClass.startTime);
-        const dateStr = startDate.toISOString().split('T')[0];
-        const timeStr = startDate.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-
-        setRescheduleForm({
-            newDate: dateStr,
-            newTime: timeStr
-        })
-
-        setIsRescheduleModalOpen(true);
-    }
-
-    const handleRescheduleSubmit = async (e: React.SubmitEvent)=> {
-        e.preventDefault();
-        if (!selectedClassForModal) return;
-
-        setIsRescheduling(true);
-        try {
-            const newStartDateTime = `${rescheduleForm.newDate}T${rescheduleForm.newTime}:00`;
-            await apiPrivate.patch(`/api/classes/${selectedClassForModal.id}/reschedule?newTime=${newStartDateTime}`)
-            toast.success('Zajęcia zostały pomyślnie przełożone!');
-            setIsRescheduleModalOpen(false);
-            await fetchTrainerClasses();
-        } catch (error) {
-            console.error("Błąd przekładania zajęć:", error)
-            toast.error('Nie udało się  przełożyć zajęć.')
-        } finally {
-            setIsRescheduling(false);
-        }
-    }
-
-    const fetchTrainerClasses = async () => {
-        setIsLoading(true);
-        try {
-            const formattedDate = `${selectedDate}T00:00:00`;
-            const response = await apiPrivate.get(`/api/classes/trainer?date=${formattedDate}`);
-            setClasses(response.data);
-        } catch (error) {
-            console.error("Błąd pobierania grafiku trenera:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        const fetchTrainerClasses = async () => {
+        const fetchAll = async () => {
             setIsLoading(true);
             try {
-                const formattedDate = `${selectedDate}T00:00:00`;
-                const response = await apiPrivate.get(`/api/classes/trainer?date=${formattedDate}`);
-                setClasses(response.data);
-            } catch (error) {
-                console.error("Błąd pobierania grafiku trenera:", error);
+                const today = getTodayIso();
+                const [profileRes, classesRes] = await Promise.all([
+                    apiPrivate.get('/api/users/me'),
+                    apiPrivate.get(`/api/classes/trainer?date=${today}T00:00:00`),
+                ]);
+                setProfile(profileRes.data);
+                setTodayClasses(classesRes.data);
+            } catch (err) {
+                console.error(err);
             } finally {
                 setIsLoading(false);
             }
         };
+        void fetchAll();
+    }, [apiPrivate]);
 
-        fetchTrainerClasses();
-    }, [selectedDate, apiPrivate]);
+    const now = Date.now();
+    const upcomingClasses = todayClasses
+        .filter((c) => new Date(c.endTime).getTime() > now)
+        .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 
-    useEffect(() => {
-        const fetchLocations = async () => {
-            try {
-                const response = await api.get('/api/locations');
-                setLocations(response.data);
-            } catch (error) {
-                console.error("Błąd pobierania lokalizacji:", error);
-            }
-        };
-
-        fetchLocations();
-    }, []);
-
-    const handleOpenParticipants = async (gymClass: ApiGymClass) => {
-        setSelectedClassForModal(gymClass);
-        setIsParticipantsModalOpen(true);
-        setIsParticipantsLoading(true);
-
-        try {
-            const response = await apiPrivate.get(`/api/classes/${gymClass.id}/participants`);
-            setParticipantsList(response.data);
-        } catch (error) {
-            console.error("Błąd pobierania uczestników:", error);
-        } finally {
-            setIsParticipantsLoading(false);
-        }
-    };
-
-    const handleCancelClass = async (classId: number, className: string) => {
-        setConfirmDialog({
-            isOpen: true,
-            title: 'Odwołaj zajęcia',
-            message: `Czy na pewno chcesz odwołać zajęcia: ${className}?`,
-            onConfirm: async () => {
-                await apiPrivate.delete(`/api/classes/${classId}`);
-                toast.success(`Zajęcia ${className} zostały odwołane!`);
-                await fetchTrainerClasses()
-            }
-        });
-    };
-
-    const handleCreateSubmit = async (e: React.SyntheticEvent) => {
-        e.preventDefault();
-        setIsCreating(true);
-
-        try {
-            const startDateTime = `${selectedDate}T${createForm.startTimeStr}:00.000Z`;
-            const endDateTime = `${selectedDate}T${createForm.endTimeStr}:00.000Z`;
-
-            const payload = {
-                name: createForm.name,
-                description: createForm.description,
-                startTime: startDateTime,
-                endTime: endDateTime,
-                maxParticipants: createForm.personalTraining ? 1 : createForm.maxParticipants,
-                personalTraining: createForm.personalTraining,
-                locationId: Number(createForm.locationId),
-            };
-            await apiPrivate.post('/api/classes', payload);
-
-            toast.success('Zajęcia zostały pomyślnie dodane!');
-            setIsCreateModalOpen(false);
-            setCreateForm({
-                name: '', description: '', startTimeStr: '12:00', endTimeStr: '13:00', maxParticipants: 15, personalTraining: false, locationId: ''
-            });
-
-            await fetchTrainerClasses();
-
-        } catch (error) {
-            console.error("Błąd tworzenia zajęć:", error);
-            toast.error('Nie udało się utworzyć zajęć. Sprawdź poprawność danych.');
-        } finally {
-            setIsCreating(false);
-        }
-    };
-
-    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
-
-        if (type === 'checkbox') {
-            const checked = (e.target as HTMLInputElement).checked;
-            setCreateForm(prev => ({
-                ...prev,
-                [name]: checked,
-                maxParticipants: checked ? 1 : prev.maxParticipants
-            }));
-        } else {
-            setCreateForm(prev => ({ ...prev, [name]: value }));
-        }
-    };
-
-    const formatDayButton = (dateStr: string) => {
-        const date = new Date(dateStr);
-        const dayName = date.toLocaleDateString('pl-PL', { weekday: 'short' });
-        const dayNum = date.getDate();
-        return { dayName, dayNum };
-    };
+    const nextClass = upcomingClasses[0] ?? null;
+    const totalParticipantsToday = todayClasses.reduce((sum, c) => sum + c.currentParticipants, 0);
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8">
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-white">Twój Grafik</h1>
-                    <p className="text-slate-400 mt-2">Zarządzaj swoimi zajęciami i przeglądaj listy obecności.</p>
-                </div>
-                <div className="inline-flex space-x-5">
-                    <div className="relative">
-                        <button
-                            onClick={() => setIsNotifOpen(!isNotifOpen)}
-                            className={`flex items-center justify-between w-full p-3 rounded-xl transition-colors ${
-                                isNotifOpen ? 'bg-slate-800 text-white' : 'hover:bg-slate-800 text-slate-400'
-                            }`}
-                        >
-                            <div className="flex items-center gap-3">
-                                <Bell className="6 h-6 text-slate-300" />
-                                {unreadCount > 0 && (
-                                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                                )}
-                            </div>
-                        </button>
-
-                        <NotificationDropdown
-                            isOpen={isNotifOpen}
-                            onClose={() => setIsNotifOpen(false)}
-                        />
-                    </div>
-                    <button
-                        onClick={() => setIsCreateModalOpen(true)}
-                        className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-emerald-900/20"
-                    >
-                        <Plus className="w-5 h-5"/> Dodaj zajęcia
-                    </button>
-                </div>
+        <div className="space-y-8">
+            <header>
+                <p className="text-slate-500 text-sm font-medium mb-1">{greeting()},</p>
+                {isLoading ? (
+                    <div className="h-9 w-56 bg-slate-700/50 rounded-xl animate-pulse" />
+                ) : (
+                    <h1 className="text-3xl font-bold text-white">
+                        {profile?.firstName ?? 'Trenerze'} 👋
+                    </h1>
+                )}
             </header>
 
-            <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
-                <button
-                    onClick={() => setDayOffset(daysOffset - 7)}
-                    className={`flex flex-col items-center justify-center min-w-20 py-4 rounded-2xl border transition-all bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-500/20`}
-                >
-                    <ArrowLeft className="w-10 h-10 text-white" />
-                </button>
-                {availableDays.map((dateStr) => {
-                    const { dayName, dayNum } = formatDayButton(dateStr);
-                    const isSelected = selectedDate === dateStr;
-
-                    return (
-                        <button
-                            key={dateStr}
-                            onClick={() => setSelectedDate(dateStr)}
-                            className={`flex flex-col items-center justify-center min-w-20 py-4 rounded-2xl border transition-all ${
-                                isSelected
-                                    ? 'bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-                                    : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white'
-                            }`}
-                        >
-                            <span className="text-xs uppercase font-bold tracking-wider mb-1">{dayName}</span>
-                            <span className="text-2xl font-black">{dayNum}</span>
-                        </button>
-                    );
-                })}
-                <button
-                    onClick={() => setDayOffset(daysOffset + 7)}
-                    className={`flex flex-col items-center justify-center min-w-20 py-4 rounded-2xl border transition-all bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-500/20`}
-                >
-                    <ArrowRight className="w-10 h-10 text-white" />
-                </button>
-            </div>
-
-            <div className="space-y-4 relative min-h-75">
+            <div className="grid grid-cols-3 gap-4">
                 {isLoading ? (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
-                        <Loader2 className="w-10 h-10 animate-spin text-emerald-500 mb-4" />
-                        <p>Wczytywanie Twojego grafiku...</p>
-                    </div>
-                ) : classes.length > 0 ? (
-                    classes.map((gymClass) => (
-                        <div key={gymClass.id} className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/80 rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-slate-600 transition-colors">
-                            <div>
-                                <div className="flex items-center gap-3 mb-1">
-                                    <span className="text-xl font-bold text-emerald-400">
-                                        {formatTime(gymClass.startTime)} - {formatTime(gymClass.endTime)}
-                                    </span>
-                                    {gymClass.personalTraining && (
-                                        <span className="text-xs font-bold bg-amber-500/20 text-amber-400 px-2 py-1 rounded-full border border-amber-500/30">
-                                            Trening Personalny
-                                        </span>
-                                    )}
-                                </div>
-                                <h3 className="text-lg font-bold text-slate-200 mb-1">{gymClass.name}</h3>
-                                <p className="text-sm text-slate-500 line-clamp-1 mb-3">{gymClass.description}</p>
-
-                                <button
-                                    onClick={() => handleOpenParticipants(gymClass)}
-                                    className="flex items-center gap-2 text-sm font-medium bg-slate-900/50 hover:bg-slate-900 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors"
-                                >
-                                    <Users className="w-4 h-4 text-blue-400" />
-                                    <span>Zapisanych: {gymClass.currentParticipants} / {gymClass.maxParticipants}</span>
-                                    <span className="text-blue-400 text-xs ml-1">(Zobacz listę)</span>
-                                </button>
-                            </div>
-
-                            <div className="flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
-                                <button
-                                    onClick={() => handleOpenReschedule(gymClass)}
-                                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-sm font-bold transition-colors">
-                                    <Edit className="w-4 h-4" /> Przełóż
-                                </button>
-                                <button
-                                    onClick={() => handleCancelClass(gymClass.id, gymClass.name)}
-                                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-xl text-sm font-bold transition-colors"
-                                >
-                                    <XCircle className="w-4 h-4" /> Odwołaj
-                                </button>
-                            </div>
-
-                        </div>
-                    ))
+                    <>
+                        {[0, 1, 2].map((i) => (
+                            <div key={i} className="h-20 rounded-2xl bg-slate-800/40 border border-slate-700/50 animate-pulse" />
+                        ))}
+                    </>
                 ) : (
-                    <div className="text-center py-20 text-slate-400">
-                        <CalendarIcon className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                        <p className="text-lg">Masz wolne! Brak zaplanowanych zajęć na ten dzień.</p>
-                    </div>
+                    <>
+                        <StatTile value={todayClasses.length} label="Zajęć dziś" />
+                        <StatTile value={upcomingClasses.length} label="Nadchodzących" color="text-blue-400" />
+                        <StatTile value={totalParticipantsToday} label="Uczestników łącznie" color="text-purple-400" />
+                    </>
                 )}
             </div>
 
-            {isCreateModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
-                    <div className="absolute inset-0" onClick={() => !isCreating && setIsCreateModalOpen(false)}></div>
+            <div className="grid grid-cols-5 gap-6">
+                <div className="col-span-3">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">Najbliższe zajęcia</h2>
 
-                    <div className="relative bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]">
+                    {isLoading ? (
+                        <div className="h-52 rounded-3xl bg-slate-800/40 border border-slate-700/50 animate-pulse" />
+                    ) : nextClass ? (
+                        <div
+                            className="relative rounded-3xl p-6 border border-blue-500/20 overflow-hidden"
+                            style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.08))' }}
+                        >
+                            <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl pointer-events-none"
+                                 style={{ background: 'rgba(59,130,246,0.08)' }} />
 
-                        <div className="flex justify-between items-center p-6 border-b border-slate-700">
-                            <div>
-                                <h3 className="text-xl font-bold text-white">Dodaj nowe zajęcia</h3>
-                                <p className="text-sm text-emerald-400 mt-1">Data: {selectedDate}</p>
-                            </div>
-                            <button onClick={() => !isCreating && setIsCreateModalOpen(false)} className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition-colors">
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-
-                        <div className="p-6 overflow-y-auto">
-                            <form id="createClassForm" onSubmit={handleCreateSubmit} className="space-y-5">
-
-                                <label className="flex items-center gap-3 p-4 border border-emerald-500/30 bg-emerald-500/10 rounded-xl cursor-pointer hover:bg-emerald-500/20 transition-colors">
-                                    <input
-                                        type="checkbox"
-                                        name="personalTraining"
-                                        checked={createForm.personalTraining}
-                                        onChange={handleFormChange}
-                                        className="w-5 h-5 accent-emerald-500 rounded cursor-pointer"
-                                    />
-                                    <div>
-                                        <span className="block font-bold text-emerald-400">To jest trening personalny</span>
-                                        <span className="block text-xs text-slate-400">Zajęcia indywidualne (1 na 1)</span>
-                                    </div>
-                                </label>
-
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="col-span-2">
-                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nazwa zajęć</label>
-                                        <div className="relative">
-                                            <Dumbbell className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                                            <input
-                                                type="text" required name="name" value={createForm.name} onChange={handleFormChange}
-                                                placeholder="np. Poranna Joga"
-                                                className="w-full pl-9 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Miejsca</label>
-                                        <div className="relative">
-                                            <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                                            <input
-                                                type="number" required min="1" max="100" name="maxParticipants"
-                                                value={createForm.maxParticipants} onChange={handleFormChange}
-                                                disabled={createForm.personalTraining}
-                                                className="w-full pl-9 pr-3 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Od</label>
-                                        <div className="relative">
-                                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                                            <input
-                                                type="time" required name="startTimeStr" value={createForm.startTimeStr} onChange={handleFormChange}
-                                                className="w-full pl-9 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm [&::-webkit-calendar-picker-indicator]:invert"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Do</label>
-                                        <div className="relative">
-                                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                                            <input
-                                                type="time" required name="endTimeStr" value={createForm.endTimeStr} onChange={handleFormChange}
-                                                className="w-full pl-9 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm [&::-webkit-calendar-picker-indicator]:invert"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4">
-                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-                                        Lokalizacja (Klub)
-                                    </label>
-                                    <select
-                                        required
-                                        name="locationId"
-                                        value={createForm.locationId}
-                                        onChange={handleFormChange}
-                                        className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm appearance-none"
+                            <div className="relative">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span
+                                        className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full"
+                                        style={{
+                                            background: new Date(nextClass.startTime).getTime() <= now
+                                                ? 'rgba(16,185,129,0.15)'
+                                                : 'rgba(59,130,246,0.15)',
+                                            color: new Date(nextClass.startTime).getTime() <= now ? '#10B981' : '#60A5FA',
+                                            border: `1px solid ${new Date(nextClass.startTime).getTime() <= now ? 'rgba(16,185,129,0.3)' : 'rgba(59,130,246,0.3)'}`,
+                                        }}
                                     >
-                                        <option value="" disabled>Wybierz klub z listy...</option>
-                                        {locations.map((loc) => (
-                                            <option key={loc.id} value={loc.id}>
-                                                {loc.city} - {loc.name} ({loc.address})
-                                            </option>
-                                        ))}
-                                    </select>
+                                        {getTimeUntil(nextClass.startTime)}
+                                    </span>
+                                    {nextClass.personalTraining && (
+                                        <span className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/15 border border-amber-500/30 px-3 py-1 rounded-full">
+                                            Personalny
+                                        </span>
+                                    )}
                                 </div>
 
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Opis</label>
-                                    <div className="relative">
-                                        <FileText className="absolute left-3 top-4 w-4 h-4 text-slate-500" />
-                                        <textarea
-                                            required name="description" value={createForm.description} onChange={handleFormChange} rows={3}
-                                            placeholder="Krótki opis treningu dla klientów..."
-                                            className="w-full pl-9 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm resize-none"
-                                        />
-                                    </div>
+                                <h3 className="text-2xl font-bold text-white mb-1">{nextClass.name}</h3>
+
+                                <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-slate-400 mb-5">
+                                    <span className="flex items-center gap-1.5">
+                                        <Clock className="w-3.5 h-3.5 text-slate-600" />
+                                        {formatTime(nextClass.startTime)} – {formatTime(nextClass.endTime)}
+                                        <span className="text-slate-600">({formatDuration(nextClass.startTime, nextClass.endTime)})</span>
+                                    </span>
+                                    {nextClass.locationName && (
+                                        <span className="flex items-center gap-1.5">
+                                            <MapPin className="w-3.5 h-3.5 text-slate-600" />
+                                            {nextClass.locationName}
+                                        </span>
+                                    )}
+                                    <span className="flex items-center gap-1.5">
+                                        <Users className="w-3.5 h-3.5 text-slate-600" />
+                                        {nextClass.currentParticipants}/{nextClass.maxParticipants} zapisanych
+                                    </span>
                                 </div>
 
-                            </form>
-                        </div>
+                                <div className="w-full h-1.5 bg-slate-700/60 rounded-full overflow-hidden mb-5">
+                                    <div
+                                        className="h-full rounded-full"
+                                        style={{
+                                            width: `${Math.min((nextClass.currentParticipants / nextClass.maxParticipants) * 100, 100)}%`,
+                                            background: 'linear-gradient(90deg, #3B82F6, #8B5CF6)',
+                                        }}
+                                    />
+                                </div>
 
-                        <div className="p-6 border-t border-slate-700 bg-slate-800/80">
-                            <button
-                                type="submit" form="createClassForm" disabled={isCreating}
-                                className="w-full flex justify-center items-center gap-2 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all disabled:opacity-70 shadow-lg shadow-emerald-900/20"
-                            >
-                                {isCreating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                                {isCreating ? 'Zapisywanie...' : 'Utwórz zajęcia'}
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-            )}
-
-            {isParticipantsModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
-                    <div className="absolute inset-0" onClick={() => setIsParticipantsModalOpen(false)}></div>
-                    <div className="relative bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden z-10">
-
-                        <div className="flex justify-between items-center p-6 border-b border-slate-700">
-                            <div>
-                                <h3 className="text-xl font-bold text-white">Lista obecności</h3>
-                                <p className="text-sm text-slate-400 mt-1">{selectedClassForModal?.name}</p>
+                                <Link
+                                    to="/trainer/schedule"
+                                    className="inline-flex items-center gap-2 text-sm font-bold text-white no-underline px-5 py-2.5 rounded-xl transition-all hover:opacity-90"
+                                    style={{ background: 'linear-gradient(135deg, #3B82F6, #6D28D9)', boxShadow: '0 4px 16px rgba(59,130,246,0.25)' }}
+                                >
+                                    <Users className="w-4 h-4" /> Zobacz listę obecności
+                                </Link>
                             </div>
-                            <button onClick={() => setIsParticipantsModalOpen(false)} className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition-colors">
-                                <X className="w-5 h-5" />
-                            </button>
                         </div>
-
-                        <div className="p-6 max-h-[60vh] overflow-y-auto">
-                            {isParticipantsLoading ? (
-                                <div className="flex justify-center py-8">
-                                    <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-                                </div>
-                            ) : participantsList.length > 0 ? (
-                                <ul className="space-y-3">
-                                    {participantsList.map((participant, index) => (
-                                        <li key={participant.id} className="flex items-center gap-4 p-3 rounded-xl bg-slate-900/50 border border-slate-700/50">
-                                            <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-300">
-                                                {index + 1}
-                                            </div>
-                                            <div>
-                                                <p className="text-white font-medium">{participant.firstName} {participant.lastName}</p>
-                                                <p className="text-xs text-slate-500">{participant.email}</p>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <div className="text-center py-8 text-slate-400">
-                                    <User className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                                    <p>Nikt jeszcze nie zapisał się na te zajęcia.</p>
-                                </div>
-                            )}
-                        </div>
-
-                    </div>
-                </div>
-            )}
-
-            {isRescheduleModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
-                    <div className="absolute inset-0" onClick={() => !isRescheduling && setIsRescheduleModalOpen(false)}></div>
-
-                    <div className="relative bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden z-10">
-
-                        <div className="flex justify-between items-center p-6 border-b border-slate-700">
-                            <div>
-                                <h3 className="text-xl font-bold text-white">Przełóż zajęcia</h3>
-                                <p className="text-sm text-slate-400 mt-1 line-clamp-1">{selectedClassForModal?.name}</p>
-                            </div>
-                            <button onClick={() => !isRescheduling && setIsRescheduleModalOpen(false)} className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-700 transition-colors">
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-
-                        <div className="p-6">
-                            <form id="rescheduleForm" onSubmit={handleRescheduleSubmit} className="space-y-4">
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nowa data</label>
-                                    <div className="relative">
-                                        <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                                        <input
-                                            type="date" required
-                                            value={rescheduleForm.newDate}
-                                            onChange={(e) => setRescheduleForm(prev => ({ ...prev, newDate: e.target.value }))}
-                                            className="w-full pl-9 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm [&::-webkit-calendar-picker-indicator]:invert"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nowa godzina rozpoczęcia</label>
-                                    <div className="relative">
-                                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                                        <input
-                                            type="time" required
-                                            value={rescheduleForm.newTime}
-                                            onChange={(e) => setRescheduleForm(prev => ({ ...prev, newTime: e.target.value }))}
-                                            className="w-full pl-9 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-sm [&::-webkit-calendar-picker-indicator]:invert"
-                                        />
-                                    </div>
-                                    <p className="text-xs text-slate-500 mt-2">Czas zakończenia zostanie przeliczony automatycznie.</p>
-                                </div>
-
-                            </form>
-                        </div>
-
-                        <div className="p-6 border-t border-slate-700 bg-slate-800/80">
-                            <button
-                                type="submit" form="rescheduleForm" disabled={isRescheduling}
-                                className="w-full flex justify-center items-center gap-2 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all disabled:opacity-70 shadow-lg shadow-emerald-900/20"
+                    ) : (
+                        <div className="rounded-3xl p-8 border border-slate-700/50 bg-slate-800/30 flex flex-col items-center justify-center text-center h-52">
+                            <CalendarClock className="w-10 h-10 text-slate-600 mb-3" />
+                            <p className="text-white font-semibold mb-1">Brak zajęć na dziś</p>
+                            <p className="text-slate-500 text-sm mb-4">Możesz dodać nowe zajęcia w grafiku.</p>
+                            <Link
+                                to="/trainer/schedule"
+                                className="inline-flex items-center gap-2 text-sm font-bold text-white no-underline px-4 py-2 rounded-xl"
+                                style={{ background: 'linear-gradient(135deg, #3B82F6, #6D28D9)' }}
                             >
-                                {isRescheduling ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                                {isRescheduling ? 'Zapisywanie...' : 'Przełóż zajęcia'}
-                            </button>
+                                <Plus className="w-4 h-4" /> Przejdź do grafiku
+                            </Link>
                         </div>
-
-                    </div>
+                    )}
                 </div>
-            )}
 
-            <ConfirmModal
-                isOpen={confirmDialog.isOpen}
-                title={confirmDialog.title}
-                message={confirmDialog.message}
-                onConfirm={confirmDialog.onConfirm}
-                onCancel={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}
-            />
+                <div className="col-span-2">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">Plan na dziś</h2>
 
+                    {isLoading ? (
+                        <div className="space-y-2">
+                            {[0, 1, 2].map((i) => (
+                                <div key={i} className="h-16 rounded-2xl bg-slate-800/40 border border-slate-700/50 animate-pulse" />
+                            ))}
+                        </div>
+                    ) : todayClasses.length > 0 ? (
+                        <div className="space-y-2">
+                            {todayClasses
+                                .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+                                .map((cls) => {
+                                    const isPast = new Date(cls.endTime).getTime() < now;
+                                    const isActive = new Date(cls.startTime).getTime() <= now && !isPast;
+                                    return (
+                                        <Link
+                                            key={cls.id}
+                                            to="/trainer/schedule"
+                                            className={`flex items-center gap-3 p-3 rounded-2xl border no-underline transition-all group ${
+                                                isPast
+                                                    ? 'border-slate-700/30 bg-slate-800/20 opacity-50'
+                                                    : isActive
+                                                        ? 'border-blue-500/30 bg-blue-500/8'
+                                                        : 'border-slate-700/50 bg-slate-800/30 hover:border-slate-600/60 hover:bg-slate-800/50'
+                                            }`}
+                                        >
+                                            <div className="p-2 rounded-xl bg-slate-700/50 shrink-0">
+                                                {cls.personalTraining
+                                                    ? <User className="w-4 h-4 text-amber-400" />
+                                                    : <Activity className="w-4 h-4 text-blue-400" />}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-white text-sm font-bold truncate">{cls.name}</p>
+                                                <p className="text-slate-500 text-xs">
+                                                    {formatTime(cls.startTime)} · {cls.currentParticipants}/{cls.maxParticipants} os.
+                                                </p>
+                                            </div>
+                                            {isActive && (
+                                                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider shrink-0">Na żywo</span>
+                                            )}
+                                            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
+                                        </Link>
+                                    );
+                                })}
+                        </div>
+                    ) : (
+                        <div className="rounded-2xl border border-slate-700/40 bg-slate-800/20 p-6 text-center">
+                            <p className="text-slate-500 text-sm">Brak zajęć na dziś.</p>
+                        </div>
+                    )}
+
+                    <Link
+                        to="/trainer/schedule"
+                        className="mt-3 flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-300 no-underline transition-colors"
+                    >
+                        Pełny grafik <ChevronRight className="w-3.5 h-3.5" />
+                    </Link>
+                </div>
+
+            </div>
         </div>
     );
 };
