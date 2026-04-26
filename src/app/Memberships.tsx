@@ -62,7 +62,7 @@ export const Memberships: React.FC = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto space-y-10">
+        <div className="max-w-6xl mx-auto space-y-15 max-h-screen">
             <div>
                 <h1 className="text-3xl font-bold text-white">Zarządzanie Karnetem</h1>
                 <p className="text-slate-400 mt-2">Przeglądaj ofertę i zarządzaj swoją subskrypcją.</p>
