@@ -16,6 +16,7 @@ import {Toaster} from "react-hot-toast";
 import {NotificationProvider} from "../components/NotificationProvider.tsx";
 import {LocationsPage} from "./LocationsPage.tsx";
 import {MembershipProvider} from "../components/MembershipProvider.tsx";
+import {TrainerSchedule} from "./TrainerSchedule.tsx";
 
 function App() {
     return (
@@ -66,6 +67,7 @@ function App() {
                                 <Route element={<ProtectedRoute roles={['ROLE_TRAINER']}><TrainerLayout/></ProtectedRoute>}>
                                     <Route path="/trainer/dashboard" element={<TrainerDashboard/>}/>
                                     <Route path="/trainer/profile" element={<Profile/>}/>
+                                    <Route path="/trainer/schedule" element={<TrainerSchedule/>}/>
                                 </Route>
                             </Routes>
                         </Router>

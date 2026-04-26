@@ -108,7 +108,7 @@ export const TrainerDashboard: React.FC = () => {
                     <div className="h-9 w-56 bg-slate-700/50 rounded-xl animate-pulse" />
                 ) : (
                     <h1 className="text-3xl font-bold text-white">
-                        {profile?.firstName ?? 'Trenerze'} 👋
+                        {profile?.firstName ?? 'Trenerze'}!
                     </h1>
                 )}
             </header>
