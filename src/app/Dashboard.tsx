@@ -7,6 +7,7 @@ import { useNotifications } from '../hooks/useNotifications.ts';
 import { useMembership } from '../hooks/useMembership.ts';
 import { Link } from 'react-router';
 import {SkeletonCard} from "../components/SkeletonCard.tsx";
+import {useTranslation} from "react-i18next";
 
 interface UserProfile {
     firstName: string;
@@ -113,6 +114,7 @@ export const Dashboard: React.FC = () => {
     const todayDate = new Date();
     const [todayClasses, setTodayClasses] = React.useState<ClassItem[]>([])
     const enrolledClasses = todayClasses.filter((c) => c.userEnrolled);
+    const { t } = useTranslation('dashboard');
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -149,9 +151,9 @@ export const Dashboard: React.FC = () => {
 
     const greeting = (): string => {
         const h = new Date().getHours();
-        if (h < 12) return 'Dzień dobry';
-        if (h < 18) return 'Cześć';
-        return 'Dobry wieczór';
+        if (h < 12) return t('greeting_morning');
+        if (h < 18) return t('greeting_afternoon');
+        return t('greeting_evening');
     };
 
     return (
@@ -163,7 +165,7 @@ export const Dashboard: React.FC = () => {
                         <div className="h-9 w-48 bg-slate-700/50 rounded-xl animate-pulse" />
                     ) : (
                         <h1 className="text-3xl font-bold text-white">
-                            {profileData?.firstName || 'użytkowniku'}
+                            {profileData?.firstName || t('user')}
                         </h1>
                     )}
                 </div>
@@ -191,40 +193,40 @@ export const Dashboard: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
-                    <SectionCard title="Status karnetu" icon={<IdCard className="w-5 h-5 text-slate-400" />}>
+                    <SectionCard title={t('membership_status')} icon={<IdCard className="w-5 h-5 text-slate-400" />}>
                         {isMembershipLoading ? (
                             <div className="flex items-center gap-3 py-2">
                                 <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                                <span className="text-slate-400 text-sm">Pobieranie danych…</span>
+                                <span className="text-slate-400 text-sm">{t('loading_data')}</span>
                             </div>
                         ) : membership && !isValid ? (
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <p className="text-red-400 font-bold text-xl mb-1">Karnet wygasł</p>
-                                    <p className="text-slate-500 text-sm">Odnów karnet, aby kontynuować treningi.</p>
+                                    <p className="text-red-400 font-bold text-xl mb-1">{t('membership_expired')}</p>
+                                    <p className="text-slate-500 text-sm">{t('renew_to_continue')}</p>
                                 </div>
                                 <Link
                                     to="/memberships"
                                     className="bg-red-500/15 hover:bg-red-500/25 border border-red-500/40 text-red-400 px-4 py-2 rounded-xl text-sm font-bold transition-colors no-underline shrink-0"
                                 >
-                                    Odnów →
+                                    {t('renew_btn')}
                                 </Link>
                             </div>
                         ) : membership ? (
                             <>
                                 <div className="flex items-end justify-between mb-5">
                                     <div>
-                                        <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Pozostało</p>
+                                        <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">{t('days_left')}</p>
                                         <p className="text-5xl font-extrabold text-white leading-none">
                                             {calculateDaysRemaining(membership.endDate)}
-                                            <span className="text-slate-500 text-xl font-medium ml-2">dni</span>
+                                            <span className="text-slate-500 text-xl font-medium ml-2">{t('days_unit')}</span>
                                         </p>
                                     </div>
                                     <div className="text-right">
                                         <span className="inline-block text-xs font-bold uppercase tracking-wide text-blue-400 bg-blue-500/15 border border-blue-500/30 px-3 py-1.5 rounded-full mb-2">
                                             {membership.type}
                                         </span>
-                                        <p className="text-slate-500 text-xs">ważny do {formatDate(membership.endDate)}</p>
+                                        <p className="text-slate-500 text-xs">{t('valid_until')} {formatDate(membership.endDate)}</p>
                                     </div>
                                 </div>
                                 <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
@@ -242,21 +244,21 @@ export const Dashboard: React.FC = () => {
                         ) : (
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <p className="text-white font-bold text-lg mb-1">Brak aktywnego karnetu</p>
-                                    <p className="text-slate-500 text-sm">Kup karnet i zacznij trenować już dziś.</p>
+                                    <p className="text-white font-bold text-lg mb-1">{t('no_membership')}</p>
+                                    <p className="text-slate-500 text-sm">{t('buy_and_start')}</p>
                                 </div>
                                 <Link
                                     to="/memberships"
                                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors no-underline shrink-0"
                                 >
-                                    Kup karnet →
+                                    {t('buy_btn')}
                                 </Link>
                             </div>
                         )}
                     </SectionCard>
 
                     <SectionCard
-                        title="Twoje zapisy na dziś"
+                        title={t('today_classes')}
                         icon={<CalendarDays className="w-5 h-5 text-purple-400" />}
                     >
                         {isLoading ? (
@@ -266,13 +268,13 @@ export const Dashboard: React.FC = () => {
                         ) : enrolledClasses.length === 0 ? (
                             <div className="text-center py-8">
                                 <Dumbbell className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-                                <p className="text-slate-400 text-sm font-medium">Nie masz żadnych zapisów na dziś</p>
-                                <p className="text-slate-600 text-xs mt-1 mb-4">Przeglądaj grafik i zapisz się na zajęcia</p>
+                                <p className="text-slate-400 text-sm font-medium">{t('no_classes')}</p>
+                                <p className="text-slate-600 text-xs mt-1 mb-4">{t('schedule_browse_and_signup')}</p>
                                 <Link
                                     to="/schedule"
                                     className="text-sm text-blue-400 font-semibold hover:text-blue-300 transition-colors no-underline"
                                 >
-                                    Otwórz grafik →
+                                    {t('open_schedule')}
                                 </Link>
                             </div>
                         ) : (
@@ -285,7 +287,7 @@ export const Dashboard: React.FC = () => {
                                         to="/schedule"
                                         className="text-xs text-slate-500 hover:text-slate-300 transition-colors no-underline font-medium"
                                     >
-                                        Przeglądaj pełny grafik →
+                                        {t('browse_full_schedule')}
                                     </Link>
                                 </div>
                             </div>
@@ -294,7 +296,7 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="space-y-6">
-                    <SectionCard title="Dzisiaj w klubie" icon={<Clock className="w-4 h-4 text-slate-500" />}>
+                    <SectionCard title={t('club_today')} icon={<Clock className="w-4 h-4 text-slate-500" />}>
                         <div className="space-y-2">
                             {todayClasses.slice(0, 4).map((cls) => (
                                 <ClassRow key={cls.id} cls={cls} showEnrolledBadge />
@@ -304,7 +306,7 @@ export const Dashboard: React.FC = () => {
                             to="/schedule"
                             className="block text-center text-xs text-slate-500 hover:text-slate-300 font-medium transition-colors no-underline mt-4 pt-4 border-t border-slate-700/50"
                         >
-                            Zobacz wszystkie zajęcia →
+                            {t('see_all_classes')}
                         </Link>
                     </SectionCard>
                 </div>
