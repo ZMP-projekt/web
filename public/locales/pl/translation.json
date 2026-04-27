@@ -1,0 +1,26 @@
+{
+  "dashboard": {
+    "days_left": "Pozostało",
+    "membership_status": "Status karnetu",
+    "today_classes": "Twoje zapisy na dziś",
+    "no_classes": "Nie masz żadnych zapisów na dziś",
+    "user": "użytkowniku",
+    "membership_expired": "Karnet wygasł",
+    "renew_to_continue": "Odnów karnet, aby kontynuować treningi.",
+    "renew_btn": "Odnów →",
+    "valid_until": "ważny do",
+    "no_membership": "Brak aktywnego karnetu",
+    "buy_btn": "Kup karnet →",
+    "days_unit": "dni",
+    "buy_and_start": "Kup karnet i zacznij trenować już dziś.",
+    "schedule_browse_and_signup": "Przeglądaj grafik i zapisz się na zajęcia",
+    "open_schedule": "Otwórz grafik →",
+    "browse_full_schedule": "Przeglądaj pełny grafik →",
+    "see_all_classes": "Przeglądaj wszystkie zajęcia →",
+    "loading_data": "Pobieranie danych",
+    "greeting_morning": "Dzień dobry",
+    "greeting_afternoon": "Cześć",
+    "greeting_evening": "Dobry wieczór",
+    "club_today": "Dzisiaj w klubie"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "dashboard": {
+    "days_left": "Remaining",
+    "membership_status": "Membership Status",
+    "today_classes": "Your classes for today",
+    "no_classes": "No classes scheduled for today",
+    "user": "user",
+    "membership_expired": "Membership expired",
+    "renew_to_continue": "Renew your membership to continue training.",
+    "renew_btn": "Renew →",
+    "valid_until": "valid until",
+    "no_membership": "No active membership",
+    "buy_btn": "Buy membership →",
+    "days_unit": "days",
+    "buy_and_start": "Buy a membership and start training today.",
+    "schedule_browse_and_signup": "Browse the schedule and sign up for classes",
+    "open_schedule": "Open schedule →",
+    "browse_full_schedule": "Browse full schedule →",
+    "see_all_classes": "See all classes →",
+    "loading_data": "Fetching data...",
+    "greeting_morning": "Good morning",
+    "greeting_afternoon": "Hi",
+    "greeting_evening": "Good evening",
+    "club_today": "Today at the club"
+  }
+}
