@@ -3,12 +3,19 @@ import { Link, useNavigate, useLocation } from 'react-router';
 import React from 'react';
 import { useAuth } from '../auth/useAuth.ts';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate.ts';
+import {useTranslation} from "react-i18next";
 
 export const Sidebar: React.FC = () => {
     const navigate = useNavigate();
     const { logout } = useAuth();
     const apiPrivate = useAxiosPrivate();
     const location = useLocation();
+    const { i18n } = useTranslation();
+
+    const toggleLanguage = () => {
+        const newLang = i18n.language === 'pl' ? 'en' : 'pl';
+        i18n.changeLanguage(newLang);
+    }
 
     const handleLogout = async (): Promise<void> => {
         try {
@@ -68,6 +75,10 @@ export const Sidebar: React.FC = () => {
                 <NavButton to="/memberships" icon={<CreditCard className="w-5 h-5" />}    label="Mój Karnet" />
                 <NavButton to="/profile"     icon={<User className="w-5 h-5" />}          label="Profil" />
             </nav>
+
+            <button onClick={toggleLanguage} className="p-2 text-xs font-bold text-slate-400 hover:text-white">
+                {i18n.language.toUpperCase()}
+            </button>
 
             {/* Logout */}
             <div className="pt-4 border-t border-slate-800/80">
