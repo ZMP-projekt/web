@@ -528,7 +528,7 @@ export const TrainerSchedule: React.FC = () => {
                                     <label className={labelCls}>Opis</label>
                                     <div className="relative">
                                         <FileText className="absolute left-3 top-3.5 w-4 h-4 text-slate-500" />
-                                        <textarea required name="description" value={createForm.description}
+                                        <textarea name="description" value={createForm.description}
                                                   onChange={handleFormChange} rows={3}
                                                   placeholder="Krótki opis treningu dla klientów…"
                                                   className={inputCls + ' pl-9 resize-none'} />
