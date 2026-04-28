@@ -22,5 +22,12 @@
     "greeting_afternoon": "Cześć",
     "greeting_evening": "Dobry wieczór",
     "club_today": "Dzisiaj w klubie"
+  },
+  "sidebar": {
+    "dashboard": "Pulpit",
+    "schedule": "Grafik",
+    "my_membership": "Mój Karnet",
+    "profile": "Profil",
+    "logout": "Wyloguj się"
   }
 }
