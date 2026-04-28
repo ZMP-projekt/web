@@ -29,5 +29,14 @@
     "my_membership": "Mój Karnet",
     "profile": "Profil",
     "logout": "Wyloguj się"
+  },
+  "notifications": {
+    "notifications": "Powiadomienia",
+    "new": "nowe",
+    "no_notifications": "Brak powiadomień.",
+    "up_to_date": "Jesteś na bieżąco!",
+    "mark_as_read": "Oznacz jako przeczytane",
+    "delete_notification": "Usuń powiadomienie",
+    "delete_failed": "Nie udało się usunąć"
   }
 }

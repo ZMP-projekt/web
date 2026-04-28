@@ -29,5 +29,14 @@
     "my_membership": "Membership",
     "profile": "Profile",
     "logout": "Logout"
+  },
+  "notifications": {
+    "notifications": "Notifications",
+    "new": "new",
+    "no_notifications": "No notifications.",
+    "up_to_date": "You're up to date!",
+    "mark_as_read": "Mark as read",
+    "delete_notification": "Delete notification",
+    "delete_failed": "Delete failed"
   }
 }

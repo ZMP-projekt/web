@@ -6,6 +6,7 @@ import {Client} from "@stomp/stompjs";
 import {BellRing} from "lucide-react";
 import toast from "react-hot-toast";
 import SockJS from "sockjs-client";
+import {useTranslation} from "react-i18next";
 
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
@@ -15,6 +16,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     const [notifications, setNotifications] = useState<NotificationData[]>([]);
 
     const unreadCount = notifications.filter(n => !n.read).length;
+    const { t } = useTranslation('notifications');
 
     useEffect(() => {
         if (!isAuthenticated || !token) return;
@@ -27,7 +29,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
                 console.error("Błąd pobierania historii powiadomień:", error);
             }
         };
-        fetchOldNotifications();
+        void fetchOldNotifications();
 
         const client = new Client({
             webSocketFactory: () => new SockJS('https://api-j6d6.onrender.com/ws-gym'),
@@ -69,7 +71,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         client.activate();
 
         return () => {
-            client.deactivate();
+            void client.deactivate();
         };
     }, [token, isAuthenticated, apiPrivate]);
 
@@ -88,7 +90,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
             setNotifications(prev => prev.filter(n => n.id !== id));
         } catch (error) {
             console.error(error);
-            toast.error("Nie udało się usunąć");
+            toast.error(t('delete_failed'));
         }
 
     }

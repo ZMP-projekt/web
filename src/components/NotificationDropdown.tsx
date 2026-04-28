@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNotifications } from "../hooks/useNotifications.ts";
 import { Bell, CheckCircle, Trash2, X } from 'lucide-react';
+import {useTranslation} from "react-i18next";
 
 interface NotificationDropdownProps {
     isOpen: boolean;
@@ -9,6 +10,7 @@ interface NotificationDropdownProps {
 
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOpen, onClose }) => {
     const { notifications, markAsRead, deleteNotification, unreadCount } = useNotifications();
+    const { t } = useTranslation('notifications');
 
     if (!isOpen) return null;
 
@@ -23,10 +25,10 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
             <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50 flex flex-col max-h-[80vh]">
                 <div className="p-4 border-b border-slate-700 flex items-center justify-between bg-slate-800/90 backdrop-blur-sm z-10">
                     <div className="flex items-center gap-2">
-                        <h3 className="text-white font-bold text-lg">Powiadomienia</h3>
+                        <h3 className="text-white font-bold text-lg">{t('notifications')}</h3>
                         {unreadCount > 0 && (
                             <span className="bg-blue-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                                {unreadCount} nowe
+                                {unreadCount} {t('new')}
                             </span>
                         )}
                     </div>
@@ -39,8 +41,8 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
                     {notifications.length === 0 ? (
                         <div className="text-center py-10 flex flex-col items-center">
                             <Bell className="w-12 h-12 text-slate-600 mb-3 opacity-50" />
-                            <p className="text-slate-400 text-sm">Brak powiadomień.</p>
-                            <p className="text-slate-500 text-xs mt-1">Jesteś na bieżąco!</p>
+                            <p className="text-slate-400 text-sm">{t('no_notifications')}</p>
+                            <p className="text-slate-500 text-xs mt-1">{t('up_to_date')}</p>
                         </div>
                     ) : (
                         <ul className="space-y-1">
@@ -67,7 +69,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
                                             <button
                                                 onClick={() => markAsRead(notification.id)}
                                                 className="p-1.5 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-colors"
-                                                title="Oznacz jako przeczytane"
+                                                title={t('mark_as_read')}
                                             >
                                                 <CheckCircle className="w-4 h-4" />
                                             </button>
@@ -75,7 +77,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
                                         <button
                                             onClick={() => deleteNotification(notification.id)}
                                             className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                                            title="Usuń powiadomienie"
+                                            title={t('delete_notification')}
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
