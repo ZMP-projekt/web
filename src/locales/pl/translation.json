@@ -1,6 +1,5 @@
 {
   "dashboard": {
-    "days_left": "Pozostało",
     "membership_status": "Status karnetu",
     "today_classes": "Twoje zapisy na dziś",
     "no_classes": "Nie masz żadnych zapisów na dziś",
@@ -8,10 +7,8 @@
     "membership_expired": "Karnet wygasł",
     "renew_to_continue": "Odnów karnet, aby kontynuować treningi.",
     "renew_btn": "Odnów →",
-    "valid_until": "ważny do",
     "no_membership": "Brak aktywnego karnetu",
     "buy_btn": "Kup karnet →",
-    "days_unit": "dni",
     "buy_and_start": "Kup karnet i zacznij trenować już dziś.",
     "schedule_browse_and_signup": "Przeglądaj grafik i zapisz się na zajęcia",
     "open_schedule": "Otwórz grafik →",
@@ -22,6 +19,12 @@
     "greeting_afternoon": "Cześć",
     "greeting_evening": "Dobry wieczór",
     "club_today": "Dzisiaj w klubie"
+  },
+  "common": {
+    "days_unit": "dni",
+    "days_left": "Pozostało",
+    "valid_until": "ważny do",
+    "processing": "Przetwarzanie..."
   },
   "sidebar": {
     "dashboard": "Pulpit",
@@ -38,5 +41,22 @@
     "mark_as_read": "Oznacz jako przeczytane",
     "delete_notification": "Usuń powiadomienie",
     "delete_failed": "Nie udało się usunąć"
+  },
+  "memberships": {
+    "transaction_error": "Wystąpił błąd podczas transakcji.",
+    "manage_title": "Zarządzanie karnetem",
+    "manage_description": "Przeglądaj ofertę i zarządzaj swoją subskrybcją.",
+    "status_active": "AKTYWNY",
+    "my_plan": "Mój plan:",
+    "status_expired": "WYGASŁ",
+    "status_none": "BRAK KARNETU",
+    "expired_message": "Twój karnet stracił ważność",
+    "no_membership_yet": "Nie masz jeszcze karnetu",
+    "renew_description": "Odnów subskrypcję, wybierając jeden z poniższych planów, aby kontynuować treningi.",
+    "choose_plan_description": "Wybierz plan idealnie dopasowany do Twoich potrzeb i zacznij trenować już dziś.",
+    "your_plan": "Twój plan",
+    "change_plan_btn": "Zmień plan",
+    "buy_membership_btn": "Kup karnet",
+    "extend_membership_btn": "Przedłuż karnet"
   }
 }

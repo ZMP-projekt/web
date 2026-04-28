@@ -3,6 +3,7 @@ import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import {CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap, AlertCircle} from 'lucide-react';
 import toast from "react-hot-toast";
 import {useMembership} from "../hooks/useMembership.ts";
+import {useTranslation} from "react-i18next";
 
 const MEMBERSHIP_PLANS = [
     {
@@ -33,16 +34,17 @@ export const Memberships: React.FC = () => {
 
     const { membership, isValid, isMembershipLoading, refreshMembership } = useMembership()
     const [purchasingType, setPurchasingType] = useState<string | null>(null);
+    const { t } = useTranslation(['memberships', 'common']);
 
     const handlePurchase = async (type: string) => {
         setPurchasingType(type);
         try {
             await apiPrivate.post(`api/memberships/purchase?type=${type}`);
-            toast.success(`Pomyślnie ${membership?.type === type ? 'przedłużono' : 'zakupiono'} karnet ${type}!`);
+            toast.success(t(membership?.type === type ? 'toast_extended' : 'toast_purchased', {type: type}));
             await refreshMembership();
         } catch (error) {
             console.error("Błąd zakupu:", error);
-            alert("Wystąpił błąd podczas transakcji.");
+            toast.error(t('transaction_error'));
         } finally {
             setPurchasingType(null);
         }
@@ -64,23 +66,23 @@ export const Memberships: React.FC = () => {
     return (
         <div className="max-w-6xl mx-auto space-y-15 max-h-screen">
             <div>
-                <h1 className="text-3xl font-bold text-white">Zarządzanie Karnetem</h1>
-                <p className="text-slate-400 mt-2">Przeglądaj ofertę i zarządzaj swoją subskrypcją.</p>
+                <h1 className="text-3xl font-bold text-white">{t('manage_title')}</h1>
+                <p className="text-slate-400 mt-2">{t('manage_description')}</p>
             </div>
 
             {membership && isValid ? (
                 <div className="bg-slate-800/50 backdrop-blur-sm border border-emerald-500/30 rounded-3xl p-6 relative overflow-hidden">
                     <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10">
-                        AKTYWNY
+                        {t('status_active')}
                     </div>
                     <div className="flex items-center gap-6 relative z-10">
                         <div className="p-4 bg-emerald-500/20 rounded-2xl border border-emerald-500/30">
                             <Award className="w-10 h-10 text-emerald-400" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-white">Mój plan: {membership.type}</h2>
+                            <h2 className="text-2xl font-bold text-white">{t('my_plan')} {membership.type}</h2>
                             <p className="text-slate-400 mt-1">
-                                Pozostało: <span className="text-white font-bold">{calculateDaysRemaining(membership.endDate)} dni</span> (ważny do {formatDate(membership.endDate)})
+                                {t('common:days_left')}: <span className="text-white font-bold">{calculateDaysRemaining(membership.endDate)} dni</span> ({t('common:valid_until')} {formatDate(membership.endDate)})
                             </p>
                         </div>
                     </div>
@@ -92,7 +94,7 @@ export const Memberships: React.FC = () => {
                     <div className={`absolute top-0 right-0 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10 ${
                         membership ? 'bg-red-500' : 'bg-slate-600'
                     }`}>
-                        {membership ? 'WYGASŁ' : 'BRAK KARNETU'}
+                        {membership ? t("status_expired") : t('status_none')}
                     </div>
                     <div className="flex items-center gap-6 relative z-10">
                         <div className={`p-4 rounded-2xl border ${
@@ -102,12 +104,12 @@ export const Memberships: React.FC = () => {
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold text-white">
-                                {membership ? 'Twój karnet stracił ważność' : 'Nie masz jeszcze karnetu'}
+                                {membership ? t('expired_message') : t('no_membership_yet')}
                             </h2>
                             <p className="text-slate-400 mt-1">
                                 {membership
-                                    ? 'Odnów subskrypcję, wybierając jeden z poniższych planów, aby kontynuować treningi.'
-                                    : 'Wybierz plan idealnie dopasowany do Twoich potrzeb i zacznij trenować już dziś.'}
+                                    ? t('renew_description')
+                                    : t('choose_plan_description')}
                             </p>
                         </div>
                     </div>
@@ -124,7 +126,7 @@ export const Memberships: React.FC = () => {
 
                             {isCurrentPlan && (
                                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md">
-                                    Twój plan
+                                    {t('your_plan')}
                                 </div>
                             )}
 
@@ -155,11 +157,11 @@ export const Memberships: React.FC = () => {
                                 }`}
                             >
                                 {isPurchasingThis ? (
-                                    <><Loader2 className="w-5 h-5 animate-spin" /> Przetwarzanie...</>
+                                    <><Loader2 className="w-5 h-5 animate-spin" /> {t('common:processing')}</>
                                 ) : isCurrentPlan ? (
-                                    'Przedłuż karnet'
+                                    t('extend_membership_btn')
                                 ) : (
-                                    membership?.active ? 'Zmień plan' : 'Kup karnet'
+                                    membership?.active ? t('change_plan_btn') : t('buy_membership_btn')
                                 )}
                             </button>
                         </div>

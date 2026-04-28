@@ -1,6 +1,5 @@
 {
   "dashboard": {
-    "days_left": "Remaining",
     "membership_status": "Membership Status",
     "today_classes": "Your classes for today",
     "no_classes": "No classes scheduled for today",
@@ -8,10 +7,8 @@
     "membership_expired": "Membership expired",
     "renew_to_continue": "Renew your membership to continue training.",
     "renew_btn": "Renew →",
-    "valid_until": "valid until",
     "no_membership": "No active membership",
     "buy_btn": "Buy membership →",
-    "days_unit": "days",
     "buy_and_start": "Buy a membership and start training today.",
     "schedule_browse_and_signup": "Browse the schedule and sign up for classes",
     "open_schedule": "Open schedule →",
@@ -22,6 +19,12 @@
     "greeting_afternoon": "Hi",
     "greeting_evening": "Good evening",
     "club_today": "Today at the club"
+  },
+  "common": {
+    "days_unit": "dni",
+    "days_left": "Remaining",
+    "valid_until": "valid until",
+    "processing": "Processing..."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -38,5 +41,22 @@
     "mark_as_read": "Mark as read",
     "delete_notification": "Delete notification",
     "delete_failed": "Delete failed"
+  },
+  "memberships": {
+    "transaction_error": "An error occurred during the transaction.",
+    "manage_title": "Manage membership",
+    "manage_description": "Browse the offer and manage your subscription.",
+    "status_active": "ACTIVE",
+    "my_plan": "My plan:",
+    "status_expired": "EXPIRED",
+    "status_none": "NO MEMBERSHIP",
+    "expired_message": "Your membership has expired",
+    "no_membership_yet": "You don't have a membership yet",
+    "renew_description": "Renew your subscription by choosing one of the plans below to continue training.",
+    "choose_plan_description": "Choose the perfect plan for your needs and start training today.",
+    "your_plan": "Your plan",
+    "change_plan_btn": "Change plan",
+    "buy_membership_btn": "Buy membership",
+    "extend_membership_btn": "Extend membership"
   }
 }
