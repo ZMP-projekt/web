@@ -24,7 +24,8 @@
     "days_unit": "dni",
     "days_left": "Pozostało",
     "valid_until": "ważny do",
-    "processing": "Przetwarzanie..."
+    "processing": "Przetwarzanie...",
+    "error_retry": "Wystąpił błąd. Spróbuj ponownie."
   },
   "sidebar": {
     "dashboard": "Pulpit",
@@ -57,6 +58,42 @@
     "your_plan": "Twój plan",
     "change_plan_btn": "Zmień plan",
     "buy_membership_btn": "Kup karnet",
-    "extend_membership_btn": "Przedłuż karnet"
+    "extend_membership_btn": "Przedłuż karnet",
+    "toast_extended": "Pomyślnie przedłużono karnet {{type}}!",
+    "toast_purchased": "Pomyślnie zakupiono karnet {{type}}!"
+  },
+  "schedule": {
+    "loading": "Ładowanie danych o karnecie…",
+    "title": "Grafik zajęć",
+    "subtitle": "Wybierz dzień i zapisz się na trening.",
+    "prev_week": "Poprzedni tydzień",
+    "today": "Dziś",
+    "next_week": "Następny tydzień",
+    "no_classes_day": "Brak zajęć w tym dniu",
+    "check_other_day": "Sprawdź inny dzień lub wróć później.",
+    "active_membership_required": "Musisz posiadać aktywny karnet, aby zapisać się na zajęcia!",
+    "signup_success": "Pomyślnie zapisano na zajęcia!",
+    "cancel_success": "Zrezygnowano z zajęć.",
+    "personal_training": "Trening Personalny",
+    "group_class": "Zajęcia Grupowe",
+    "trainer": "Trener",
+    "duration": "Czas trwania",
+    "location": "Lokalizacja",
+    "open_map": "Otwórz mapę",
+    "about": "O zajęciach",
+    "no_description": "Brak dodatkowego opisu dla tych zajęć.",
+    "participants": "Uczestnicy",
+    "on_participants_list": "Jesteś na liśce uczestników"
+  },
+  "class": {
+    "personal": "Personalne",
+    "group": "Grupowe",
+    "signed_up": "Zapisany",
+    "places": "miejsc",
+    "no_free_places": "Brak wolnych miejsc",
+    "free": "wolnych",
+    "drop_out_btn": "Wypisz się",
+    "no_places": "Brak miejsc",
+    "sign_up_btn": "Zapisz się"
   }
 }

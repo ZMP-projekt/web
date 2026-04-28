@@ -4,6 +4,8 @@ import {
     Users, Loader2, ChevronRight, XCircle
 } from 'lucide-react';
 import {Link} from "react-router";
+import i18n from "../i18n.ts";
+import {useTranslation} from "react-i18next";
 
 export interface GymClass {
     id: number;
@@ -30,7 +32,7 @@ interface ClassCardProps {
 }
 
 const formatTime = (isoString: string): string =>
-    new Date(isoString).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+    new Date(isoString).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
 
 const formatDuration = (start: string, end: string): string => {
     const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
@@ -41,6 +43,7 @@ const formatDuration = (start: string, end: string): string => {
 
 export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading, onEnroll }) => {
     const isFull = gymClass.currentParticipants >= gymClass.maxParticipants;
+    const { t } = useTranslation('class');
     const occupancyPct = gymClass.maxParticipants > 0
         ? Math.min((gymClass.currentParticipants / gymClass.maxParticipants) * 100, 100)
         : 0;
@@ -72,13 +75,13 @@ export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading,
 
                         <span
                             className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border border-slate-600 text-slate-400 bg-slate-800">
-                        {gymClass.personalTraining ? 'Personalne' : 'Grupowe'}
+                        {gymClass.personalTraining ? t('personal') : t('group')}
                     </span>
 
                         {gymClass.userEnrolled && (
                             <span
                                 className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
-                            <CheckCircle className="w-3 h-3"/> Zapisany
+                            <CheckCircle className="w-3 h-3"/> {t('signed_up')}
                         </span>
                         )}
                     </div>
@@ -97,7 +100,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading,
                         <span
                             className={`flex items-center gap-1.5 font-medium ${isFull ? 'text-red-400' : 'text-slate-300'}`}>
                         <Users className="w-3.5 h-3.5"/>
-                            {gymClass.currentParticipants}/{gymClass.maxParticipants} miejsc
+                            {gymClass.currentParticipants}/{gymClass.maxParticipants} {t('places')}
                     </span>
                     </div>
 
@@ -109,7 +112,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading,
                             />
                         </div>
                         <span className="text-[11px] text-slate-500 shrink-0 font-medium">
-                        {isFull ? 'Brak wolnych miejsc' : `${gymClass.maxParticipants - gymClass.currentParticipants} wolnych`}
+                        {isFull ? t('no_free_places') : `${gymClass.maxParticipants - gymClass.currentParticipants} ${t('free')}`}
                     </span>
                     </div>
                 </div>
@@ -127,12 +130,12 @@ export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading,
                         >
                             {isActionLoading ? <Loader2 className="w-4 h-4 animate-spin"/> :
                                 <XCircle className="w-4 h-4"/>}
-                            Wypisz się
+                            {t('drop_out_btn')}
                         </button>
                     ) : isFull ? (
                         <button disabled
                                 className="w-full md:w-auto px-5 py-2.5 rounded-xl font-bold text-sm bg-red-500/10 text-red-400 border border-red-500/20 cursor-not-allowed">
-                            Brak miejsc
+                            {t('no_places')}
                         </button>
                     ) : (
                         <button
@@ -146,7 +149,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading,
                         >
                             {isActionLoading ? <Loader2 className="w-4 h-4 animate-spin"/> :
                                 <ChevronRight className="w-4 h-4"/>}
-                            Zapisz się
+                            {t('sign_up_btn')}
                         </button>
                     )}
                 </div>

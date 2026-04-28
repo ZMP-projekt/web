@@ -10,6 +10,8 @@ import { useMembership } from '../hooks/useMembership.ts';
 import {SkeletonCard} from "../components/SkeletonCard.tsx";
 import {ClassCard, type GymClass} from "../components/ClassCard.tsx";
 import {useNavigate, useParams} from "react-router";
+import {useTranslation} from "react-i18next";
+import i18n from "../i18n.ts";
 
 const generateNext7Days = (offset: number): string[] => {
     const days: string[] = [];
@@ -26,16 +28,16 @@ const formatMonthRange = (days: string[]): string => {
     const last = new Date(days[days.length - 1]);
     const opts: Intl.DateTimeFormatOptions = { month: 'long', year: 'numeric' };
     if (first.getMonth() === last.getMonth()) {
-        return first.toLocaleDateString('pl-PL', opts);
+        return first.toLocaleDateString(i18n.language, opts);
     }
-    return `${first.toLocaleDateString('pl-PL', { month: 'long' })} – ${last.toLocaleDateString('pl-PL', opts)}`;
+    return `${first.toLocaleDateString(i18n.language, { month: 'long' })} – ${last.toLocaleDateString(i18n.language, opts)}`;
 };
 
 const isToday = (dateStr: string): boolean =>
     dateStr === new Date().toISOString().split('T')[0];
 
 const formatTime = (isoString: string): string =>
-    new Date(isoString).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+    new Date(isoString).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
 
 export const Schedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
@@ -49,6 +51,7 @@ export const Schedule: React.FC = () => {
     const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
     const { classId } = useParams();
     const navigate = useNavigate();
+    const { t } = useTranslation(['schedule', 'common']);
 
     const selectedClassDetails = classId ? classes.find(c => c.id === Number(classId)) : null;
 
@@ -67,7 +70,7 @@ export const Schedule: React.FC = () => {
                 const response = await apiPrivate.get(`/api/classes/by-date?date=${selectedDate}T00:00:00`);
                 setClasses(response.data);
             } catch (error) {
-                console.error('Błąd pobierania grafiku:', error);
+                console.error('Error while fetching the schedule:', error);
             } finally {
                 setIsLoading(false);
             }
@@ -77,11 +80,11 @@ export const Schedule: React.FC = () => {
 
     const handleEnrollment = async (classId: number, isEnrolling: boolean): Promise<void> => {
         if (isMembershipLoading) {
-            toast.loading('Ładowanie danych o karnecie…');
+            toast.loading(t('loading'));
             return;
         }
         if (!isValid) {
-            toast.error('Musisz posiadać aktywny karnet, aby zapisać się na zajęcia!');
+            toast.error(t('active_membership_required'));
             return;
         }
         setActionLoadingId(classId);
@@ -104,16 +107,16 @@ export const Schedule: React.FC = () => {
                         : c
                 )
             );
-            toast.success(isEnrolling ? 'Pomyślnie zapisano na zajęcia!' : 'Zrezygnowano z zajęć.');
+            toast.success(isEnrolling ? t('signup_success') : t('cancel_success'));
         } catch {
-            toast.error('Wystąpił błąd. Spróbuj ponownie.');
+            toast.error(t('common:error_retry'));
         } finally {
             setActionLoadingId(null);
         }
     };
 
     const selectedDateObj = new Date(selectedDate);
-    const selectedDayFull = selectedDateObj.toLocaleDateString('pl-PL', {
+    const selectedDayFull = selectedDateObj.toLocaleDateString(i18n.language, {
         weekday: 'long', day: 'numeric', month: 'long',
     });
 
@@ -121,9 +124,9 @@ export const Schedule: React.FC = () => {
         <div className="max-w-5xl mx-auto space-y-8">
             <header className="flex items-start justify-between gap-4 flex-wrap">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Grafik zajęć</h1>
+                    <h1 className="text-3xl font-bold text-white">{t('title')}</h1>
                     <p className="text-slate-500 mt-1.5 text-sm">
-                        Wybierz dzień i zapisz się na trening.
+                        {t('subtitle')}
                     </p>
                 </div>
             </header>
@@ -137,14 +140,14 @@ export const Schedule: React.FC = () => {
                     <button
                         onClick={() => setDaysOffset((o) => o - 7)}
                         className="flex items-center justify-center w-12 h-14 rounded-2xl bg-slate-700/50 hover:bg-slate-700 border border-slate-600/50 text-slate-400 hover:text-white transition-all shrink-0"
-                        title="Poprzedni tydzień"
+                        title={t('prev_week')}
                     >
                         <ArrowLeft className="w-4 h-4" />
                     </button>
                     <div className="flex-1 grid grid-cols-7 gap-2">
                         {availableDays.map((dateStr) => {
                             const d = new Date(dateStr);
-                            const dayName = d.toLocaleDateString('pl-PL', { weekday: 'short' });
+                            const dayName = d.toLocaleDateString(i18n.language, { weekday: 'short' });
                             const dayNum = d.getDate();
                             const today = isToday(dateStr);
                             const selected = selectedDate === dateStr;
@@ -163,7 +166,7 @@ export const Schedule: React.FC = () => {
                                     style={selected ? { background: 'linear-gradient(135deg, #3B82F6, #6D28D9)' } : {}}
                                 >
                                     <span className="text-[10px] uppercase font-bold tracking-wider mb-1 opacity-80">
-                                        {today && !selected ? 'Dziś' : dayName}
+                                        {today && !selected ? t('today') : dayName}
                                     </span>
                                     <span className="text-xl font-black leading-none">{dayNum}</span>
                                     {today && (
@@ -180,7 +183,7 @@ export const Schedule: React.FC = () => {
                     <button
                         onClick={() => setDaysOffset((o) => o + 7)}
                         className="flex items-center justify-center w-12 h-14 rounded-2xl bg-slate-700/50 hover:bg-slate-700 border border-slate-600/50 text-slate-400 hover:text-white transition-all shrink-0"
-                        title="Następny tydzień"
+                        title={t('next_week')}
                     >
                         <ArrowRight className="w-4 h-4" />
                     </button>
@@ -218,8 +221,8 @@ export const Schedule: React.FC = () => {
                             <div className="w-16 h-16 rounded-3xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4">
                                 <CalendarIcon className="w-7 h-7 text-slate-600" />
                             </div>
-                            <p className="text-white font-semibold mb-1">Brak zajęć w tym dniu</p>
-                            <p className="text-slate-500 text-sm">Sprawdź inny dzień lub wróć później.</p>
+                            <p className="text-white font-semibold mb-1">{t('no_classes_day')}</p>
+                            <p className="text-slate-500 text-sm">{t('check_other_day')}</p>
                         </div>
                     )}
                 </div>
@@ -228,8 +231,6 @@ export const Schedule: React.FC = () => {
             {selectedClassDetails && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-4 py-6 overflow-y-auto">
                     <div className="bg-slate-800 border border-slate-700 w-full max-w-xl rounded-4xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
-
-                        {/* 1. Header z kolorem zależnym od typu */}
                         <div className={`p-8 pb-6 ${selectedClassDetails.personalTraining ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
                             <div className="flex justify-between items-start mb-4">
                     <span className={`text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${
@@ -237,7 +238,7 @@ export const Schedule: React.FC = () => {
                             ? 'border-amber-500/30 text-amber-500 bg-amber-500/5'
                             : 'border-blue-500/30 text-blue-500 bg-blue-500/5'
                     }`}>
-                        {selectedClassDetails.personalTraining ? 'Trening Personalny' : 'Zajęcia Grupowe'}
+                        {selectedClassDetails.personalTraining ? t('personal_training') : t('group_class')}
                     </span>
                                 <button
                                     onClick={() => navigate('/schedule')}
@@ -250,10 +251,9 @@ export const Schedule: React.FC = () => {
                         </div>
 
                         <div className="p-8 pt-2 space-y-8">
-                            {/* 2. Siatka detali (Szybkie info) */}
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-1">
-                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Trener</p>
+                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('trainer')}</p>
                                     <div className="flex items-center gap-2 text-white font-semibold">
                                         <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center">
                                             <User className="w-4 h-4 text-blue-400" />
@@ -262,7 +262,7 @@ export const Schedule: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">Czas trwania</p>
+                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('duration')}</p>
                                     <div className="flex items-center gap-2 text-white font-semibold">
                                         <Clock className="w-5 h-5 text-slate-400" />
                                         {formatTime(selectedClassDetails.startTime)} - {formatTime(selectedClassDetails.endTime)}
@@ -270,9 +270,8 @@ export const Schedule: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* 3. Lokalizacja z linkiem do mapy */}
                             <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-4">
-                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-3">Lokalizacja</p>
+                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-3">{t('location')}</p>
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex gap-3">
                                         <MapPin className="w-5 h-5 text-red-500 shrink-0 mt-1" />
@@ -286,25 +285,23 @@ export const Schedule: React.FC = () => {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="bg-slate-800 hover:bg-slate-700 p-2 rounded-xl border border-slate-600 transition-colors"
-                                        title="Otwórz w Mapach Google"
+                                        title={t('open_map')}
                                     >
                                         <Navigation className="w-5 h-5 text-blue-400" />
                                     </a>
                                 </div>
                             </div>
 
-                            {/* 4. Opis zajęć */}
                             <div className="space-y-2">
-                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">O zajęciach</p>
+                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('about')}</p>
                                 <p className="text-slate-300 leading-relaxed italic">
-                                    "{selectedClassDetails.description || 'Brak dodatkowego opisu dla tych zajęć.'}"
+                                    "{selectedClassDetails.description || t('no_description')}"
                                 </p>
                             </div>
 
-                            {/* 5. Obłożenie */}
                             <div className="pt-4 border-t border-slate-700/50">
                                 <div className="flex justify-between items-end mb-2">
-                                    <span className="text-slate-400 text-sm font-medium">Uczestnicy</span>
+                                    <span className="text-slate-400 text-sm font-medium">{t('participants')}</span>
                                     <span className="text-white font-bold">
                             {selectedClassDetails.currentParticipants} / {selectedClassDetails.maxParticipants}
                         </span>
@@ -317,11 +314,10 @@ export const Schedule: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* 6. Status zapisu (jeśli użytkownik jest już zapisany) */}
                             {selectedClassDetails.userEnrolled && (
                                 <div className="flex items-center justify-center gap-2 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
                                     <CheckCircle className="w-5 h-5 text-emerald-500" />
-                                    <span className="text-emerald-500 font-bold text-sm uppercase tracking-wide">Jesteś na liście uczestników</span>
+                                    <span className="text-emerald-500 font-bold text-sm uppercase tracking-wide">{t('on_participant_list')}</span>
                                 </div>
                             )}
                         </div>

@@ -24,7 +24,8 @@
     "days_unit": "dni",
     "days_left": "Remaining",
     "valid_until": "valid until",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "error_retry": "An error occurred. Please try again."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -57,6 +58,42 @@
     "your_plan": "Your plan",
     "change_plan_btn": "Change plan",
     "buy_membership_btn": "Buy membership",
-    "extend_membership_btn": "Extend membership"
+    "extend_membership_btn": "Extend membership",
+    "toast_extended": "Successfully extended the {{type}} membership!",
+    "toast_purchased": "Successfully purchased the {{type}} membership!"
+  },
+  "schedule": {
+    "loading": "Loading membership data…",
+    "title": "Class schedule",
+    "subtitle": "Choose a day and sign up for a class",
+    "prev_week": "Previous week",
+    "today": "Today",
+    "next_week": "Next week",
+    "no_classes_day": "No classes on this day",
+    "check_other_day": "Check another day or come back later.",
+    "active_membership_required": "You must have an active membership to sign up for classes!",
+    "signup_success": "Successfully signed up for the class!",
+    "cancel_success": "Class booking cancelled.",
+    "personal_training": "Personal Training",
+    "group_class": "Group Class",
+    "trainer": "Trainer",
+    "duration": "Duration",
+    "location": "Location",
+    "open_map": "Open map",
+    "about": "About the class",
+    "no_description": "No additional description for this class.",
+    "participants": "Participants",
+    "on_participants_list": "You are on the participant list"
+  },
+  "class": {
+    "personal": "Personal",
+    "group": "Group",
+    "signed_up": "Signed up",
+    "places": "places",
+    "no_free_places": "No free places",
+    "free": "available",
+    "drop_out_btn": "Drop out",
+    "no_places": "No places available",
+    "sign_up_btn": "Sign up"
   }
 }
