@@ -114,7 +114,7 @@ export const Dashboard: React.FC = () => {
     const todayDate = new Date();
     const [todayClasses, setTodayClasses] = React.useState<ClassItem[]>([])
     const enrolledClasses = todayClasses.filter((c) => c.userEnrolled);
-    const { t } = useTranslation('dashboard');
+    const { t } = useTranslation(['dashboard', 'common']);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -216,17 +216,17 @@ export const Dashboard: React.FC = () => {
                             <>
                                 <div className="flex items-end justify-between mb-5">
                                     <div>
-                                        <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">{t('days_left')}</p>
+                                        <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">{t('common:days_left')}</p>
                                         <p className="text-5xl font-extrabold text-white leading-none">
                                             {calculateDaysRemaining(membership.endDate)}
-                                            <span className="text-slate-500 text-xl font-medium ml-2">{t('days_unit')}</span>
+                                            <span className="text-slate-500 text-xl font-medium ml-2">{t('common:days_unit')}</span>
                                         </p>
                                     </div>
                                     <div className="text-right">
                                         <span className="inline-block text-xs font-bold uppercase tracking-wide text-blue-400 bg-blue-500/15 border border-blue-500/30 px-3 py-1.5 rounded-full mb-2">
                                             {membership.type}
                                         </span>
-                                        <p className="text-slate-500 text-xs">{t('valid_until')} {formatDate(membership.endDate)}</p>
+                                        <p className="text-slate-500 text-xs">{t('common:until')} {formatDate(membership.endDate)}</p>
                                     </div>
                                 </div>
                                 <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
