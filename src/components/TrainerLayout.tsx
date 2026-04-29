@@ -5,6 +5,7 @@ import { useAuth } from '../auth/useAuth.ts';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import { NotificationDropdown } from './NotificationDropdown.tsx';
 import { useNotifications } from '../hooks/useNotifications.ts';
+import {useTranslation} from "react-i18next";
 
 export const TrainerLayout: React.FC = () => {
     const navigate = useNavigate();
@@ -13,6 +14,7 @@ export const TrainerLayout: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
     const { unreadCount } = useNotifications();
     const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const { t, i18n } = useTranslation('sidebar');
 
     const handleLogout = async (): Promise<void> => {
         try {
@@ -24,6 +26,11 @@ export const TrainerLayout: React.FC = () => {
             navigate('/login');
         }
     };
+
+    const toggleLanguage = () => {
+        const newLang = i18n.language === 'pl' ? 'en' : 'pl';
+        void i18n.changeLanguage(newLang);
+    }
 
     const NavLink = ({ to, icon, label }: { to: string; icon: React.ReactNode; label: string }) => {
         const isActive = location.pathname === to;
@@ -62,19 +69,22 @@ export const TrainerLayout: React.FC = () => {
                     </div>
                     <span className="font-bold text-white text-base tracking-tight">GymSystem</span>
                     <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">
-                        Panel trenera
+                        {t('trainer_badge')}
                     </span>
                 </div>
 
                 {/* Nav */}
                 <nav className="flex items-center gap-1">
-                    <NavLink to="/trainer/dashboard" icon={<Dumbbell className="w-4 h-4" />} label="Pulpit" />
-                    <NavLink to="/trainer/schedule"  icon={<CalendarClock className="w-4 h-4" />} label="Grafik" />
-                    <NavLink to="/trainer/profile"   icon={<User className="w-4 h-4" />} label="Profil" />
+                    <NavLink to="/trainer/dashboard" icon={<Dumbbell className="w-4 h-4" />} label={t('dashboard')} />
+                    <NavLink to="/trainer/schedule"  icon={<CalendarClock className="w-4 h-4" />} label={t('schedule')} />
+                    <NavLink to="/trainer/profile"   icon={<User className="w-4 h-4" />} label={t('profile')} />
                 </nav>
 
                 {/* Right actions */}
                 <div className="flex items-center gap-2">
+                    <button onClick={toggleLanguage} className="p-2 text-xs font-bold text-slate-400 hover:text-white">
+                        {i18n.language.toUpperCase()}
+                    </button>
                     {/* Notifications */}
                     <div className="relative">
                         <button
@@ -100,7 +110,7 @@ export const TrainerLayout: React.FC = () => {
                         className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
                     >
                         <LogOut className="w-4 h-4" />
-                        Wyloguj
+                        {t('logout')}
                     </button>
                 </div>
             </header>
