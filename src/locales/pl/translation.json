@@ -192,5 +192,14 @@
     "specialization": "Specjalizacja",
     "bio": "Biogram (O mnie)",
     "bio_placeholder": "Napisz kilka słów o swoim doświadczeniu..."
+  },
+  "map": {
+    "title": "Nasze Kluby",
+    "search_placeholder": "Szukaj miasta lub klubu...",
+    "loading_locations": "Ładowanie lokalizacji...",
+    "depends_on_location": "Zależnie od lokalizacji",
+    "select_club_btn": "Wybierz ten klub",
+    "no_clubs_found": "Nie znaleziono klubów w tej lokalizacji.",
+    "back_to_home": "Powrót do strony głównej"
   }
 }

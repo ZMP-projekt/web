@@ -193,5 +193,14 @@
     "specialization": "Specialization",
     "bio": "Bio (About me)",
     "bio_placeholder": "Write a few words about your experience..."
+  },
+  "map": {
+    "title": "Our Clubs",
+    "search_placeholder": "Search for a city or club...",
+    "loading_locations": "Loading locations...",
+    "depends_on_location": "Depending on location",
+    "select_club_btn": "Select this club",
+    "no_clubs_found": "No clubs found in this location.",
+    "back_to_home": "Back to home page"
   }
 }
