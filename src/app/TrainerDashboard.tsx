@@ -91,7 +91,7 @@ export const TrainerDashboard: React.FC = () => {
         const h = new Date().getHours();
         if (h < 12) return t('common.greeting_morning');
         if (h < 18) return t('common.greeting_afternoon');
-        return t('common.greeting.evening');
+        return t('common.greeting_evening');
     };
 
     const getTimeUntil = (iso: string): string => {
@@ -100,10 +100,10 @@ export const TrainerDashboard: React.FC = () => {
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
         if (h > 0) return t('trainer.starts_in', {
-            hours: h,
+            hours: `${h} h`,
             minutes: m > 0 ? m : ''
         });
-        return t('trainer.starts_in', { minutes: m > 0 ? m : '' });
+        return t('trainer.starts_in', {hours: '', minutes: m > 0 ? m : '' });
     };
 
     return (
