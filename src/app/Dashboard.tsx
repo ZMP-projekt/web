@@ -151,9 +151,9 @@ export const Dashboard: React.FC = () => {
 
     const greeting = (): string => {
         const h = new Date().getHours();
-        if (h < 12) return t('greeting_morning');
-        if (h < 18) return t('greeting_afternoon');
-        return t('greeting_evening');
+        if (h < 12) return t('common.greeting_morning');
+        if (h < 18) return t('common.greeting_afternoon');
+        return t('common.greeting_evening');
     };
 
     return (
@@ -165,7 +165,7 @@ export const Dashboard: React.FC = () => {
                         <div className="h-9 w-48 bg-slate-700/50 rounded-xl animate-pulse" />
                     ) : (
                         <h1 className="text-3xl font-bold text-white">
-                            {profileData?.firstName || t('user')}
+                            {profileData?.firstName || t('user.user')}
                         </h1>
                     )}
                 </div>
@@ -193,23 +193,23 @@ export const Dashboard: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
-                    <SectionCard title={t('membership_status')} icon={<IdCard className="w-5 h-5 text-slate-400" />}>
+                    <SectionCard title={t('user.membership_status')} icon={<IdCard className="w-5 h-5 text-slate-400" />}>
                         {isMembershipLoading ? (
                             <div className="flex items-center gap-3 py-2">
                                 <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                                <span className="text-slate-400 text-sm">{t('loading_data')}</span>
+                                <span className="text-slate-400 text-sm">{t('common:loading_data')}</span>
                             </div>
                         ) : membership && !isValid ? (
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <p className="text-red-400 font-bold text-xl mb-1">{t('membership_expired')}</p>
-                                    <p className="text-slate-500 text-sm">{t('renew_to_continue')}</p>
+                                    <p className="text-red-400 font-bold text-xl mb-1">{t('user.membership_expired')}</p>
+                                    <p className="text-slate-500 text-sm">{t('user.renew_to_continue')}</p>
                                 </div>
                                 <Link
                                     to="/memberships"
                                     className="bg-red-500/15 hover:bg-red-500/25 border border-red-500/40 text-red-400 px-4 py-2 rounded-xl text-sm font-bold transition-colors no-underline shrink-0"
                                 >
-                                    {t('renew_btn')}
+                                    {t('user.renew_btn')}
                                 </Link>
                             </div>
                         ) : membership ? (
@@ -226,7 +226,7 @@ export const Dashboard: React.FC = () => {
                                         <span className="inline-block text-xs font-bold uppercase tracking-wide text-blue-400 bg-blue-500/15 border border-blue-500/30 px-3 py-1.5 rounded-full mb-2">
                                             {membership.type}
                                         </span>
-                                        <p className="text-slate-500 text-xs">{t('common:until')} {formatDate(membership.endDate)}</p>
+                                        <p className="text-slate-500 text-xs">{t('common:valid_until')} {formatDate(membership.endDate)}</p>
                                     </div>
                                 </div>
                                 <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
@@ -244,21 +244,21 @@ export const Dashboard: React.FC = () => {
                         ) : (
                             <div className="flex items-start justify-between">
                                 <div>
-                                    <p className="text-white font-bold text-lg mb-1">{t('no_membership')}</p>
-                                    <p className="text-slate-500 text-sm">{t('buy_and_start')}</p>
+                                    <p className="text-white font-bold text-lg mb-1">{t('user.no_membership')}</p>
+                                    <p className="text-slate-500 text-sm">{t('user.buy_and_start')}</p>
                                 </div>
                                 <Link
                                     to="/memberships"
                                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors no-underline shrink-0"
                                 >
-                                    {t('buy_btn')}
+                                    {t('user.buy_btn')}
                                 </Link>
                             </div>
                         )}
                     </SectionCard>
 
                     <SectionCard
-                        title={t('today_classes')}
+                        title={t('user.today_classes')}
                         icon={<CalendarDays className="w-5 h-5 text-purple-400" />}
                     >
                         {isLoading ? (
@@ -268,13 +268,13 @@ export const Dashboard: React.FC = () => {
                         ) : enrolledClasses.length === 0 ? (
                             <div className="text-center py-8">
                                 <Dumbbell className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-                                <p className="text-slate-400 text-sm font-medium">{t('no_classes')}</p>
-                                <p className="text-slate-600 text-xs mt-1 mb-4">{t('schedule_browse_and_signup')}</p>
+                                <p className="text-slate-400 text-sm font-medium">{t('user.no_classes')}</p>
+                                <p className="text-slate-600 text-xs mt-1 mb-4">{t('user.schedule_browse_and_signup')}</p>
                                 <Link
                                     to="/schedule"
                                     className="text-sm text-blue-400 font-semibold hover:text-blue-300 transition-colors no-underline"
                                 >
-                                    {t('open_schedule')}
+                                    {t('user.open_schedule')}
                                 </Link>
                             </div>
                         ) : (
@@ -287,7 +287,7 @@ export const Dashboard: React.FC = () => {
                                         to="/schedule"
                                         className="text-xs text-slate-500 hover:text-slate-300 transition-colors no-underline font-medium"
                                     >
-                                        {t('browse_full_schedule')}
+                                        {t('user.browse_full_schedule')}
                                     </Link>
                                 </div>
                             </div>
@@ -296,7 +296,7 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="space-y-6">
-                    <SectionCard title={t('club_today')} icon={<Clock className="w-4 h-4 text-slate-500" />}>
+                    <SectionCard title={t('user.club_today')} icon={<Clock className="w-4 h-4 text-slate-500" />}>
                         <div className="space-y-2">
                             {todayClasses.slice(0, 4).map((cls) => (
                                 <ClassRow key={cls.id} cls={cls} showEnrolledBadge />
@@ -306,7 +306,7 @@ export const Dashboard: React.FC = () => {
                             to="/schedule"
                             className="block text-center text-xs text-slate-500 hover:text-slate-300 font-medium transition-colors no-underline mt-4 pt-4 border-t border-slate-700/50"
                         >
-                            {t('see_all_classes')}
+                            {t('user.see_all_classes')}
                         </Link>
                     </SectionCard>
                 </div>
