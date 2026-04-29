@@ -11,6 +11,8 @@ import {
     User,
     Plus,
 } from 'lucide-react';
+import i18n from "../i18n.ts";
+import {useTranslation} from "react-i18next";
 
 interface TrainerProfile {
     firstName: string;
@@ -33,30 +35,14 @@ interface ApiGymClass {
 }
 
 const formatTime = (iso: string): string =>
-    new Date(iso).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+    new Date(iso).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
 
 const formatDuration = (start: string, end: string): string => {
     const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
     return mins >= 60 ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? ` ${mins % 60} min` : ''}` : `${mins} min`;
 };
 
-const getTimeUntil = (iso: string): string => {
-    const diff = new Date(iso).getTime() - Date.now();
-    if (diff <= 0) return 'Trwa teraz';
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    if (h > 0) return `za ${h}h ${m > 0 ? `${m} min` : ''}`.trim();
-    return `za ${m} min`;
-};
-
 const getTodayIso = (): string => new Date().toISOString().split('T')[0];
-
-const greeting = (): string => {
-    const h = new Date().getHours();
-    if (h < 12) return 'Dzień dobry';
-    if (h < 18) return 'Cześć';
-    return 'Dobry wieczór';
-};
 
 const StatTile = ({ value, label, color = 'text-white' }: { value: string | number; label: string; color?: string }) => (
     <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl px-5 py-4 text-center">
@@ -71,6 +57,7 @@ export const TrainerDashboard: React.FC = () => {
     const [profile, setProfile] = useState<TrainerProfile | null>(null);
     const [todayClasses, setTodayClasses] = useState<ApiGymClass[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { t } = useTranslation('dashboard');
 
     useEffect(() => {
         const fetchAll = async () => {
@@ -100,6 +87,25 @@ export const TrainerDashboard: React.FC = () => {
     const nextClass = upcomingClasses[0] ?? null;
     const totalParticipantsToday = todayClasses.reduce((sum, c) => sum + c.currentParticipants, 0);
 
+    const greeting = (): string => {
+        const h = new Date().getHours();
+        if (h < 12) return t('common.greeting_morning');
+        if (h < 18) return t('common.greeting_afternoon');
+        return t('common.greeting.evening');
+    };
+
+    const getTimeUntil = (iso: string): string => {
+        const diff = new Date(iso).getTime() - Date.now();
+        if (diff <= 0) return t('trainer.happening.now');
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        if (h > 0) return t('trainer.starts_in', {
+            hours: h,
+            minutes: m > 0 ? m : ''
+        });
+        return t('trainer.starts_in', { minutes: m > 0 ? m : '' });
+    };
+
     return (
         <div className="space-y-8">
             <header>
@@ -108,7 +114,7 @@ export const TrainerDashboard: React.FC = () => {
                     <div className="h-9 w-56 bg-slate-700/50 rounded-xl animate-pulse" />
                 ) : (
                     <h1 className="text-3xl font-bold text-white">
-                        {profile?.firstName ?? 'Trenerze'}!
+                        {profile?.firstName ?? t('trainer.coach_vocative')}!
                     </h1>
                 )}
             </header>
@@ -122,16 +128,16 @@ export const TrainerDashboard: React.FC = () => {
                     </>
                 ) : (
                     <>
-                        <StatTile value={todayClasses.length} label="Zajęć dziś" />
-                        <StatTile value={upcomingClasses.length} label="Nadchodzących" color="text-blue-400" />
-                        <StatTile value={totalParticipantsToday} label="Uczestników łącznie" color="text-purple-400" />
+                        <StatTile value={todayClasses.length} label={t('trainer.classes_today')} />
+                        <StatTile value={upcomingClasses.length} label={t('trainer.upcoming')} color="text-blue-400" />
+                        <StatTile value={totalParticipantsToday} label={t('trainer.total_participants')} color="text-purple-400" />
                     </>
                 )}
             </div>
 
             <div className="grid grid-cols-5 gap-6">
                 <div className="col-span-3">
-                    <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">Najbliższe zajęcia</h2>
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">{t('trainer.next_classes')}</h2>
 
                     {isLoading ? (
                         <div className="h-52 rounded-3xl bg-slate-800/40 border border-slate-700/50 animate-pulse" />
@@ -159,7 +165,7 @@ export const TrainerDashboard: React.FC = () => {
                                     </span>
                                     {nextClass.personalTraining && (
                                         <span className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/15 border border-amber-500/30 px-3 py-1 rounded-full">
-                                            Personalny
+                                            {t('trainer.personal')}
                                         </span>
                                     )}
                                 </div>
@@ -180,7 +186,7 @@ export const TrainerDashboard: React.FC = () => {
                                     )}
                                     <span className="flex items-center gap-1.5">
                                         <Users className="w-3.5 h-3.5 text-slate-600" />
-                                        {nextClass.currentParticipants}/{nextClass.maxParticipants} zapisanych
+                                        {nextClass.currentParticipants}/{nextClass.maxParticipants} {t('trainer.registered')}
                                     </span>
                                 </div>
 
@@ -199,28 +205,28 @@ export const TrainerDashboard: React.FC = () => {
                                     className="inline-flex items-center gap-2 text-sm font-bold text-white no-underline px-5 py-2.5 rounded-xl transition-all hover:opacity-90"
                                     style={{ background: 'linear-gradient(135deg, #3B82F6, #6D28D9)', boxShadow: '0 4px 16px rgba(59,130,246,0.25)' }}
                                 >
-                                    <Users className="w-4 h-4" /> Zobacz listę obecności
+                                    <Users className="w-4 h-4" /> {t('trainer.view_attendance')}
                                 </Link>
                             </div>
                         </div>
                     ) : (
                         <div className="rounded-3xl p-8 border border-slate-700/50 bg-slate-800/30 flex flex-col items-center justify-center text-center h-52">
                             <CalendarClock className="w-10 h-10 text-slate-600 mb-3" />
-                            <p className="text-white font-semibold mb-1">Brak zajęć na dziś</p>
-                            <p className="text-slate-500 text-sm mb-4">Możesz dodać nowe zajęcia w grafiku.</p>
+                            <p className="text-white font-semibold mb-1">{t('trainer.no_classes_today')}</p>
+                            <p className="text-slate-500 text-sm mb-4">{t('trainer.add_new_hint')}</p>
                             <Link
                                 to="/trainer/schedule"
                                 className="inline-flex items-center gap-2 text-sm font-bold text-white no-underline px-4 py-2 rounded-xl"
                                 style={{ background: 'linear-gradient(135deg, #3B82F6, #6D28D9)' }}
                             >
-                                <Plus className="w-4 h-4" /> Przejdź do grafiku
+                                <Plus className="w-4 h-4" /> {t('trainer.go_to_schedule')}
                             </Link>
                         </div>
                     )}
                 </div>
 
                 <div className="col-span-2">
-                    <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">Plan na dziś</h2>
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">{t('trainer.today_plan')}</h2>
 
                     {isLoading ? (
                         <div className="space-y-2">
@@ -259,7 +265,7 @@ export const TrainerDashboard: React.FC = () => {
                                                 </p>
                                             </div>
                                             {isActive && (
-                                                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider shrink-0">Na żywo</span>
+                                                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider shrink-0">{t('trainer.live')}</span>
                                             )}
                                             <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
                                         </Link>
@@ -268,7 +274,7 @@ export const TrainerDashboard: React.FC = () => {
                         </div>
                     ) : (
                         <div className="rounded-2xl border border-slate-700/40 bg-slate-800/20 p-6 text-center">
-                            <p className="text-slate-500 text-sm">Brak zajęć na dziś.</p>
+                            <p className="text-slate-500 text-sm">{t('trainer.no_classes_today')}</p>
                         </div>
                     )}
 
@@ -276,7 +282,7 @@ export const TrainerDashboard: React.FC = () => {
                         to="/trainer/schedule"
                         className="mt-3 flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-300 no-underline transition-colors"
                     >
-                        Pełny grafik <ChevronRight className="w-3.5 h-3.5" />
+                        {t('trainer.full_schedule')} <ChevronRight className="w-3.5 h-3.5" />
                     </Link>
                 </div>
 

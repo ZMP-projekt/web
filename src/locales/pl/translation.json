@@ -1,38 +1,61 @@
 {
   "dashboard": {
-    "membership_status": "Status karnetu",
-    "today_classes": "Twoje zapisy na dziś",
-    "no_classes": "Nie masz żadnych zapisów na dziś",
-    "user": "użytkowniku",
-    "membership_expired": "Karnet wygasł",
-    "renew_to_continue": "Odnów karnet, aby kontynuować treningi.",
-    "renew_btn": "Odnów →",
-    "no_membership": "Brak aktywnego karnetu",
-    "buy_btn": "Kup karnet →",
-    "buy_and_start": "Kup karnet i zacznij trenować już dziś.",
-    "schedule_browse_and_signup": "Przeglądaj grafik i zapisz się na zajęcia",
-    "open_schedule": "Otwórz grafik →",
-    "browse_full_schedule": "Przeglądaj pełny grafik →",
-    "see_all_classes": "Przeglądaj wszystkie zajęcia →",
-    "loading_data": "Pobieranie danych",
-    "greeting_morning": "Dzień dobry",
-    "greeting_afternoon": "Cześć",
-    "greeting_evening": "Dobry wieczór",
-    "club_today": "Dzisiaj w klubie"
+    "user": {
+      "membership_status": "Status karnetu",
+      "today_classes": "Twoje zapisy na dziś",
+      "no_classes": "Nie masz żadnych zapisów na dziś",
+      "user": "użytkowniku",
+      "membership_expired": "Karnet wygasł",
+      "renew_to_continue": "Odnów karnet, aby kontynuować treningi.",
+      "renew_btn": "Odnów →",
+      "no_membership": "Brak aktywnego karnetu",
+      "buy_btn": "Kup karnet →",
+      "buy_and_start": "Kup karnet i zacznij trenować już dziś.",
+      "schedule_browse_and_signup": "Przeglądaj grafik i zapisz się na zajęcia",
+      "open_schedule": "Otwórz grafik →",
+      "browse_full_schedule": "Przeglądaj pełny grafik →",
+      "see_all_classes": "Przeglądaj wszystkie zajęcia →",
+      "club_today": "Dzisiaj w klubie"
+    },
+    "trainer": {
+      "coach_vocative": "Trenerze",
+      "happening_now": "Trwa teraz",
+      "classes_today": "Zajęć dziś",
+      "upcoming": "Nadchodzących",
+      "total_participants": "Uczestników łącznie",
+      "next_classes": "Najbliższe zajęcia",
+      "view_attendance": "Zobacz listę obecności",
+      "no_classes_today": "Brak zajęć na dziś",
+      "add_new_hint": "Możesz dodać nowe zajęcia w grafiku",
+      "go_to_schedule": "Przejdź do grafiku",
+      "today_plan": "Plan na dziś",
+      "starts_in": "za {{hours}}h {{minutes}} min",
+      "live": "Na żywo",
+      "full_schedule": "Pełny grafik",
+      "personal": "Personalny",
+      "registered": "zapisanych"
+    },
+    "common": {
+      "greeting_morning": "Dzień dobry",
+      "greeting_afternoon": "Cześć",
+      "greeting_evening": "Dobry wieczór"
+    }
   },
   "common": {
     "days_unit": "dni",
     "days_left": "Pozostało",
     "valid_until": "ważny do",
     "processing": "Przetwarzanie...",
-    "error_retry": "Wystąpił błąd. Spróbuj ponownie."
+    "error_retry": "Wystąpił błąd. Spróbuj ponownie.",
+    "loading_data": "Pobieranie danych"
   },
-  "sidebar": {
+  "navbar": {
     "dashboard": "Pulpit",
     "schedule": "Grafik",
     "my_membership": "Mój Karnet",
     "profile": "Profil",
-    "logout": "Wyloguj się"
+    "logout": "Wyloguj się",
+    "trainer_badge": "Panel trenera"
   },
   "notifications": {
     "notifications": "Powiadomienia",

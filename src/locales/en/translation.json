@@ -1,38 +1,62 @@
 {
   "dashboard": {
-    "membership_status": "Membership Status",
-    "today_classes": "Your classes for today",
-    "no_classes": "No classes scheduled for today",
-    "user": "user",
-    "membership_expired": "Membership expired",
-    "renew_to_continue": "Renew your membership to continue training.",
-    "renew_btn": "Renew →",
-    "no_membership": "No active membership",
-    "buy_btn": "Buy membership →",
-    "buy_and_start": "Buy a membership and start training today.",
-    "schedule_browse_and_signup": "Browse the schedule and sign up for classes",
-    "open_schedule": "Open schedule →",
-    "browse_full_schedule": "Browse full schedule →",
-    "see_all_classes": "See all classes →",
-    "loading_data": "Fetching data...",
-    "greeting_morning": "Good morning",
-    "greeting_afternoon": "Hi",
-    "greeting_evening": "Good evening",
-    "club_today": "Today at the club"
+    "user": {
+      "membership_status": "Membership Status",
+      "today_classes": "Your classes for today",
+      "no_classes": "No classes scheduled for today",
+      "user": "user",
+      "membership_expired": "Membership expired",
+      "renew_to_continue": "Renew your membership to continue training.",
+      "renew_btn": "Renew →",
+      "no_membership": "No active membership",
+      "buy_btn": "Buy membership →",
+      "buy_and_start": "Buy a membership and start training today.",
+      "schedule_browse_and_signup": "Browse the schedule and sign up for classes",
+      "open_schedule": "Open schedule →",
+      "browse_full_schedule": "Browse full schedule →",
+      "see_all_classes": "See all classes →",
+      "club_today": "Today at the club"
+    },
+    "trainer": {
+      "coach_vocative": "Coach",
+      "happening_now": "Happening now",
+      "classes_today": "Classes today",
+      "upcoming": "Upcoming",
+      "total_participants": "Total participants",
+      "next_classes": "Next classes",
+      "view_attendance": "View attendance list",
+      "no_classes_today": "No classes for today",
+      "add_new_hint": "You can add new classes in the schedule",
+      "go_to_schedule": "Go to schedule",
+      "today_plan": "Today's plan",
+      "starts_in": "in {{hours}}h {{minutes}} min",
+      "live": "Live",
+      "full_schedule": "Full schedule",
+      "personal": "Personal",
+      "registered": "registered"
+    },
+    "common": {
+      "greeting_morning": "Good morning",
+      "greeting_afternoon": "Hi",
+      "greeting_evening": "Good evening"
+    }
+
   },
   "common": {
     "days_unit": "dni",
     "days_left": "Remaining",
     "valid_until": "valid until",
     "processing": "Processing...",
-    "error_retry": "An error occurred. Please try again."
+    "error_retry": "An error occurred. Please try again.",
+    "loading_data": "Fetching data..."
   },
-  "sidebar": {
+  "navbar": {
     "dashboard": "Dashboard",
     "schedule": "Schedule",
     "my_membership": "Membership",
     "profile": "Profile",
-    "logout": "Logout"
+    "logout": "Logout",
+    "trainer_badge": "Trainer panel"
   },
   "notifications": {
     "notifications": "Notifications",
