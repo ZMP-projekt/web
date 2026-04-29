@@ -29,7 +29,7 @@
       "add_new_hint": "You can add new classes in the schedule",
       "go_to_schedule": "Go to schedule",
       "today_plan": "Today's plan",
-      "starts_in": "in {{hours}}h {{minutes}} min",
+      "starts_in": "in {{hours}} {{minutes}} min",
       "live": "Live",
       "full_schedule": "Full schedule",
       "personal": "Personal",
@@ -170,5 +170,28 @@
     "drop_out_btn": "Drop out",
     "no_places": "No places available",
     "sign_up_btn": "Sign up"
+  },
+  "profile": {
+    "title": "Profile",
+    "user_title": "User Profile",
+    "edit_title": "Edit details",
+    "details_section": "Detailed information",
+    "update_success": "Profile updated successfully!",
+    "update_error": "An error occurred while saving changes. Please make sure the entered data is correct.",
+    "no_email": "No email address",
+    "no_bio": "No biography.",
+    "no_data": "No data available",
+    "role_coach": "Trainer",
+    "role_client": "Client",
+    "edit_btn": "Edit profile",
+    "save_btn": "Save changes",
+    "enter_label": "Enter",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "photo_url": "Photo link (URL)",
+    "photo_url_hint": "Paste a direct link to an image (e.g., from LinkedIn or image hosting).",
+    "specialization": "Specialization",
+    "bio": "Bio (About me)",
+    "bio_placeholder": "Write a few words about your experience..."
   }
 }

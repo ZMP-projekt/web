@@ -29,7 +29,7 @@
       "add_new_hint": "Możesz dodać nowe zajęcia w grafiku",
       "go_to_schedule": "Przejdź do grafiku",
       "today_plan": "Plan na dziś",
-      "starts_in": "za {{hours}}h {{minutes}} min",
+      "starts_in": "za {{hours}} {{minutes}} min",
       "live": "Na żywo",
       "full_schedule": "Pełny grafik",
       "personal": "Personalny",
@@ -169,5 +169,28 @@
     "drop_out_btn": "Wypisz się",
     "no_places": "Brak miejsc",
     "sign_up_btn": "Zapisz się"
+  },
+  "profile": {
+    "title": "Profil",
+    "user_title": "Profil Użytkownika",
+    "edit_title": "Edycja danych",
+    "details_section": "Dane szczegółowe",
+    "update_success": "Profil został zaktualizowany!",
+    "update_error": "Wystąpił błąd podczas zapisywania zmian. Upewnij się, że wpisane dane są poprawne.",
+    "no_email": "Brak adresu e-mail",
+    "no_bio": "Brak biogramu.",
+    "no_data": "Brak danych",
+    "role_coach": "Trener",
+    "role_client": "Klient",
+    "edit_btn": "Edytuj profil",
+    "save_btn": "Zapisz zmiany",
+    "enter_label": "Wprowadź",
+    "first_name": "Imię",
+    "last_name": "Nazwisko",
+    "photo_url": "Link do zdjęcia (URL)",
+    "photo_url_hint": "Wklej bezpośredni link do obrazka (np. z LinkedIn lub hostingu zdjęć).",
+    "specialization": "Specjalizacja",
+    "bio": "Biogram (O mnie)",
+    "bio_placeholder": "Napisz kilka słów o swoim doświadczeniu..."
   }
 }

@@ -3,6 +3,8 @@ import { useAuth } from "../auth/useAuth.ts";
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import { User, Mail, Edit2, Save, X, Loader2, AlertCircle, Link as LinkIcon } from 'lucide-react';
 import toast from "react-hot-toast";
+import {useTranslation} from "react-i18next";
+import {t} from "i18next";
 
 interface ProfileData {
     firstName: string;
@@ -22,6 +24,7 @@ export const Profile: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState('');
+    const { t } = useTranslation(['profile', 'common']);
 
     const [formData, setFormData] = useState<ProfileData>({
         firstName: '',
@@ -42,7 +45,7 @@ export const Profile: React.FC = () => {
                 setProfile(response.data);
                 setFormData(response.data);
             } catch (err) {
-                console.warn('Profil nie istnieje lub błąd pobierania.', err);
+                console.warn('Account does not exist, or error while fetching', err);
                 const emptyProfile = { firstName: '', lastName: '', email: '', specialization: '', bio: '', photoUrl: '' };
                 setProfile(emptyProfile);
                 setFormData(emptyProfile);
@@ -61,10 +64,10 @@ export const Profile: React.FC = () => {
             await apiPrivate.put(apiEndpoint, formData);
             setProfile(formData);
             setIsEditing(false);
-            toast.success('Profil został zaktualizowany!');
+            toast.success(t('update_success'));
         } catch (err) {
-            console.error('Błąd zapisu profilu:', err);
-            setError('Wystąpił błąd podczas zapisywania zmian. Upewnij się, że wpisane dane są poprawne.');
+            console.error('Error while saving profile data:', err);
+            setError(t('update_error'));
         } finally {
             setIsSaving(false);
         }
@@ -92,7 +95,7 @@ export const Profile: React.FC = () => {
                     {formData.photoUrl ? (
                         <img
                             src={formData.photoUrl}
-                            alt="Profil"
+                            alt={t('title')}
                             className="w-full h-full object-cover"
                             onError={(e) => {
                                 (e.target as HTMLImageElement).style.display = 'none';
@@ -107,17 +110,17 @@ export const Profile: React.FC = () => {
                     <h1 className="text-3xl font-bold text-white mb-2">
                         {profile?.firstName || profile?.lastName
                             ? `${profile.firstName} ${profile.lastName}`
-                            : 'Profil Użytkownika'}
+                            : t('user_title')}
                     </h1>
                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-slate-400">
                         <span className="flex items-center gap-1.5">
                             <Mail className="w-4 h-4" />
-                            {profile?.email || 'Brak adresu e-mail'}
+                            {profile?.email || t('no_email')}
                         </span>
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border
                             'bg-blue-500/10 text-blue-400 border-blue-500/30'
                         `}>
-                            {isTrainer ? 'Trener' : 'Klient'}
+                            {isTrainer ? t('role_coach') : t('role_client')}
                         </span>
                     </div>
                 </div>
@@ -126,11 +129,11 @@ export const Profile: React.FC = () => {
                     <div className="z-10 shrink-0 mt-4 md:mt-0">
                         {!isEditing ? (
                             <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-5 py-2.5 rounded-xl font-bold transition-colors">
-                                <Edit2 className="w-4 h-4" /> Edytuj profil
+                                <Edit2 className="w-4 h-4" /> {t('edit_btn')}
                             </button>
                         ) : (
                             <button onClick={() => { setIsEditing(false); setFormData(profile || formData); }} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 px-5 py-2.5 rounded-xl font-bold transition-colors">
-                                <X className="w-4 h-4" /> Anuluj
+                                <X className="w-4 h-4" /> {t('common:cancel')}
                             </button>
                         )}
                     </div>
@@ -146,19 +149,19 @@ export const Profile: React.FC = () => {
 
             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-3xl p-8">
                 <h2 className="text-xl font-bold text-white mb-6">
-                    {isEditing ? 'Edycja danych' : 'Dane szczegółowe'}
+                    {isEditing ? t('edit_title') : t('details_section')}
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                    <InputField label="Imię" name="firstName" value={formData.firstName} isEditing={isEditing} onChange={handleChange} />
-                    <InputField label="Nazwisko" name="lastName" value={formData.lastName} isEditing={isEditing} onChange={handleChange} />
+                    <InputField label={t('first_name')} name="firstName" value={formData.firstName} isEditing={isEditing} onChange={handleChange} />
+                    <InputField label={t('last_name')} name="lastName" value={formData.lastName} isEditing={isEditing} onChange={handleChange} />
 
                     {isTrainer && (
                         <>
                             {isEditing && (
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-wider">
-                                        Link do zdjęcia (URL)
+                                        {t('photo_url')}
                                     </label>
                                     <div className="relative">
                                         <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -168,19 +171,19 @@ export const Profile: React.FC = () => {
                                             value={formData.photoUrl || ''}
                                             onChange={handleChange}
                                             className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder:text-slate-600"
-                                            placeholder="https://example.com/moje-zdjecie.jpg"
+                                            placeholder="https://example.com/my-photo.jpg"
                                         />
                                     </div>
-                                    <p className="text-xs text-slate-500 mt-2">Wklej bezpośredni link do obrazka (np. z LinkedIn lub hostingu zdjęć).</p>
+                                    <p className="text-xs text-slate-500 mt-2">{t('photo_url_hint')}</p>
                                 </div>
                             )}
 
                             <div className="md:col-span-2">
-                                <InputField label="Specjalizacja" name="specialization" value={formData.specialization || ''} isEditing={isEditing} onChange={handleChange} />
+                                <InputField label={t('specialization')} name="specialization" value={formData.specialization || ''} isEditing={isEditing} onChange={handleChange} />
                             </div>
 
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-wider">Biogram (O mnie)</label>
+                                <label className="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-wider">{t('bio')}</label>
                                 {isEditing ? (
                                     <textarea
                                         name="bio"
@@ -188,11 +191,11 @@ export const Profile: React.FC = () => {
                                         onChange={handleChange}
                                         rows={4}
                                         className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none placeholder:text-slate-600"
-                                        placeholder="Napisz kilka słów o swoim doświadczeniu..."
+                                        placeholder={t('bio_placeholder')}
                                     />
                                 ) : (
                                     <div className="w-full px-4 py-3 bg-slate-900/20 border border-slate-700/50 rounded-xl text-slate-300 min-h-24 leading-relaxed">
-                                        {formData.bio || <span className="text-slate-500 italic">Brak biogramu.</span>}
+                                        {formData.bio || <span className="text-slate-500 italic">{t('no_bio')}</span>}
                                     </div>
                                 )}
                             </div>
@@ -209,7 +212,7 @@ export const Profile: React.FC = () => {
                             style={{ background: 'linear-gradient(135deg, #3B82F6, #6D28D9)', boxShadow: '0 4px 16px rgba(59,130,246,0.25)' }}
                         >
                             {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                            {isSaving ? 'Zapisywanie...' : 'Zapisz zmiany'}
+                            {isSaving ? t('common:saving') : t('save_btn')}
                         </button>
                     </div>
                 )}
@@ -228,11 +231,11 @@ const InputField = ({ label, name, value, isEditing, onChange }: { label: string
                 value={value}
                 onChange={onChange}
                 className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder:text-slate-600"
-                placeholder={`Wprowadź ${label.toLowerCase()}`}
+                placeholder={`${t('enter_label')} ${label.toLowerCase()}`}
             />
         ) : (
             <div className="w-full px-4 py-3 bg-slate-900/20 border border-slate-700/50 rounded-xl text-white font-medium">
-                {value || <span className="text-slate-500 italic">Brak danych</span>}
+                {value || <span className="text-slate-500 italic">{t('no_data')}</span>}
             </div>
         )}
     </div>
