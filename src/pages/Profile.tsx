@@ -153,8 +153,8 @@ export const Profile: React.FC = () => {
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                    <InputField label={t('first_name')} name="firstName" value={formData.firstName} isEditing={isEditing} onChange={handleChange} />
-                    <InputField label={t('last_name')} name="lastName" value={formData.lastName} isEditing={isEditing} onChange={handleChange} />
+                    <InputField label={t('common:first_name')} name="firstName" value={formData.firstName} isEditing={isEditing} onChange={handleChange} />
+                    <InputField label={t('common:last_name')} name="lastName" value={formData.lastName} isEditing={isEditing} onChange={handleChange} />
 
                     {isTrainer && (
                         <>
