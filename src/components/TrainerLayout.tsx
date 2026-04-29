@@ -14,7 +14,7 @@ export const TrainerLayout: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
     const { unreadCount } = useNotifications();
     const [isNotifOpen, setIsNotifOpen] = useState(false);
-    const { t, i18n } = useTranslation('sidebar');
+    const { t, i18n } = useTranslation('navbar');
 
     const handleLogout = async (): Promise<void> => {
         try {
