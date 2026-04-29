@@ -10,7 +10,7 @@ export const Sidebar: React.FC = () => {
     const { logout } = useAuth();
     const apiPrivate = useAxiosPrivate();
     const location = useLocation();
-    const { t, i18n } = useTranslation('sidebar');
+    const { t, i18n } = useTranslation('navbar');
 
     const toggleLanguage = () => {
         const newLang = i18n.language === 'pl' ? 'en' : 'pl';
