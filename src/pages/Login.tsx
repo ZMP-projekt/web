@@ -1,10 +1,11 @@
 import './index.css'
 import React, { useState } from 'react';
-import { Mail, Lock, ArrowRight, Dumbbell, AlertCircle, Loader2 } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Dumbbell, AlertCircle, Loader2, MoveLeft } from 'lucide-react';
 import {Link, useNavigate} from "react-router";
 import { useAuth } from "../auth/useAuth.ts";
 import { api } from "../api/axios.ts";
 import { jwtDecode } from "jwt-decode";
+import {useTranslation} from "react-i18next";
 
 interface JwtPayload {
     sub: string;
@@ -20,6 +21,7 @@ export const Login: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
+    const { t } = useTranslation(['auth', 'common']);
 
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
@@ -32,7 +34,7 @@ export const Login: React.FC = () => {
             const role = jwtDecode<JwtPayload>(token).role;
 
             if (role === 'ROLE_ADMIN') {
-                setError('Konta administratorów są obsługiwane wyłącznie w aplikacji Desktopowej.');
+                setError(t('login.admin_restriction'));
                 setIsLoading(false);
                 return;
             }
@@ -44,15 +46,21 @@ export const Login: React.FC = () => {
                 : role === 'ROLE_TRAINER' ? '/trainer/dashboard'
                 : 'unauthorised')
         } catch (err) {
-            console.error('Błąd logowania:', err);
-            setError("Niepoprawny email lub hasło");
+            console.error('Error while signing in:', err);
+            setError(t('login.invalid_credentials'));
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-900 text-slate-200 p-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
+        <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white-200 p-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
+            <div className="absolute top-15 left-15">
+                <Link to={'/'} className="flex items-center gap-4 text-white hover:text-slate-500 transition-colors">
+                    <MoveLeft className={"w-10 h-10"} />
+                    <span>Strona główna</span>
+                </Link>
+            </div>
             <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ background: "radial-gradient(circle at 50% 50%, #1E3A5F 0%, transparent 80%)" }} />
             <div className="max-w-md w-full bg-slate-800/40 backdrop-blur-xl border border-white/5 rounded-3xl p-8 shadow-2xl relative z-10">
 
@@ -63,8 +71,8 @@ export const Login: React.FC = () => {
                     <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg" style={{ background: "linear-gradient(135deg, #3B82F6, #8B5CF6)" }}>
                         <Dumbbell className="w-8 h-8" />
                     </div>
-                    <h2 className="text-4xl text-white tracking-wide" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Witaj ponownie!</h2>
-                    <p className="text-slate-400 mt-2 text-center text-sm">Zaloguj się, aby zarządzać swoim karnetem i treningami.</p>
+                    <h2 className="text-4xl text-white tracking-wide" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{t('login.title')}</h2>
+                    <p className="text-slate-400 mt-2 text-center text-sm">{t('login.subtitle')}</p>
                 </div>
 
                 {error && (
@@ -77,7 +85,7 @@ export const Login: React.FC = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
 
                     <div>
-                        <label className="block text-xs font-bold tracking-wider text-slate-400 uppercase mb-1 ml-1">Adres E-mail</label>
+                        <label className="block text-xs font-bold tracking-wider text-slate-400 uppercase mb-1 ml-1">{t('common:email')}</label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <Mail className="h-4 w-4 text-slate-500" />
@@ -87,14 +95,14 @@ export const Login: React.FC = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="block w-full pl-10 pr-4 py-3.5 border border-slate-700/50 rounded-xl bg-slate-900/50 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[#3B82F6] focus:border-[#3B82F6] transition-all text-sm"
-                                placeholder="jan@example.com"
+                                placeholder={t('placeholders.email')}
                                 required
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold tracking-wider text-slate-400 uppercase mb-1 ml-1">Hasło</label>
+                        <label className="block text-xs font-bold tracking-wider text-slate-400 uppercase mb-1 ml-1">{t('common:password')}</label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <Lock className="h-4 w-4 text-slate-500" />
@@ -124,11 +132,11 @@ export const Login: React.FC = () => {
                         {isLoading ? (
                             <>
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                                <span>Logowanie...</span>
+                                <span>{t('login.logging_in')}</span>
                             </>
                         ) : (
                             <>
-                                <span>Zaloguj się</span>
+                                <span>{t('login.submit_btn')}</span>
                                 <ArrowRight className="w-5 h-5" />
                             </>
                         )}
@@ -137,9 +145,9 @@ export const Login: React.FC = () => {
 
                 <div className="mt-8 text-center relative z-10 border-t border-slate-700/50 pt-6">
                     <p className="text-sm text-slate-400">
-                        Nie masz jeszcze konta?{' '}
+                        {t('login.no_account_question')}{' '}
                         <Link to="/register" className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
-                            Zarejestruj się
+                            {t('login.register_link')}
                         </Link>
                     </p>
                 </div>
