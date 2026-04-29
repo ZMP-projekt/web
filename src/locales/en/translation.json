@@ -52,7 +52,11 @@
     "loading": "Loading…",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "email": "Email address",
+    "password": "Password"
   },
   "navbar": {
     "dashboard": "Dashboard",
@@ -186,8 +190,6 @@
     "edit_btn": "Edit profile",
     "save_btn": "Save changes",
     "enter_label": "Enter",
-    "first_name": "First name",
-    "last_name": "Last name",
     "photo_url": "Photo link (URL)",
     "photo_url_hint": "Paste a direct link to an image (e.g., from LinkedIn or image hosting).",
     "specialization": "Specialization",
@@ -202,5 +204,31 @@
     "select_club_btn": "Select this club",
     "no_clubs_found": "No clubs found in this location.",
     "back_to_home": "Back to home page"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back!",
+      "subtitle": "Log in to manage your membership and workouts.",
+      "logging_in": "Logging in...",
+      "submit_btn": "Log in",
+      "admin_restriction": "Administrator accounts are only supported in the Desktop application.",
+      "invalid_credentials": "Invalid email or password",
+      "no_account_question": "Don't have an account yet?",
+      "register_link": "Sign up"
+    },
+    "register": {
+      "error": "Registration error",
+      "title": "Join us",
+      "subtitle": "Start your training with GymSystem today.",
+      "password_hint": "Min. 8 characters",
+      "submit_btn": "Create account",
+      "have_account_question": "Already have an account?",
+      "login_link": "Log in"
+    },
+    "placeholders": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "email": "joe@example.com"
+    }
   }
 }

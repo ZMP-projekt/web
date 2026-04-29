@@ -51,7 +51,11 @@
     "loading": "Ładowanie…",
     "cancel": "Anuluj",
     "confirm": "Potwierdź",
-    "saving": "Zapisywanie…"
+    "saving": "Zapisywanie…",
+    "first_name": "Imię",
+    "last_name": "Nazwisko",
+    "email": "Adres E-mail",
+    "password": "Hasło"
   },
   "navbar": {
     "dashboard": "Pulpit",
@@ -185,8 +189,6 @@
     "edit_btn": "Edytuj profil",
     "save_btn": "Zapisz zmiany",
     "enter_label": "Wprowadź",
-    "first_name": "Imię",
-    "last_name": "Nazwisko",
     "photo_url": "Link do zdjęcia (URL)",
     "photo_url_hint": "Wklej bezpośredni link do obrazka (np. z LinkedIn lub hostingu zdjęć).",
     "specialization": "Specjalizacja",
@@ -201,5 +203,31 @@
     "select_club_btn": "Wybierz ten klub",
     "no_clubs_found": "Nie znaleziono klubów w tej lokalizacji.",
     "back_to_home": "Powrót do strony głównej"
+  },
+  "auth": {
+    "login": {
+      "title": "Witaj ponownie!",
+      "subtitle": "Zaloguj się, aby zarządzać swoim karnetem i treningami.",
+      "logging_in": "Logowanie...",
+      "submit_btn": "Zaloguj się",
+      "admin_restriction": "Konta administratorów są obsługiwane wyłącznie w aplikacji Desktopowej.",
+      "invalid_credentials": "Niepoprawny email lub hasło",
+      "no_account_question": "Nie masz jeszcze konta?",
+      "register_link": "Zarejestruj się"
+    },
+    "register": {
+      "error": "Błąd rejestracji",
+      "title": "Dołącz do nas",
+      "subtitle": "Zacznij swój trening z GymSystem już dziś.",
+      "password_hint": "Min. 8 znaków",
+      "submit_btn": "Utwórz konto",
+      "have_account_question": "Masz już konto?",
+      "login_link": "Zaloguj się"
+    },
+    "placeholders": {
+      "first_name": "Jan",
+      "last_name": "Kowalski",
+      "email": "jan@example.com"
+    }
   }
 }
