@@ -80,11 +80,11 @@ export const Schedule: React.FC = () => {
 
     const handleEnrollment = async (classId: number, isEnrolling: boolean): Promise<void> => {
         if (isMembershipLoading) {
-            toast.loading(t('loading'));
+            toast.loading(t('common:loading'));
             return;
         }
         if (!isValid) {
-            toast.error(t('active_membership_required'));
+            toast.error(t('user.active_membership_required'));
             return;
         }
         setActionLoadingId(classId);
@@ -107,7 +107,7 @@ export const Schedule: React.FC = () => {
                         : c
                 )
             );
-            toast.success(isEnrolling ? t('signup_success') : t('cancel_success'));
+            toast.success(isEnrolling ? t('user.signup_success') : t('user.cancel_success'));
         } catch {
             toast.error(t('common:error_retry'));
         } finally {
@@ -124,9 +124,9 @@ export const Schedule: React.FC = () => {
         <div className="max-w-5xl mx-auto space-y-8">
             <header className="flex items-start justify-between gap-4 flex-wrap">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">{t('title')}</h1>
+                    <h1 className="text-3xl font-bold text-white">{t('user.title')}</h1>
                     <p className="text-slate-500 mt-1.5 text-sm">
-                        {t('subtitle')}
+                        {t('user.subtitle')}
                     </p>
                 </div>
             </header>
@@ -140,7 +140,7 @@ export const Schedule: React.FC = () => {
                     <button
                         onClick={() => setDaysOffset((o) => o - 7)}
                         className="flex items-center justify-center w-12 h-14 rounded-2xl bg-slate-700/50 hover:bg-slate-700 border border-slate-600/50 text-slate-400 hover:text-white transition-all shrink-0"
-                        title={t('prev_week')}
+                        title={t('user.prev_week')}
                     >
                         <ArrowLeft className="w-4 h-4" />
                     </button>
@@ -166,7 +166,7 @@ export const Schedule: React.FC = () => {
                                     style={selected ? { background: 'linear-gradient(135deg, #3B82F6, #6D28D9)' } : {}}
                                 >
                                     <span className="text-[10px] uppercase font-bold tracking-wider mb-1 opacity-80">
-                                        {today && !selected ? t('today') : dayName}
+                                        {today && !selected ? t('common.today') : dayName}
                                     </span>
                                     <span className="text-xl font-black leading-none">{dayNum}</span>
                                     {today && (
@@ -183,7 +183,7 @@ export const Schedule: React.FC = () => {
                     <button
                         onClick={() => setDaysOffset((o) => o + 7)}
                         className="flex items-center justify-center w-12 h-14 rounded-2xl bg-slate-700/50 hover:bg-slate-700 border border-slate-600/50 text-slate-400 hover:text-white transition-all shrink-0"
-                        title={t('next_week')}
+                        title={t('user.next_week')}
                     >
                         <ArrowRight className="w-4 h-4" />
                     </button>
@@ -221,8 +221,8 @@ export const Schedule: React.FC = () => {
                             <div className="w-16 h-16 rounded-3xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4">
                                 <CalendarIcon className="w-7 h-7 text-slate-600" />
                             </div>
-                            <p className="text-white font-semibold mb-1">{t('no_classes_day')}</p>
-                            <p className="text-slate-500 text-sm">{t('check_other_day')}</p>
+                            <p className="text-white font-semibold mb-1">{t('user.no_classes_day')}</p>
+                            <p className="text-slate-500 text-sm">{t('user.check_other_day')}</p>
                         </div>
                     )}
                 </div>
@@ -238,7 +238,7 @@ export const Schedule: React.FC = () => {
                             ? 'border-amber-500/30 text-amber-500 bg-amber-500/5'
                             : 'border-blue-500/30 text-blue-500 bg-blue-500/5'
                     }`}>
-                        {selectedClassDetails.personalTraining ? t('personal_training') : t('group_class')}
+                        {selectedClassDetails.personalTraining ? t('common.personal_training') : t('user.group_class')}
                     </span>
                                 <button
                                     onClick={() => navigate('/schedule')}
@@ -253,7 +253,7 @@ export const Schedule: React.FC = () => {
                         <div className="p-8 pt-2 space-y-8">
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-1">
-                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('trainer')}</p>
+                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.trainer')}</p>
                                     <div className="flex items-center gap-2 text-white font-semibold">
                                         <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center">
                                             <User className="w-4 h-4 text-blue-400" />
@@ -262,7 +262,7 @@ export const Schedule: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('duration')}</p>
+                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.duration')}</p>
                                     <div className="flex items-center gap-2 text-white font-semibold">
                                         <Clock className="w-5 h-5 text-slate-400" />
                                         {formatTime(selectedClassDetails.startTime)} - {formatTime(selectedClassDetails.endTime)}
@@ -271,7 +271,7 @@ export const Schedule: React.FC = () => {
                             </div>
 
                             <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-4">
-                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-3">{t('location')}</p>
+                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-3">{t('common.location')}</p>
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex gap-3">
                                         <MapPin className="w-5 h-5 text-red-500 shrink-0 mt-1" />
@@ -285,7 +285,7 @@ export const Schedule: React.FC = () => {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="bg-slate-800 hover:bg-slate-700 p-2 rounded-xl border border-slate-600 transition-colors"
-                                        title={t('open_map')}
+                                        title={t('user.open_map')}
                                     >
                                         <Navigation className="w-5 h-5 text-blue-400" />
                                     </a>
@@ -293,15 +293,15 @@ export const Schedule: React.FC = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('about')}</p>
+                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.about')}</p>
                                 <p className="text-slate-300 leading-relaxed italic">
-                                    "{selectedClassDetails.description || t('no_description')}"
+                                    "{selectedClassDetails.description || t('user.no_description')}"
                                 </p>
                             </div>
 
                             <div className="pt-4 border-t border-slate-700/50">
                                 <div className="flex justify-between items-end mb-2">
-                                    <span className="text-slate-400 text-sm font-medium">{t('participants')}</span>
+                                    <span className="text-slate-400 text-sm font-medium">{t('user.participants')}</span>
                                     <span className="text-white font-bold">
                             {selectedClassDetails.currentParticipants} / {selectedClassDetails.maxParticipants}
                         </span>
@@ -317,7 +317,7 @@ export const Schedule: React.FC = () => {
                             {selectedClassDetails.userEnrolled && (
                                 <div className="flex items-center justify-center gap-2 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
                                     <CheckCircle className="w-5 h-5 text-emerald-500" />
-                                    <span className="text-emerald-500 font-bold text-sm uppercase tracking-wide">{t('on_participant_list')}</span>
+                                    <span className="text-emerald-500 font-bold text-sm uppercase tracking-wide">{t('user.on_participant_list')}</span>
                                 </div>
                             )}
                         </div>
