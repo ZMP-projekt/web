@@ -1,6 +1,8 @@
 import { AlertTriangle } from 'lucide-react';
+import {useTranslation} from "react-i18next";
 
 export const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel } : {isOpen: boolean, title: string, message: string, onConfirm: () => void, onCancel: () => void}) => {
+    const { t } = useTranslation('common');
     if (!isOpen) return null;
 
     return (
@@ -15,10 +17,10 @@ export const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel } : {
                 <p className="text-slate-400 text-sm mb-8">{message}</p>
                 <div className="flex gap-3">
                     <button onClick={onCancel} className="flex-1 px-4 py-2.5 rounded-xl text-slate-300 font-medium hover:bg-slate-700 transition-colors">
-                        Anuluj
+                        {t('cancel')}
                     </button>
                     <button onClick={() => { onConfirm(); onCancel(); }} className="flex-1 px-4 py-2.5 rounded-xl bg-red-500/75 text-white font-bold hover:bg-red-600/75 transition-colors">
-                        Potwierdź
+                        {t('confirm')}
                     </button>
                 </div>
             </div>
