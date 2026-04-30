@@ -219,7 +219,7 @@ export const Dashboard: React.FC = () => {
                                         <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">{t('common:days_left')}</p>
                                         <p className="text-5xl font-extrabold text-white leading-none">
                                             {calculateDaysRemaining(membership.endDate)}
-                                            <span className="text-slate-500 text-xl font-medium ml-2">{t('common:days_unit')}</span>
+                                            <span className="text-slate-500 text-xl font-medium ml-2">{t('common:days_unit', {count: calculateDaysRemaining(membership.endDate)})}</span>
                                         </p>
                                     </div>
                                     <div className="text-right">

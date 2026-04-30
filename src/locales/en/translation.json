@@ -43,7 +43,8 @@
 
   },
   "common": {
-    "days_unit": "dni",
+    "days_unit_one": "day",
+    "days_unit_other": "days",
     "days_left": "Remaining",
     "valid_until": "valid until",
     "processing": "Processing...",
@@ -168,9 +169,11 @@
     "personal": "Personal",
     "group": "Group",
     "signed_up": "Signed up",
-    "places": "places",
-    "no_free_places": "No free places",
-    "free": "available",
+    "places_one": "place",
+    "places_other": "places",
+    "no_free_places": "Fully booked",
+    "free_spots_one": "{{count}} spot left",
+    "free_spots_other": "{{count}} spots left",
     "drop_out_btn": "Drop out",
     "no_places": "No places available",
     "sign_up_btn": "Sign up"

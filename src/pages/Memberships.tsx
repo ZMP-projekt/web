@@ -82,7 +82,7 @@ export const Memberships: React.FC = () => {
                         <div>
                             <h2 className="text-2xl font-bold text-white">{t('my_plan')} {membership.type}</h2>
                             <p className="text-slate-400 mt-1">
-                                {t('common:days_left')}: <span className="text-white font-bold">{calculateDaysRemaining(membership.endDate)} dni</span> ({t('common:valid_until')} {formatDate(membership.endDate)})
+                                {t('common:days_left')}: <span className="text-white font-bold">{calculateDaysRemaining(membership.endDate)} {t('common:days_unit', {count: calculateDaysRemaining(membership.endDate)})}</span> ({t('common:valid_until')} {formatDate(membership.endDate)})
                             </p>
                         </div>
                     </div>

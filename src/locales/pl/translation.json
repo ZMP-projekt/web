@@ -42,7 +42,9 @@
     }
   },
   "common": {
-    "days_unit": "dni",
+    "days_unit_one": "dzień",
+    "days_unit_few": "dni",
+    "days_unit_many": "dni",
     "days_left": "Pozostało",
     "valid_until": "ważny do",
     "processing": "Przetwarzanie...",
@@ -115,7 +117,7 @@
       "about": "O zajęciach",
       "no_description": "Brak dodatkowego opisu dla tych zajęć.",
       "participants": "Uczestnicy",
-      "on_participants_list": "Jesteś na liśce uczestników"
+      "on_participants_list": "Jesteś na liście uczestników"
     },
     "common": {
       "today": "Dziś",
@@ -167,9 +169,13 @@
     "personal": "Personalne",
     "group": "Grupowe",
     "signed_up": "Zapisany",
-    "places": "miejsc",
+    "places_one": "miejsce",
+    "places_few": "miejsca",
+    "places_many": "miejsc",
     "no_free_places": "Brak wolnych miejsc",
-    "free": "wolnych",
+    "free_spots_one": "{{count}} wolne miejsce",
+    "free_spots_few": "{{count}} wolne miejsca",
+    "free_spots_many": "{{count}} wolnych miejsc",
     "drop_out_btn": "Wypisz się",
     "no_places": "Brak miejsc",
     "sign_up_btn": "Zapisz się"

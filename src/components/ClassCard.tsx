@@ -100,7 +100,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading,
                         <span
                             className={`flex items-center gap-1.5 font-medium ${isFull ? 'text-red-400' : 'text-slate-300'}`}>
                         <Users className="w-3.5 h-3.5"/>
-                            {gymClass.currentParticipants}/{gymClass.maxParticipants} {t('places')}
+                            {gymClass.currentParticipants}/{gymClass.maxParticipants} {t('places', {count: gymClass.maxParticipants})}
                     </span>
                     </div>
 
@@ -112,7 +112,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading,
                             />
                         </div>
                         <span className="text-[11px] text-slate-500 shrink-0 font-medium">
-                        {isFull ? t('no_free_places') : `${gymClass.maxParticipants - gymClass.currentParticipants} ${t('free')}`}
+                        {isFull ? t('no_free_places') : t('free_spots', {count: gymClass.maxParticipants - gymClass.currentParticipants})}
                     </span>
                     </div>
                 </div>

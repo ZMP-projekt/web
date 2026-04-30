@@ -317,7 +317,7 @@ export const Schedule: React.FC = () => {
                             {selectedClassDetails.userEnrolled && (
                                 <div className="flex items-center justify-center gap-2 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
                                     <CheckCircle className="w-5 h-5 text-emerald-500" />
-                                    <span className="text-emerald-500 font-bold text-sm uppercase tracking-wide">{t('user.on_participant_list')}</span>
+                                    <span className="text-emerald-500 font-bold text-sm uppercase tracking-wide">{t('user.on_participants_list')}</span>
                                 </div>
                             )}
                         </div>
