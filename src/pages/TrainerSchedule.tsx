@@ -305,7 +305,7 @@ export const TrainerSchedule: React.FC = () => {
                                     style={selected ? { background: 'linear-gradient(135deg, #3B82F6, #6D28D9)' } : {}}
                                 >
                                     <span className="text-[10px] uppercase font-bold tracking-wider mb-1 opacity-80">
-                                        {today && !selected ? t('ccmmon.today') : d.toLocaleDateString(i18n.language, { weekday: 'short' })}
+                                        {today && !selected ? t('common.today') : d.toLocaleDateString(i18n.language, { weekday: 'short' })}
                                     </span>
                                     <span className="text-xl font-black leading-none">{d.getDate()}</span>
                                     {today && (
@@ -331,7 +331,7 @@ export const TrainerSchedule: React.FC = () => {
                     <h2 className="text-white font-semibold capitalize">{selectedDateLabel}</h2>
                     {!isLoading && <div className="h-px flex-1 bg-slate-700/50" />}
                     {!isLoading && classes.length > 0 && (
-                        <span className="text-xs text-slate-500 font-medium shrink-0">{classes.length} {t('trainer.classes_count')}</span>
+                        <span className="text-xs text-slate-500 font-medium shrink-0">{t('trainer.classes_count', {count: classes.length})}</span>
                     )}
                 </div>
 
@@ -397,7 +397,7 @@ export const TrainerSchedule: React.FC = () => {
                                                     />
                                                 </div>
                                                 <span className="text-[11px] text-slate-500 font-medium">
-                                                    {isFull ? t('trainer.no_spots') : `${gymClass.maxParticipants - gymClass.currentParticipants} ${t('trainer.spots_available')}`}
+                                                    {isFull ? t('trainer.no_spots') : t('trainer.spots_available', {count: gymClass.maxParticipants - gymClass.currentParticipants})}
                                                 </span>
                                             </div>
                                         </div>
