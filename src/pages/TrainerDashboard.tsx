@@ -128,9 +128,9 @@ export const TrainerDashboard: React.FC = () => {
                     </>
                 ) : (
                     <>
-                        <StatTile value={todayClasses.length} label={t('trainer.classes_today')} />
-                        <StatTile value={upcomingClasses.length} label={t('trainer.upcoming')} color="text-blue-400" />
-                        <StatTile value={totalParticipantsToday} label={t('trainer.total_participants')} color="text-purple-400" />
+                        <StatTile value={todayClasses.length} label={t('trainer.classes_today', {count: todayClasses.length})} />
+                        <StatTile value={upcomingClasses.length} label={t('trainer.upcoming', {count: upcomingClasses.length})} color="text-blue-400" />
+                        <StatTile value={totalParticipantsToday} label={t('trainer.total_participants', {count: totalParticipantsToday})} color="text-purple-400" />
                     </>
                 )}
             </div>
