@@ -6,6 +6,7 @@ import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import { NotificationDropdown } from './NotificationDropdown.tsx';
 import { useNotifications } from '../hooks/useNotifications.ts';
 import {useTranslation} from "react-i18next";
+import {LanguageButton} from "./LanguageButton.tsx";
 
 export const TrainerLayout: React.FC = () => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ export const TrainerLayout: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
     const { unreadCount } = useNotifications();
     const [isNotifOpen, setIsNotifOpen] = useState(false);
-    const { t, i18n } = useTranslation('navbar');
+    const { t } = useTranslation('navbar');
 
     const handleLogout = async (): Promise<void> => {
         try {
@@ -26,11 +27,6 @@ export const TrainerLayout: React.FC = () => {
             navigate('/login');
         }
     };
-
-    const toggleLanguage = () => {
-        const newLang = i18n.language === 'pl' ? 'en' : 'pl';
-        void i18n.changeLanguage(newLang);
-    }
 
     const NavLink = ({ to, icon, label }: { to: string; icon: React.ReactNode; label: string }) => {
         const isActive = location.pathname === to;
@@ -82,9 +78,7 @@ export const TrainerLayout: React.FC = () => {
 
                 {/* Right actions */}
                 <div className="flex items-center gap-2">
-                    <button onClick={toggleLanguage} className="p-2 text-xs font-bold text-slate-400 hover:text-white">
-                        {i18n.language.toUpperCase()}
-                    </button>
+                    <LanguageButton />
                     {/* Notifications */}
                     <div className="relative">
                         <button

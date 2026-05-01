@@ -4,18 +4,14 @@ import React from 'react';
 import { useAuth } from '../auth/useAuth.ts';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate.ts';
 import {useTranslation} from "react-i18next";
+import {LanguageButton} from "./LanguageButton.tsx";
 
 export const Sidebar: React.FC = () => {
     const navigate = useNavigate();
     const { logout } = useAuth();
     const apiPrivate = useAxiosPrivate();
     const location = useLocation();
-    const { t, i18n } = useTranslation('navbar');
-
-    const toggleLanguage = () => {
-        const newLang = i18n.language === 'pl' ? 'en' : 'pl';
-        void i18n.changeLanguage(newLang);
-    }
+    const { t } = useTranslation('navbar');
 
     const handleLogout = async (): Promise<void> => {
         try {
@@ -73,9 +69,7 @@ export const Sidebar: React.FC = () => {
                 <NavButton to="/profile"     icon={<User className="w-5 h-5" />}          label={t('profile')} />
             </nav>
 
-            <button onClick={toggleLanguage} className="p-2 text-xs font-bold text-slate-400 hover:text-white">
-                {i18n.language.toUpperCase()}
-            </button>
+            <LanguageButton />
 
             <div className="pt-4 border-t border-slate-800/80">
                 <button
