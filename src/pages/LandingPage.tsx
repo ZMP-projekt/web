@@ -5,11 +5,11 @@ import {
     CalendarDays, Dumbbell,
     Flame,
     Leaf,
-    MapPin,
+    MapPin, Menu,
     MoveRight,
     Navigation,
     Smartphone,
-    Trophy
+    Trophy, X
 } from "lucide-react";
 import {LanguageButton} from "../components/LanguageButton.tsx";
 import {useTranslation} from "react-i18next";
@@ -56,6 +56,7 @@ const PRICING: PricingPlan[] = [
 
 export const LandingPage: React.FC = () => {
     const [scrolled, setScrolled] = useState<boolean>(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
     const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
     const { t } = useTranslation(['landing_page', 'common']);
@@ -152,15 +153,14 @@ export const LandingPage: React.FC = () => {
       `}</style>
 
             <div className="grain" />
-
             <nav className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 transition-all duration-300 ${
                 scrolled ? "h-15 bg-slate-900/90 backdrop-blur-md border-b border-white/5" : "h-18 bg-transparent"
             }`}>
                 <div className="flex items-center gap-2.5">
                     <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg display"
+                        className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-lg display"
                         style={{ background: "linear-gradient(135deg, #3B82F6, #8B5CF6)" }}
-                    ><Dumbbell className="w-6 h-6" /></div>
+                    >GS</div>
                     <span className="font-bold text-lg text-white">GymSystem</span>
                 </div>
 
@@ -172,7 +172,7 @@ export const LandingPage: React.FC = () => {
                     ))}
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="hidden md:flex items-center gap-3">
                     <LanguageButton />
                     <Link to="/login" className="text-slate-400 hover:text-white text-sm font-medium no-underline transition-colors">
                         {t('common:log_in')}
@@ -182,10 +182,65 @@ export const LandingPage: React.FC = () => {
                         className="text-white text-sm flex items-center gap-2 font-bold no-underline px-5 py-2 rounded-xl transition-opacity hover:opacity-90"
                         style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)", boxShadow: "0 0 20px rgba(59,130,246,0.3)" }}
                     >
-                        {t('join_now')} <MoveRight className="w-3 h-3" />
+                        {t('join_now')} <MoveRight className="w-4 h-4" />
                     </Link>
                 </div>
+
+                <button
+                    className="md:hidden p-2 -mr-2 text-slate-400 hover:text-white"
+                    onClick={() => setIsMobileMenuOpen(true)}
+                >
+                    <Menu className="w-7 h-7" />
+                </button>
             </nav>
+
+            <div
+                className={`fixed inset-0 bg-slate-900/98 backdrop-blur-3xl z-60 flex flex-col transition-transform duration-500 ease-in-out md:hidden ${
+                    isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+                }`}
+            >
+                <div className="flex items-center justify-between px-8 h-18 border-b border-white/10">
+                    <span className="font-bold text-lg text-white">Menu</span>
+                    <button
+                        className="p-2 -mr-2 text-slate-400 hover:text-white bg-slate-800/50 rounded-full"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+                </div>
+
+                <div className="flex flex-col flex-1 px-8 py-10 overflow-y-auto">
+                    <div className="flex flex-col gap-8 mb-12">
+                        {NAV_LINKS.map((link) => (
+                            <a
+                                key={link.href}
+                                href={link.href}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="text-3xl font-bold text-slate-300 hover:text-white transition-colors"
+                            >
+                                {link.label}
+                            </a>
+                        ))}
+                    </div>
+
+                    <div className="mt-auto flex flex-col gap-4">
+                        <LanguageButton />
+                        <Link
+                            to="/login"
+                            className="flex items-center justify-center w-full p-4 rounded-2xl border border-slate-700/50 text-sm font-bold text-white bg-slate-800/80"
+                        >
+                            Zaloguj się
+                        </Link>
+                        <Link
+                            to="/register"
+                            className="flex items-center justify-center w-full p-4 rounded-2xl text-white text-base font-bold shadow-lg"
+                            style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)" }}
+                        >
+                            Dołącz teraz →
+                        </Link>
+                    </div>
+                </div>
+            </div>
 
             <section
                 className="hero-bg diagonal-bottom relative flex flex-col justify-center overflow-hidden"
