@@ -1,11 +1,12 @@
 import './index.css'
 import React, { useState } from 'react';
-import { Mail, Lock, ArrowRight, Dumbbell, AlertCircle, Loader2, MoveLeft } from 'lucide-react';
+import {Mail, Lock, ArrowRight, Dumbbell, AlertCircle, Loader2, ArrowLeft} from 'lucide-react';
 import {Link, useNavigate} from "react-router";
 import { useAuth } from "../auth/useAuth.ts";
 import { api } from "../api/axios.ts";
 import { jwtDecode } from "jwt-decode";
 import {useTranslation} from "react-i18next";
+import {LanguageButton} from "../components/LanguageButton.tsx";
 
 interface JwtPayload {
     sub: string;
@@ -55,15 +56,17 @@ export const Login: React.FC = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white-200 p-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
-            <div className="absolute top-15 left-15">
-                <Link to={'/'} className="flex items-center gap-4 text-white hover:text-slate-500 transition-colors">
-                    <MoveLeft className={"w-10 h-10"} />
-                    <span>Strona główna</span>
-                </Link>
-            </div>
             <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ background: "radial-gradient(circle at 50% 50%, #1E3A5F 0%, transparent 80%)" }} />
             <div className="max-w-md w-full bg-slate-800/40 backdrop-blur-xl border border-white/5 rounded-3xl p-8 shadow-2xl relative z-10">
+                <Link
+                    to="/"
+                    title="Wróć do strony głównej"
+                    className="absolute top-6 left-6 z-20 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                </Link>
 
+                <div className="absolute top-6 right-6 z-20"><LanguageButton /></div>
                 <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#3B82F6]/20 rounded-full blur-3xl pointer-events-none"></div>
                 <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-[#8B5CF6]/20 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -115,11 +118,6 @@ export const Login: React.FC = () => {
                                 placeholder="••••••••"
                                 required
                             />
-                        </div>
-                        <div className="flex justify-end mt-3">
-                            <button type="button" className="text-sm text-[#3B82F6] hover:text-blue-400 font-medium transition-colors">
-                                Zapomniałeś hasła?
-                            </button>
                         </div>
                     </div>
 

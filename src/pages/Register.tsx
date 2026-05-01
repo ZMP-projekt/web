@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import {Mail, Lock, User, ArrowRight, Dumbbell, User2, Loader2, AlertCircle} from 'lucide-react';
+import {Mail, Lock, User, ArrowRight, Dumbbell, User2, Loader2, AlertCircle, ArrowLeft} from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from "../auth/useAuth.ts";
 import { api } from "../api/axios.ts";
 import {useTranslation} from "react-i18next";
+import {LanguageButton} from "../components/LanguageButton.tsx";
 
 export const Register: React.FC = () => {
     const [firstName, setFirstName] = useState('');
@@ -41,7 +42,15 @@ export const Register: React.FC = () => {
             <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ background: "radial-gradient(circle at 50% 50%, #1E3A5F 0%, transparent 80%)" }} />
 
             <div className="max-w-md w-full bg-slate-800/40 backdrop-blur-xl border border-white/5 rounded-3xl p-8 shadow-2xl relative z-10">
+                <Link
+                    to="/"
+                    title="Wróć do strony głównej"
+                    className="absolute top-6 left-6 p-2 z-20 rounded-xl text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                </Link>
 
+                <div className="absolute top-6 right-6 z-20"><LanguageButton /></div>
                 <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#3B82F6]/20 rounded-full blur-3xl pointer-events-none"></div>
                 <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-[#8B5CF6]/20 rounded-full blur-3xl pointer-events-none"></div>
 
