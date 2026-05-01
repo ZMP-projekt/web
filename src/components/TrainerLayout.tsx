@@ -21,7 +21,7 @@ export const TrainerLayout: React.FC = () => {
         try {
             await apiPrivate.post('/auth/logout');
         } catch (error) {
-            console.error('Błąd wylogowania:', error);
+            console.error('Error while logging out:', error);
         } finally {
             logout();
             navigate('/login');
@@ -52,10 +52,8 @@ export const TrainerLayout: React.FC = () => {
                 background: 'radial-gradient(ellipse 80% 60% at 80% 0%, rgba(59,130,246,0.07) 0%, transparent 60%), #0F172A',
             }}
         >
-            {/* ── Topbar ── */}
             <header className="sticky top-0 z-50 flex items-center justify-between px-8 h-16 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md">
 
-                {/* Logo */}
                 <div className="flex items-center gap-3">
                     <div
                         className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
@@ -69,17 +67,14 @@ export const TrainerLayout: React.FC = () => {
                     </span>
                 </div>
 
-                {/* Nav */}
                 <nav className="flex items-center gap-1">
                     <NavLink to="/trainer/dashboard" icon={<Dumbbell className="w-4 h-4" />} label={t('dashboard')} />
                     <NavLink to="/trainer/schedule"  icon={<CalendarClock className="w-4 h-4" />} label={t('schedule')} />
                     <NavLink to="/trainer/profile"   icon={<User className="w-4 h-4" />} label={t('profile')} />
                 </nav>
 
-                {/* Right actions */}
                 <div className="flex items-center gap-2">
                     <LanguageButton />
-                    {/* Notifications */}
                     <div className="relative">
                         <button
                             onClick={() => setIsNotifOpen(!isNotifOpen)}
@@ -95,10 +90,8 @@ export const TrainerLayout: React.FC = () => {
                         <NotificationDropdown isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
                     </div>
 
-                    {/* Divider */}
                     <div className="w-px h-6 bg-slate-700/80 mx-1" />
 
-                    {/* Logout */}
                     <button
                         onClick={handleLogout}
                         className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
@@ -109,7 +102,6 @@ export const TrainerLayout: React.FC = () => {
                 </div>
             </header>
 
-            {/* ── Page content ── */}
             <main className="flex-1 p-8 min-h-auto">
                 <div className="max-w-5xl mx-auto">
                     <Outlet />
