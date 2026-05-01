@@ -526,7 +526,7 @@ export const TrainerSchedule: React.FC = () => {
                                 </div>
 
                                 <div>
-                                    <label className={labelCls}>Opis</label>
+                                    <label className={labelCls}>{t('trainer.description')}</label>
                                     <div className="relative">
                                         <FileText className="absolute left-3 top-3.5 w-4 h-4 text-slate-500" />
                                         <textarea name="description" value={createForm.description}
