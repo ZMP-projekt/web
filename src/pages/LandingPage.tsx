@@ -1,6 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import {Link} from "react-router";
-import {Navigation} from "lucide-react";
+import {
+    BicepsFlexedIcon,
+    CalendarDays, Dumbbell,
+    Flame,
+    Leaf,
+    MapPin,
+    MoveRight,
+    Navigation,
+    Smartphone,
+    Trophy
+} from "lucide-react";
+import {LanguageButton} from "../components/LanguageButton.tsx";
+import {useTranslation} from "react-i18next";
 
 interface NavLink {
     label: string;
@@ -12,15 +24,6 @@ interface Stat {
     label: string;
 }
 
-interface ScheduleItem {
-    time: string;
-    name: string;
-    trainer: string;
-    spots: number;
-    tag: string;
-    color: string;
-}
-
 interface PricingPlan {
     title: string;
     price: string;
@@ -28,28 +31,7 @@ interface PricingPlan {
     popular: boolean;
 }
 
-const NAV_LINKS: NavLink[] = [
-    { label: "O nas", href: "#o-nas" },
-    { label: "Zajęcia", href: "#harmonogram" },
-    { label: "Cennik", href: "#cennik" },
-    { label: "Lokalizacje", href: "#mapa" },
-];
 
-const STATS: Stat[] = [
-    { value: "1 200+", label: "Aktywnych członków" },
-    { value: "3", label: "Lokalizacje w mieście" },
-    { value: "24", label: "Trenerów personalnych" },
-    { value: "40+", label: "Zajęć tygodniowo" },
-];
-
-const SCHEDULE: ScheduleItem[] = [
-    { time: "06:30", name: "Morning HIIT", trainer: "Karolina Wiśniewska", spots: 4, tag: "Cardio", color: "#3B82F6" },
-    { time: "09:00", name: "Yoga Flow", trainer: "Marek Zając", spots: 8, tag: "Mindfulness", color: "#8B5CF6" },
-    { time: "12:15", name: "CrossFit RX", trainer: "Tomasz Nowak", spots: 2, tag: "Siła", color: "#10B981" },
-    { time: "18:00", name: "Boxing Basics", trainer: "Anna Kowalska", spots: 6, tag: "Boks", color: "#F59E0B" },
-    { time: "19:30", name: "Body Pump", trainer: "Piotr Malinowski", spots: 10, tag: "Siła", color: "#3B82F6" },
-    { time: "20:30", name: "Night Stretch", trainer: "Karolina Wiśniewska", spots: 12, tag: "Mobilność", color: "#8B5CF6" },
-];
 
 const PRICING: PricingPlan[] = [
     {
@@ -76,6 +58,21 @@ export const LandingPage: React.FC = () => {
     const [scrolled, setScrolled] = useState<boolean>(false);
     const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+    const { t } = useTranslation(['landing_page', 'common']);
+
+    const NAV_LINKS: NavLink[] = [
+        { label: t('about'), href: "#about" },
+        { label: t('classes'), href: "#classes" },
+        { label: t('pricing'), href: "#pricing" },
+        { label: t('locations'), href: "/locations" },
+    ];
+
+    const STATS: Stat[] = [
+        { value: "1 200+", label: t('active_members') },
+        { value: "30", label: t('locations_count') },
+        { value: "Top", label: t('certified_coaches') },
+        { value: "40+", label: t('classes_per_week') },
+    ];
 
     useEffect(() => {
         const onScroll = (): void => setScrolled(window.scrollY > 40);
@@ -161,9 +158,9 @@ export const LandingPage: React.FC = () => {
             }`}>
                 <div className="flex items-center gap-2.5">
                     <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-lg display"
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg display"
                         style={{ background: "linear-gradient(135deg, #3B82F6, #8B5CF6)" }}
-                    >GS</div>
+                    ><Dumbbell className="w-6 h-6" /></div>
                     <span className="font-bold text-lg text-white">GymSystem</span>
                 </div>
 
@@ -176,15 +173,16 @@ export const LandingPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
+                    <LanguageButton />
                     <Link to="/login" className="text-slate-400 hover:text-white text-sm font-medium no-underline transition-colors">
-                        Zaloguj się
+                        {t('common:log_in')}
                     </Link>
                     <Link
                         to="/register"
-                        className="text-white text-sm font-bold no-underline px-5 py-2 rounded-xl transition-opacity hover:opacity-90"
+                        className="text-white text-sm flex items-center gap-2 font-bold no-underline px-5 py-2 rounded-xl transition-opacity hover:opacity-90"
                         style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)", boxShadow: "0 0 20px rgba(59,130,246,0.3)" }}
                     >
-                        Dołącz teraz →
+                        {t('join_now')} <MoveRight className="w-3 h-3" />
                     </Link>
                 </div>
             </nav>
@@ -197,21 +195,14 @@ export const LandingPage: React.FC = () => {
                 <div className="absolute top-[30%] right-[12%] w-px h-[30%]" style={{ background: "linear-gradient(to bottom, transparent, rgba(139,92,246,0.2), transparent)" }} />
 
                 <div className="max-w-300 w-full mx-auto">
-                    <div
-                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-xs font-semibold mb-8 uppercase tracking-widest"
-                        style={{ borderColor: "rgba(59,130,246,0.3)", background: "rgba(59,130,246,0.08)", color: "#60A5FA" }}
-                    >
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block" style={{ boxShadow: "0 0 8px #3B82F6" }} />
-                        Twój nowy standard treningu
-                    </div>
 
                     <h1 className="hero-title display text-white mb-8" style={{ fontSize: "clamp(72px, 12vw, 160px)", lineHeight: 0.9 }}>
-                        Przestań<br />
-                        <span style={{ WebkitTextStroke: "2px #3B82F6", color: "transparent" }}>planować.</span><br />
-                        <span style={{ background: "linear-gradient(90deg, #3B82F6, #8B5CF6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Zacznij</span>
+                        {t('hero.word1')}<br />
+                        <span style={{ WebkitTextStroke: "2px #3B82F6", color: "transparent" }}>{t('hero.word2')}</span><br />
+                        <span style={{ background: "linear-gradient(90deg, #3B82F6, #8B5CF6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{t('hero.word3')}</span>
                     </h1>
                     <h1 className="hero-title display text-white mb-12" style={{ fontSize: "clamp(72px, 12vw, 160px)", lineHeight: 0.9 }}>
-                        trenować.
+                        {t('hero.word4')}
                     </h1>
 
                     <div className="flex flex-wrap gap-4">
@@ -220,22 +211,18 @@ export const LandingPage: React.FC = () => {
                             className="inline-flex items-center gap-2.5 text-white font-bold text-base no-underline px-8 py-4 rounded-2xl transition-all hover:-translate-y-0.5"
                             style={{ background: "#3B82F6", boxShadow: "0 8px 32px rgba(59,130,246,0.35)" }}
                         >
-                            Rozpocznij za darmo <span className="text-xl">→</span>
+                            {t('start_free_btn')} <MoveRight />
                         </Link>
                         <Link
-                            to="#cennik"
+                            to="#pricing"
                             className="inline-flex items-center text-slate-200 font-semibold text-base no-underline px-8 py-4 rounded-2xl border transition-all hover:bg-white/10"
                             style={{ background: "rgba(226,232,240,0.06)", borderColor: "rgba(226,232,240,0.12)" }}
                         >
-                            Sprawdź cennik
+                            {t('check_pricing_btn')}
                         </Link>
                     </div>
                 </div>
 
-                <div className="absolute bottom-[8%] left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-600 text-[11px] font-semibold uppercase tracking-widest">
-                    <span>Przewiń</span>
-                    <div className="w-px h-10" style={{ background: "linear-gradient(to bottom, #475569, transparent)" }} />
-                </div>
             </section>
 
             <section className="border-b border-blue-500/20 py-12 px-8" style={{ background: "linear-gradient(135deg, #1E293B, #1E3A5F)" }}>
@@ -254,46 +241,68 @@ export const LandingPage: React.FC = () => {
                 </div>
             </section>
 
-            <section id="o-nas" ref={registerRef("o-nas")} className="py-24 px-8">
+            <section id="about" ref={registerRef("about")} className="py-24 px-8">
                 <div className="about-grid max-w-300 mx-auto grid grid-cols-2 gap-20 items-center">
 
-                    <div className={`fade-up ${visibleSections["o-nas"] ? "visible" : ""}`}>
-                        <div className="text-xs font-bold tracking-[0.16em] text-blue-500 uppercase mb-4">O nas</div>
+                    <div className={`fade-up ${visibleSections["about"] ? "visible" : ""}`}>
+                        <div className="text-xs font-bold tracking-[0.16em] text-blue-500 uppercase mb-4">{t('about')}</div>
                         <h2 className="display text-white mb-6" style={{ fontSize: "clamp(40px, 5vw, 72px)", lineHeight: 0.95 }}>
-                            Nie jesteśmy<br />zwykłą siłownią.
+                            {t('title1')}<br />{t('title2')}
                         </h2>
                         <p className="text-slate-400 leading-relaxed text-base mb-6">
-                            GymSystem to ekosystem, który łączy trzy nowoczesne obiekty z jedną, spójną platformą cyfrową. Rezerwujesz, płacisz i śledzisz postępy — wszystko w jednym miejscu.
+                            {t('description_1')}
                         </p>
                         <p className="text-slate-500 leading-relaxed text-sm">
-                            Koniec z papierowymi umowami, staniem w kolejkach i gubieniem karnetów. Twój dostęp jest zawsze w telefonie.
+                            {t('description_2')}
                         </p>
                         <div className="flex gap-8 mt-10">
-                            {(["Siłownia", "Cardio", "Spa & Sauna"] as const).map((t, i) => (
-                                <div key={t}>
-                                    <div className="text-sm font-bold text-white">{t}</div>
-                                    <div className="text-xs text-slate-500 mt-0.5">{["Sprzęt premium", "Pełna strefa", "Strefy VIP"][i]}</div>
+                            {([t('gym'), "Cardio", "Spa & Sauna"] as const).map((s, i) => (
+                                <div key={s}>
+                                    <div className="text-sm font-bold text-white">{s}</div>
+                                    <div className="text-xs text-slate-500 mt-0.5">{[t('premium_equipment'), t('full_zone'), t('vip_zone')][i]}</div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <div className={`fade-up stagger-2 ${visibleSections["o-nas"] ? "visible" : ""}`}>
+                    <div className={`fade-up stagger-2 ${visibleSections["about"] ? "visible" : ""}`}>
                         <div className="grid grid-cols-2 gap-4">
                             {[
-                                { icon: "📍", title: "3 Lokalizacje", desc: "W kluczowych punktach miasta, zawsze blisko Ciebie.", color: "#3B82F6" },
-                                { icon: "🗓", title: "Elastyczny plan", desc: "Zapisuj się na zajęcia jednym dotknięciem.", color: "#8B5CF6" },
-                                { icon: "🏆", title: "Top trenerzy", desc: "Certyfikowani specjaliści, realne efekty.", color: "#10B981" },
-                                { icon: "📱", title: "Aplikacja mobilna", desc: "Twój karnet, harmonogram i postępy — w kieszeni.", color: "#F59E0B" },
+                                {
+                                    icon: <MapPin className="w-8 h-8" />,
+                                    title: t('locations_number'),
+                                    desc: t('locations_desc'),
+                                    color: "#3B82F6"
+                                },
+                                {
+                                    icon: <CalendarDays className="w-8 h-8" />,
+                                    title: t('flexible_plan'),
+                                    desc: t('booking_desc'),
+                                    color: "#8B5CF6"
+                                },
+                                {
+                                    icon: <Trophy className="w-8 h-8" />,
+                                    title: t('top_coaches'),
+                                    desc: t('coaches_desc'),
+                                    color: "#10B981"
+                                },
+                                {
+                                    icon: <Smartphone className="w-8 h-8" />,
+                                    title: t('mobile_app'),
+                                    desc: t('app_desc'),
+                                    color: "#F59E0B"
+                                },
                             ].map((card, i) => (
                                 <div
                                     key={i}
-                                    className="rounded-2xl p-6 border transition-colors duration-200 cursor-default"
+                                    className="rounded-2xl p-6 border transition-all duration-300 cursor-default group"
                                     style={{ background: "rgba(30,41,59,0.6)", borderColor: "rgba(226,232,240,0.07)" }}
                                     onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => (e.currentTarget.style.borderColor = card.color + "55")}
                                     onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => (e.currentTarget.style.borderColor = "rgba(226,232,240,0.07)")}
                                 >
-                                    <div className="text-3xl mb-3">{card.icon}</div>
+                                    <div className="w-fit mb-5 transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1" style={{ color: card.color }}>
+                                        {card.icon}
+                                    </div>
                                     <div className="text-sm font-bold text-white mb-1.5">{card.title}</div>
                                     <div className="text-xs text-slate-500 leading-relaxed">{card.desc}</div>
                                 </div>
@@ -305,74 +314,80 @@ export const LandingPage: React.FC = () => {
             </section>
 
             <section
-                id="harmonogram"
-                ref={registerRef("harmonogram")}
+                id="classes"
+                ref={registerRef("classes")}
                 className="py-24 px-8 border-t border-b border-white/5"
                 style={{ background: "rgba(15,23,42,0.8)" }}
             >
                 <div className="max-w-300 mx-auto">
-                    <div className={`fade-up ${visibleSections["harmonogram"] ? "visible" : ""} mb-14`}>
+                    <div className={`fade-up ${visibleSections["classes"] ? "visible" : ""} text-center mb-16`}>
                         <div className="text-xs font-bold tracking-[0.16em] uppercase mb-3" style={{ color: "#8B5CF6" }}>
-                            Zajęcia grupowe
+                            {t('path_to_goal')}
                         </div>
-                        <div className="flex justify-between items-end flex-wrap gap-4">
-                            <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)", lineHeight: 1 }}>
-                                Co gra dzisiaj?
-                            </h2>
-                            <Link to="/public/schedule" className="text-sm text-blue-400 no-underline font-semibold tracking-wide hover:text-blue-300 transition-colors">
-                                Pełny harmonogram →
-                            </Link>
-                        </div>
+                        <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)", lineHeight: 1 }}>
+                            {t('find_rhythm')}
+                        </h2>
+                        <p className="text-slate-400 mt-4 text-base max-w-125 mx-auto">
+                            {t('description')}
+                        </p>
                     </div>
 
-                    <div className="schedule-grid grid grid-cols-2 gap-3">
-                        {SCHEDULE.map((cls, i) => (
+                    <div className="grid md:grid-cols-3 items-center gap-6 mb-12">
+                        {[
+                            {
+                                icon: <BicepsFlexedIcon className="w-10 h-10" />, title: t('strength'),
+                                desc: t('strength_desc'),
+                                color: "#3B82F6"
+                            },
+                            {
+                                icon: <Flame className="w-10 h-10 text-amber-500" />, title: t('cardio'),
+                                desc: t('cardio_desc'),
+                                color: "#F59E0B"
+                            },
+                            {
+                                icon: <Leaf className="w-10 h-10 text-emerald-600" />, title: t('mind_body'),
+                                desc: t('mind_body_desc'),
+                                color: "#8B5CF6"
+                            }
+                        ].map((type, i) => (
                             <div
                                 key={i}
-                                className={`schedule-row fade-up stagger-${Math.min(i + 1, 6)} ${visibleSections["harmonogram"] ? "visible" : ""} flex items-center gap-5 px-6 py-5 rounded-2xl border border-white/5`}
-                                style={{ background: "rgba(30,41,59,0.4)" }}
+                                className={`fade-up stagger-${i + 2} ${visibleSections["classes"] ? "visible" : ""} flex flex-col items-center text-center relative p-8 rounded-3xl border transition-transform hover:-translate-y-2`}
+                                style={{ background: "rgba(30,41,59,0.5)", borderColor: "rgba(226,232,240,0.07)" }}
                             >
-                                <div className="text-center min-w-12">
-                                    <div className="display text-[22px] leading-none" style={{ color: cls.color }}>
-                                        {cls.time.split(":")[0]}
-                                    </div>
-                                    <div className="text-[11px] text-slate-600 font-semibold">:{cls.time.split(":")[1]}</div>
-                                </div>
-                                <div className="w-0.5 h-10 rounded-sm" style={{ background: `linear-gradient(to bottom, ${cls.color}88, transparent)` }} />
-                                <div className="flex-1">
-                                    <div className="text-sm font-bold text-white mb-0.5">{cls.name}</div>
-                                    <div className="text-xs text-slate-500">{cls.trainer}</div>
-                                </div>
-                                <div className="flex flex-col items-end gap-1.5">
-                  <span
-                      className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
-                      style={{ background: cls.color + "22", color: cls.color, border: `1px solid ${cls.color}44` }}
-                  >
-                    {cls.tag}
-                  </span>
-                                    <span className={`text-[11px] font-semibold ${cls.spots <= 3 ? "text-red-400" : "text-slate-500"}`}>
-                    {cls.spots <= 3 ? `⚠ ${cls.spots} miejsc` : `${cls.spots} miejsc`}
-                  </span>
-                                </div>
+                                <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-20 pointer-events-none" style={{ background: type.color }} />
+                                <div className="text-4xl mb-6">{type.icon}</div>
+                                <h3 className="text-xl font-bold text-white mb-3">{type.title}</h3>
+                                <p className="text-sm text-slate-400 leading-relaxed">{type.desc}</p>
                             </div>
                         ))}
+                    </div>
+
+                    <div className={`fade-up stagger-5 ${visibleSections["classes"] ? "visible" : ""} text-center`}>
+                        <Link
+                            to="/public/schedule"
+                            className="inline-flex items-center gap-2 text-white font-bold no-underline px-8 py-4 rounded-2xl border transition-all hover:bg-slate-800"
+                            style={{ background: "rgba(30,41,59,0.8)", borderColor: "rgba(226,232,240,0.12)" }}
+                        >
+                            {t('check_schedule_btn')} <MoveRight className="text-[#3B82F6]" />
+                        </Link>
                     </div>
                 </div>
             </section>
 
-            <section id="cennik" ref={registerRef("cennik")} className="py-24 px-8">
+            <section id="pricing" ref={registerRef("pricing")} className="py-24 px-8">
                 <div className="max-w-300 mx-auto">
-                    <div className={`fade-up ${visibleSections["cennik"] ? "visible" : ""} text-center mb-16`}>
-                        <div className="text-xs font-bold tracking-[0.16em] text-blue-500 uppercase mb-3">Karnety</div>
-                        <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)" }}>Wybierz swój plan</h2>
-                        <p className="text-slate-500 mt-3 text-sm">Przejrzyste ceny. Brak ukrytych opłat. Rezygnuj kiedy chcesz.</p>
+                    <div className={`fade-up ${visibleSections["pricing"] ? "visible" : ""} text-center mb-16`}>
+                        <div className="text-xs font-bold tracking-[0.16em] text-blue-500 uppercase mb-3">{t('title_memberships')}</div>
+                        <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)" }}>{t('choose_plan')}</h2>
+                        <p className="text-slate-500 mt-3 text-sm">{t('transparent_desc')}</p>
                     </div>
 
                     <div className="pricing-grid grid grid-cols-3 gap-6 max-w-225 mx-auto">
                         {PRICING.map((plan, i) => (
                             <div
                                 key={i}
-                                className={`price-card fade-up stagger-${i + 1} ${visibleSections["cennik"] ? "visible" : ""} relative rounded-3xl p-9`}
+                                className={`price-card fade-up stagger-${i + 1} ${visibleSections["pricing"] ? "visible" : ""} relative rounded-3xl p-9`}
                                 style={{
                                     background: plan.popular ? "linear-gradient(160deg, #1E3A5F 0%, #1a1a2e 100%)" : "rgba(30,41,59,0.5)",
                                     border: plan.popular ? "1px solid #3B82F6" : "1px solid rgba(226,232,240,0.07)",
@@ -384,7 +399,7 @@ export const LandingPage: React.FC = () => {
                                         className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-white text-[10px] font-black tracking-[0.12em] uppercase px-4 py-1 rounded-full whitespace-nowrap"
                                         style={{ background: "linear-gradient(90deg, #3B82F6, #7C3AED)" }}
                                     >
-                                        Najpopularniejszy
+                                        {t('most_popular')}
                                     </div>
                                 )}
                                 <div className="text-[11px] font-bold tracking-widest uppercase mb-2" style={{ color: plan.popular ? "#60A5FA" : "#64748B" }}>
@@ -416,7 +431,7 @@ export const LandingPage: React.FC = () => {
                                         boxShadow: plan.popular ? "0 4px 20px rgba(59,130,246,0.3)" : "none",
                                     }}
                                 >
-                                    Wybierz plan
+                                    {t('select_plan_btn')}
                                 </Link>
                             </div>
                         ))}
@@ -425,8 +440,8 @@ export const LandingPage: React.FC = () => {
             </section>
 
             <section
-                id="mapa"
-                ref={registerRef("mapa")}
+                id="locations"
+                ref={registerRef("locations")}
                 className="py-24 px-8 border-t border-white/5"
                 style={{ background: "rgba(15,23,42,0.6)" }}
             >
@@ -435,7 +450,7 @@ export const LandingPage: React.FC = () => {
                         href="/locations"
                         className="inline-flex items-center gap-2 bg-blue-500 px-8 py-4 rounded-2xl font-bold text-white hover:bg-blue-600 transition-all"
                     >
-                        Znajdź swój klub na mapie (60 lokalizacji) <Navigation className="w-5 h-5" />
+                        {t('find_club')} <Navigation className="w-5 h-5" />
                     </a>
                 </div>
             </section>
@@ -452,23 +467,23 @@ export const LandingPage: React.FC = () => {
 
                 <div className="relative max-w-200 mx-auto text-center">
                     <div className="display text-white mb-6" style={{ fontSize: "clamp(48px, 8vw, 96px)", lineHeight: 0.95 }}>
-                        Twoja metamorfoza<br />
+                        {t('transformation_part1')}<br />
                         <span style={{ background: "linear-gradient(90deg, #3B82F6, #8B5CF6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              zaczyna się dziś.
-            </span>
+                            {t('transformation_part2')}
+                        </span>
                     </div>
                     <p className="text-slate-400 text-base leading-relaxed max-w-125 mx-auto mb-10">
-                        Dołącz do ponad 1200 osób, które już trenują z GymSystem. Pierwszych 30 dni bez opłat.
+                        {t('join_desc')}
                     </p>
                     <Link
                         to="/register"
                         className="inline-flex items-center gap-3 text-white font-black text-lg no-underline px-10 py-5 rounded-2xl tracking-wide transition-all hover:-translate-y-0.5"
                         style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)", boxShadow: "0 8px 40px rgba(59,130,246,0.4)" }}
                     >
-                        Zacznij za darmo →
+                        {t('start_free_cta')} <MoveRight />
                     </Link>
                     <p className="text-xs text-slate-700 mt-5 tracking-wider">
-                        Bez karty kredytowej · Anuluj w każdej chwili · Pełny dostęp przez 30 dni
+                        {t('guarantees')}
                     </p>
                 </div>
             </section>
@@ -478,17 +493,10 @@ export const LandingPage: React.FC = () => {
                     <div
                         className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm display"
                         style={{ background: "linear-gradient(135deg, #3B82F6, #8B5CF6)" }}
-                    >GS</div>
+                    ><Dumbbell className="w-4 h-4"/></div>
                     <span className="font-bold text-sm text-slate-200">GymSystem</span>
                 </div>
-                <p className="text-xs text-slate-700">© 2026 GymSystem — Projekt studencki</p>
-                <div className="flex gap-6">
-                    {["Regulamin", "Prywatność", "Kontakt"].map((label) => (
-                        <a key={label} href="#" className="text-xs text-slate-600 hover:text-slate-400 no-underline transition-colors">
-                            {label}
-                        </a>
-                    ))}
-                </div>
+                <p className="text-xs text-slate-700">© 2026 GymSystem</p>
             </footer>
         </div>
     );
