@@ -55,7 +55,7 @@ export const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white-200 p-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
+        <div className="min-h-screen flex overflow-hidden relative items-center justify-center bg-slate-900 text-slate-200 p-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ background: "radial-gradient(circle at 50% 50%, #1E3A5F 0%, transparent 80%)" }} />
             <div className="max-w-md w-full bg-slate-800/40 backdrop-blur-xl border border-white/5 rounded-3xl p-8 shadow-2xl relative z-10">
                 <Link
@@ -74,7 +74,7 @@ export const Login: React.FC = () => {
                     <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg" style={{ background: "linear-gradient(135deg, #3B82F6, #8B5CF6)" }}>
                         <Dumbbell className="w-8 h-8" />
                     </div>
-                    <h2 className="text-4xl text-white tracking-wide" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{t('login.title')}</h2>
+                    <h2 className="text-4xl text-center text-white tracking-wide" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{t('login.title')}</h2>
                     <p className="text-slate-400 mt-2 text-center text-sm">{t('login.subtitle')}</p>
                 </div>
 

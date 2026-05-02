@@ -37,7 +37,7 @@ export const Register: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-900 text-slate-200 p-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
+        <div className="min-h-screen overflow-hidden relative flex items-center justify-center bg-slate-900 text-slate-200 p-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
 
             <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ background: "radial-gradient(circle at 50% 50%, #1E3A5F 0%, transparent 80%)" }} />
 
@@ -58,7 +58,7 @@ export const Register: React.FC = () => {
                     <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white mb-4 shadow-lg" style={{ background: "linear-gradient(135deg, #3B82F6, #8B5CF6)" }}>
                         <Dumbbell className="w-8 h-8" />
                     </div>
-                    <h2 className="text-4xl text-white tracking-wide" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{t('register.title')}</h2>
+                    <h2 className="text-4xl text-white text-center tracking-wide" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{t('register.title')}</h2>
                     <p className="text-slate-400 mt-1 text-center text-sm">{t('register.subtitle')}</p>
                 </div>
 
