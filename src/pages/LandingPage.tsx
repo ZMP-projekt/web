@@ -158,9 +158,9 @@ export const LandingPage: React.FC = () => {
             }`}>
                 <div className="flex items-center gap-2.5">
                     <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-lg display"
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg display"
                         style={{ background: "linear-gradient(135deg, #3B82F6, #8B5CF6)" }}
-                    >GS</div>
+                    ><Dumbbell className="w-6 h-6" /></div>
                     <span className="font-bold text-lg text-white">GymSystem</span>
                 </div>
 
