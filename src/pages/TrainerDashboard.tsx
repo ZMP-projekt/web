@@ -45,7 +45,7 @@ const formatDuration = (start: string, end: string): string => {
 const getTodayIso = (): string => new Date().toISOString().split('T')[0];
 
 const StatTile = ({ value, label, color = 'text-white' }: { value: string | number; label: string; color?: string }) => (
-    <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl px-5 py-4 text-center">
+    <div className="bg-slate-800/40 border flex flex-col min-w-max border-slate-700/50 rounded-2xl px-5 py-4 text-center">
         <p className={`text-3xl font-extrabold leading-none ${color}`}>{value}</p>
         <p className="text-slate-500 text-xs mt-1.5 uppercase tracking-wider font-medium">{label}</p>
     </div>
@@ -119,7 +119,7 @@ export const TrainerDashboard: React.FC = () => {
                 )}
             </header>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto">
                 {isLoading ? (
                     <>
                         {[0, 1, 2].map((i) => (
@@ -135,8 +135,8 @@ export const TrainerDashboard: React.FC = () => {
                 )}
             </div>
 
-            <div className="grid grid-cols-5 gap-6">
-                <div className="col-span-3">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                <div className="col-span-1 lg:col-span-3">
                     <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">{t('trainer.next_classes')}</h2>
 
                     {isLoading ? (
@@ -225,7 +225,7 @@ export const TrainerDashboard: React.FC = () => {
                     )}
                 </div>
 
-                <div className="col-span-2">
+                <div className="col-span-1 lg:col-span-2">
                     <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">{t('trainer.today_plan')}</h2>
 
                     {isLoading ? (
