@@ -64,7 +64,7 @@ export const Memberships: React.FC = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto space-y-15 max-h-screen">
+        <div className="max-w-6xl mx-auto space-y-15 min-h-full pb-8">
             <div>
                 <h1 className="text-3xl font-bold text-white">{t('manage_title')}</h1>
                 <p className="text-slate-400 mt-2">{t('manage_description')}</p>
