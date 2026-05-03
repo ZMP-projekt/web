@@ -96,7 +96,7 @@ export const TrainerDashboard: React.FC = () => {
 
     const getTimeUntil = (iso: string): string => {
         const diff = new Date(iso).getTime() - Date.now();
-        if (diff <= 0) return t('trainer.happening.now');
+        if (diff <= 0) return t('trainer.happening_now');
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
         if (h > 0) return t('trainer.starts_in', {
