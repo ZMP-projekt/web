@@ -1,4 +1,4 @@
-import { Home, CalendarDays, CreditCard, User, Dumbbell, LogOut } from 'lucide-react';
+import { Home, CalendarDays, CreditCard, User, Dumbbell, LogOut, X } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import React from 'react';
 import { useAuth } from '../auth/useAuth.ts';
@@ -6,7 +6,12 @@ import { useAxiosPrivate } from '../hooks/useAxiosPrivate.ts';
 import {useTranslation} from "react-i18next";
 import {LanguageButton} from "./LanguageButton.tsx";
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
     const { logout } = useAuth();
     const apiPrivate = useAxiosPrivate();
@@ -29,6 +34,7 @@ export const Sidebar: React.FC = () => {
         return (
             <Link
                 to={to}
+                onClick={onClose}
                 className={`flex items-center gap-3.5 w-full px-3 py-2.5 rounded-xl transition-all duration-200 no-underline ${
                     isActive
                         ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
@@ -47,39 +53,55 @@ export const Sidebar: React.FC = () => {
     };
 
     return (
-        <div className="fixed left-0 top-0 h-full w-64 bg-slate-900/95 border-r border-slate-800/80 p-5 flex flex-col backdrop-blur-sm">
-            <div className="flex items-center gap-2.5 mb-8 px-1">
+        <>
+            {isOpen && (
                 <div
-                    className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-                    style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}
-                >
-                    <Dumbbell className="w-4 h-4 text-white" />
+                    className="md:hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-40"
+                    onClick={onClose}
+                />
+            )}
+
+            <div className={`fixed left-0 top-0 h-full w-64 bg-slate-900/95 border-r border-slate-800/80 p-5 flex flex-col z-50 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+                isOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}>
+                <div className="flex items-center justify-between mb-8 px-1">
+                    <div className="flex items-center gap-2.5">
+                        <div
+                            className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                            style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}
+                        >
+                            <Dumbbell className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-white font-bold text-lg tracking-tight">GymSystem</span>
+                    </div>
+                    <button onClick={onClose} className="md:hidden p-1 text-slate-400 hover:text-white">
+                        <X className="w-6 h-6" />
+                    </button>
                 </div>
-                <span className="text-white font-bold text-lg tracking-tight">GymSystem</span>
+
+                <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 mb-2">
+                    Menu
+                </p>
+
+                <nav className="flex-1 space-y-1">
+                    <NavButton to="/dashboard"   icon={<Home className="w-5 h-5" />}         label={t('dashboard')} />
+                    <NavButton to="/schedule"    icon={<CalendarDays className="w-5 h-5" />}  label={t('schedule')} />
+                    <NavButton to="/memberships" icon={<CreditCard className="w-5 h-5" />}    label={t('my_membership')} />
+                    <NavButton to="/profile"     icon={<User className="w-5 h-5" />}          label={t('profile')} />
+                </nav>
+
+                <LanguageButton />
+
+                <div className="pt-4 border-t border-slate-800/80 mt-4">
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3.5 w-full px-3 py-2.5 rounded-xl transition-all duration-200 text-slate-500 hover:bg-red-500/10 hover:text-red-400"
+                    >
+                        <LogOut className="w-5 h-5 shrink-0" />
+                        <span className="font-medium text-sm">{t('logout')}</span>
+                    </button>
+                </div>
             </div>
-
-            <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 mb-2">
-                Menu
-            </p>
-
-            <nav className="flex-1 space-y-1">
-                <NavButton to="/dashboard"   icon={<Home className="w-5 h-5" />}         label={t('dashboard')} />
-                <NavButton to="/schedule"    icon={<CalendarDays className="w-5 h-5" />}  label={t('schedule')} />
-                <NavButton to="/memberships" icon={<CreditCard className="w-5 h-5" />}    label={t('my_membership')} />
-                <NavButton to="/profile"     icon={<User className="w-5 h-5" />}          label={t('profile')} />
-            </nav>
-
-            <LanguageButton />
-
-            <div className="pt-4 border-t border-slate-800/80">
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-3.5 w-full px-3 py-2.5 rounded-xl transition-all duration-200 text-slate-500 hover:bg-red-500/10 hover:text-red-400"
-                >
-                    <LogOut className="w-5 h-5 shrink-0" />
-                    <span className="font-medium text-sm">{t('logout')}</span>
-                </button>
-            </div>
-        </div>
+        </>
     );
 };
