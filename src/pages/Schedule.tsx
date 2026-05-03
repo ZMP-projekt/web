@@ -144,7 +144,7 @@ export const Schedule: React.FC = () => {
                     >
                         <ArrowLeft className="w-4 h-4" />
                     </button>
-                    <div className="flex-1 grid grid-cols-7 gap-2">
+                    <div className="flex overflow-x-auto w-full md:grid no-scrollbar grid-cols-7 gap-2">
                         {availableDays.map((dateStr) => {
                             const d = new Date(dateStr);
                             const dayName = d.toLocaleDateString(i18n.language, { weekday: 'short' });
@@ -156,7 +156,7 @@ export const Schedule: React.FC = () => {
                                 <button
                                     key={dateStr}
                                     onClick={() => setSelectedDate(dateStr)}
-                                    className={`flex flex-col items-center justify-center py-3 rounded-2xl border transition-all duration-200 ${
+                                    className={`flex flex-col min-w-20 items-center justify-center py-3 rounded-2xl border transition-all duration-200 ${
                                         selected
                                             ? 'text-white border-blue-500 shadow-lg shadow-blue-500/20'
                                             : today
