@@ -60,7 +60,8 @@
     "last_name": "Last name",
     "email": "Email address",
     "password": "Password",
-    "log_in": "Log in"
+    "log_in": "Log in",
+    "month": "month"
   },
   "navbar": {
     "dashboard": "Dashboard",
@@ -96,7 +97,10 @@
     "buy_membership_btn": "Buy membership",
     "extend_membership_btn": "Extend membership",
     "toast_extended": "Successfully extended the {{type}} membership!",
-    "toast_purchased": "Successfully purchased the {{type}} membership!"
+    "toast_purchased": "Successfully purchased the {{type}} membership!",
+    "student_pass": "Student Pass",
+    "open_pass": "Open Pass",
+    "night_pass": "Night Pass"
   },
   "schedule": {
     "user": {
@@ -210,7 +214,10 @@
     "depends_on_location": "Depending on location",
     "select_club_btn": "Select this club",
     "no_clubs_found": "No clubs found in this location.",
-    "back_to_home": "Back to home page"
+    "back_to_home": "Back to home page",
+    "show_on_map": "Show on map",
+    "show_map": "Show map",
+    "show_list": "Show list"
   },
   "auth": {
     "login": {
@@ -293,5 +300,22 @@
     "start_free_cta": "Start for free",
     "guarantees": "No credit card · Cancel anytime · Full access for 30 days",
     "join_now": "Join now"
+  },
+  "plan_features": {
+    "student_alternative": "Cheaper alternative for students",
+    "flexible_management": "Flexible membership management",
+    "basic_plan": "Basic training plan",
+    "open_24_7": "Club open for you 24/7",
+    "no_limits": "No limitations whatsoever",
+    "unlimited_group_classes": "Unlimited group classes",
+    "night_owls": "Designed for night owls",
+    "no_crowds_guarantee": "Guaranteed peace and no crowds",
+    "full_equipment_access": "Access to full equipment",
+    "student_discount": "Student discount",
+    "app_included": "Mobile app included",
+    "locker_included": "Locker during workout",
+    "all_zones_access": "Full access to all zones",
+    "free_personal_training": "1 free personal training session",
+    "focus_conditions": "Ideal conditions for focus"
   }
 }

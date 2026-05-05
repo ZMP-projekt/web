@@ -64,7 +64,8 @@
     "last_name": "Nazwisko",
     "email": "Adres E-mail",
     "password": "Hasło",
-    "log_in": "Zaloguj się"
+    "log_in": "Zaloguj się",
+    "month": "miesiąc"
   },
   "navbar": {
     "dashboard": "Pulpit",
@@ -100,7 +101,10 @@
     "buy_membership_btn": "Kup karnet",
     "extend_membership_btn": "Przedłuż karnet",
     "toast_extended": "Pomyślnie przedłużono karnet {{type}}!",
-    "toast_purchased": "Pomyślnie zakupiono karnet {{type}}!"
+    "toast_purchased": "Pomyślnie zakupiono karnet {{type}}!",
+    "student_pass": "Karnet Student",
+    "open_pass": "Karnet Open",
+    "night_pass": "Karnet Night"
   },
   "schedule": {
     "user": {
@@ -219,7 +223,10 @@
     "depends_on_location": "Zależnie od lokalizacji",
     "select_club_btn": "Wybierz ten klub",
     "no_clubs_found": "Nie znaleziono klubów w tej lokalizacji.",
-    "back_to_home": "Powrót do strony głównej"
+    "back_to_home": "Powrót do strony głównej",
+    "show_on_map": "Pokaż na mapie",
+    "show_map": "Pokaż mapę",
+    "show_list": "Pokaż listę"
   },
   "auth": {
     "login": {
@@ -302,5 +309,22 @@
     "start_free_cta": "Zacznij za darmo",
     "guarantees": "Bez karty kredytowej · Anuluj w każdej chwili · Pełny dostęp przez 30 dni",
     "join_now": "Dołącz teraz"
+  },
+  "plan_features": {
+    "student_alternative": "Tańsza alternatywa dla uczących się",
+    "flexible_management": "Elastyczne zarządzanie karnetem",
+    "basic_plan": "Podstawowy plan treningowy",
+    "open_24_7": "Klub otwarty dla Ciebie 24/7",
+    "no_limits": "Brak jakichkolwiek limitów",
+    "unlimited_group_classes": "Nielimitowane zajęcia grupowe",
+    "night_owls": "Zaprojektowany dla nocnych marków",
+    "no_crowds_guarantee": "Gwarancja spokoju i braku tłumów",
+    "full_equipment_access": "Dostęp do pełnego wyposażenia",
+    "student_discount": "Zniżka dla uczących się",
+    "app_included": "Aplikacja mobilna w cenie",
+    "locker_included": "Szafka na czas treningu",
+    "all_zones_access": "Pełny dostęp do wszystkich stref",
+    "free_personal_training": "1 darmowy trening personalny",
+    "focus_conditions": "Idealne warunki do skupienia"
   }
 }
