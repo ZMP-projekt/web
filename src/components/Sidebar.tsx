@@ -90,7 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     <NavButton to="/profile"     icon={<User className="w-5 h-5" />}          label={t('profile')} />
                 </nav>
 
-                <LanguageButton />
+                <div className="flex justify-center"><LanguageButton/></div>
 
                 <div className="pt-4 border-t border-slate-800/80 mt-4">
                     <button
