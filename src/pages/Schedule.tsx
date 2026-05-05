@@ -12,6 +12,7 @@ import {ClassCard, type GymClass} from "../components/ClassCard.tsx";
 import {useNavigate, useParams} from "react-router";
 import {useTranslation} from "react-i18next";
 import i18n from "../i18n.ts";
+import {createPortal} from "react-dom";
 
 const generateNext7Days = (offset: number): string[] => {
     const days: string[] = [];
@@ -228,101 +229,107 @@ export const Schedule: React.FC = () => {
                 </div>
             </div>
 
-            {selectedClassDetails && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-4 py-6 overflow-y-auto">
-                    <div className="bg-slate-800 border border-slate-700 w-full max-w-xl rounded-4xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
-                        <div className={`p-8 pb-6 ${selectedClassDetails.personalTraining ? 'bg-amber-500/10' : 'bg-blue-500/10'}`}>
-                            <div className="flex justify-between items-start mb-4">
-                    <span className={`text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${
-                        selectedClassDetails.personalTraining
-                            ? 'border-amber-500/30 text-amber-500 bg-amber-500/5'
-                            : 'border-blue-500/30 text-blue-500 bg-blue-500/5'
-                    }`}>
-                        {selectedClassDetails.personalTraining ? t('common.personal_training') : t('user.group_class')}
-                    </span>
-                                <button
-                                    onClick={() => navigate('/schedule')}
-                                    className="text-slate-500 hover:text-white transition-colors"
-                                >
-                                    <XCircle className="w-8 h-8" />
-                                </button>
-                            </div>
-                            <h2 className="text-3xl font-black text-white leading-tight">{selectedClassDetails.name}</h2>
-                        </div>
+            {/* Używamy createPortal, aby "wyrzucić" modal poza strukturę DOM i zapobiec przykrywaniu przez Topbar */}
+            {selectedClassDetails && createPortal(
+                <div className="fixed inset-0 z-100 bg-black/70 backdrop-blur-md overflow-y-auto">
+                    {/* Ten dodatkowy div naprawia błąd ucinania góry modala na małych ekranach */}
+                    <div className="flex min-h-full items-start md:items-center justify-center p-4 py-8">
+                        <div className="bg-slate-800 border border-slate-700 w-full max-w-xl rounded-4xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
 
-                        <div className="p-8 pt-2 space-y-8">
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="space-y-1">
-                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.trainer')}</p>
-                                    <div className="flex items-center gap-2 text-white font-semibold">
-                                        <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center">
-                                            <User className="w-4 h-4 text-blue-400" />
-                                        </div>
-                                        {selectedClassDetails.trainerName}
-                                    </div>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.duration')}</p>
-                                    <div className="flex items-center gap-2 text-white font-semibold">
-                                        <Clock className="w-5 h-5 text-slate-400" />
-                                        {formatTime(selectedClassDetails.startTime)} - {formatTime(selectedClassDetails.endTime)}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-4">
-                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-3">{t('common.location')}</p>
-                                <div className="flex items-start justify-between gap-4">
-                                    <div className="flex gap-3">
-                                        <MapPin className="w-5 h-5 text-red-500 shrink-0 mt-1" />
-                                        <div>
-                                            <p className="text-white font-bold">{selectedClassDetails.locationName}</p>
-                                            <p className="text-slate-400 text-sm">{selectedClassDetails.address}, {selectedClassDetails.city}</p>
-                                        </div>
-                                    </div>
-                                    <a
-                                        href={`https://www.google.com/maps/search/?api=1&query=${selectedClassDetails.latitude},${selectedClassDetails.longitude}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="bg-slate-800 hover:bg-slate-700 p-2 rounded-xl border border-slate-600 transition-colors"
-                                        title={t('user.open_map')}
+                            <div className="p-8 pb-6 bg-slate-800">
+                                <div className="flex justify-between items-start mb-4">
+                                    <span className={`text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${
+                                        selectedClassDetails.personalTraining
+                                            ? 'border-amber-500/30 text-amber-500 bg-amber-500/5'
+                                            : 'border-blue-500/30 text-blue-500 bg-blue-500/5'
+                                    }`}>
+                                        {selectedClassDetails.personalTraining ? t('common.personal_training') : t('user.group_class')}
+                                    </span>
+                                    <button
+                                        onClick={() => navigate('/schedule')}
+                                        className="text-slate-500 hover:text-white transition-colors"
                                     >
-                                        <Navigation className="w-5 h-5 text-blue-400" />
-                                    </a>
+                                        <XCircle className="w-8 h-8" />
+                                    </button>
                                 </div>
+                                <h2 className="text-3xl font-black text-white leading-tight">{selectedClassDetails.name}</h2>
                             </div>
 
-                            <div className="space-y-2">
-                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.about')}</p>
-                                <p className="text-slate-300 leading-relaxed italic">
-                                    "{selectedClassDetails.description || t('user.no_description')}"
-                                </p>
-                            </div>
+                            <div className="p-8 pt-2 space-y-8">
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="space-y-1">
+                                        <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.trainer')}</p>
+                                        <div className="flex items-center gap-2 text-white font-semibold">
+                                            <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center">
+                                                <User className="w-4 h-4 text-blue-400" />
+                                            </div>
+                                            {selectedClassDetails.trainerName}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.duration')}</p>
+                                        <div className="flex items-center gap-2 text-white font-semibold">
+                                            <Clock className="w-5 h-5 text-slate-400" />
+                                            {formatTime(selectedClassDetails.startTime)} - {formatTime(selectedClassDetails.endTime)}
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <div className="pt-4 border-t border-slate-700/50">
-                                <div className="flex justify-between items-end mb-2">
-                                    <span className="text-slate-400 text-sm font-medium">{t('user.participants')}</span>
-                                    <span className="text-white font-bold">
-                            {selectedClassDetails.currentParticipants} / {selectedClassDetails.maxParticipants}
-                        </span>
+                                <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-4">
+                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-3">{t('common.location')}</p>
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="flex gap-3">
+                                            <MapPin className="w-5 h-5 text-red-500 shrink-0 mt-1" />
+                                            <div>
+                                                <p className="text-white font-bold">{selectedClassDetails.locationName}</p>
+                                                <p className="text-slate-400 text-sm">{selectedClassDetails.address}, {selectedClassDetails.city}</p>
+                                            </div>
+                                        </div>
+                                        <a
+                                            href={`https://www.google.com/maps/search/?api=1&query=${selectedClassDetails.latitude},${selectedClassDetails.longitude}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="bg-slate-800 hover:bg-slate-700 p-2 rounded-xl border border-slate-600 transition-colors"
+                                            title={t('user.open_map')}
+                                        >
+                                            <Navigation className="w-5 h-5 text-blue-400" />
+                                        </a>
+                                    </div>
                                 </div>
-                                <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-blue-500 rounded-full transition-all duration-1000"
-                                        style={{ width: `${(selectedClassDetails.currentParticipants / selectedClassDetails.maxParticipants) * 100}%` }}
-                                    />
-                                </div>
-                            </div>
 
-                            {selectedClassDetails.userEnrolled && (
-                                <div className="flex items-center justify-center gap-2 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
-                                    <CheckCircle className="w-5 h-5 text-emerald-500" />
-                                    <span className="text-emerald-500 font-bold text-sm uppercase tracking-wide">{t('user.on_participants_list')}</span>
+                                <div className="space-y-2">
+                                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.about')}</p>
+                                    <p className="text-slate-300 leading-relaxed italic">
+                                        "{selectedClassDetails.description || t('user.no_description')}"
+                                    </p>
                                 </div>
-                            )}
+
+                                <div className="pt-4 border-t border-slate-700/50">
+                                    <div className="flex justify-between items-end mb-2">
+                                        <span className="text-slate-400 text-sm font-medium">{t('user.participants')}</span>
+                                        <span className="text-white font-bold">
+                                            {selectedClassDetails.currentParticipants} / {selectedClassDetails.maxParticipants}
+                                        </span>
+                                    </div>
+                                    <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-blue-500 rounded-full transition-all duration-1000"
+                                            style={{ width: `${(selectedClassDetails.currentParticipants / selectedClassDetails.maxParticipants) * 100}%` }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {selectedClassDetails.userEnrolled && (
+                                    <div className="flex items-center justify-center gap-2 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+                                        <CheckCircle className="w-5 h-5 text-emerald-500" />
+                                        <span className="text-emerald-500 font-bold text-sm uppercase tracking-wide">{t('user.on_participants_list')}</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body // Drugi argument createPortal - mówi gdzie teleportować kod
             )}
         </div>
     );
