@@ -31,35 +31,12 @@ interface PricingPlan {
     popular: boolean;
 }
 
-
-
-const PRICING: PricingPlan[] = [
-    {
-        title: "Student",
-        price: "89",
-        features: ["Dostęp do 16:00", "Strefy podstawowe", "Aplikacja mobilna", "Szafka w cenie"],
-        popular: false,
-    },
-    {
-        title: "Open",
-        price: "149",
-        features: ["Dostęp 24/7", "Wszystkie strefy", "Zajęcia grupowe", "1 trening personalny", "Aplikacja mobilna"],
-        popular: true,
-    },
-    {
-        title: "VIP",
-        price: "249",
-        features: ["Dostęp 24/7", "Zajęcia Premium", "Ręcznik i woda", "Nielimitowane konsultacje", "Strefa SPA"],
-        popular: false,
-    },
-];
-
 export const LandingPage: React.FC = () => {
     const [scrolled, setScrolled] = useState<boolean>(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
     const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
-    const { t } = useTranslation(['landing_page', 'common']);
+    const { t } = useTranslation(['landing_page', 'common', 'plan_features']);
 
     const NAV_LINKS: NavLink[] = [
         { label: t('about'), href: "#about" },
@@ -69,10 +46,49 @@ export const LandingPage: React.FC = () => {
     ];
 
     const STATS: Stat[] = [
-        { value: "1 200+", label: t('active_members') },
+        { value: "1200+", label: t('active_members') },
         { value: "30", label: t('locations_count') },
         { value: "Top", label: t('certified_coaches') },
         { value: "40+", label: t('classes_per_week') },
+    ];
+
+    const PRICING: PricingPlan[] = [
+        {
+            title: "Student",
+            price: "100",
+            features: [
+                t('plan_features:student_discount'),
+                t('plan_features:flexible_management'),
+                t('plan_features:basic_plan'),
+                t('plan_features:app_included'),
+                t('plan_features:locker_included')
+            ],
+            popular: false,
+        },
+        {
+            title: "Open",
+            price: "170",
+            features: [
+                t('plan_features:no_limits'),
+                t('plan_features:unlimited_group_classes'),
+                t('plan_features:all_zones_access'),
+                t('plan_features:free_personal_training'),
+                t('plan_features:app_included')
+            ],
+            popular: true,
+        },
+        {
+            title: "Night",
+            price: "80",
+            features: [
+                t('plan_features:night_owls'),
+                t('plan_features:no_crowds_guarantee'),
+                t('plan_features:full_equipment_access'),
+                t('plan_features:focus_conditions'),
+                t('plan_features:app_included')
+            ],
+            popular: false,
+        },
     ];
 
     useEffect(() => {
@@ -462,7 +478,7 @@ export const LandingPage: React.FC = () => {
                                 </div>
                                 <div className="flex items-baseline gap-1 mb-7">
                                     <span className="display text-[56px] text-white leading-none">{plan.price}</span>
-                                    <span className="text-sm text-slate-500 font-medium">PLN / msc</span>
+                                    <span className="text-sm text-slate-500 font-medium">PLN / {t('common:month')}</span>
                                 </div>
                                 <div className="h-px mb-6" style={{ background: "rgba(226,232,240,0.06)" }} />
                                 <ul className="list-none mb-8 p-0">
