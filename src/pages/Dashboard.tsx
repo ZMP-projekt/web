@@ -8,6 +8,8 @@ import { useMembership } from '../hooks/useMembership.ts';
 import { Link } from 'react-router';
 import {SkeletonCard} from "../components/SkeletonCard.tsx";
 import {useTranslation} from "react-i18next";
+import {calculateDaysRemaining, formatDuration, formatTime} from "../utils/dateUtils.ts";
+import {calculateProgress} from "../utils/membershipUtils.ts";
 
 interface UserProfile {
     firstName: string;
@@ -32,14 +34,6 @@ interface ClassItem {
     userEnrolled: boolean;
     personalTraining: boolean;
 }
-
-const formatTime = (isoString: string): string =>
-    new Date(isoString).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-
-const formatDuration = (start: string, end: string): string => {
-    const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
-    return mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60 > 0 ? `${mins % 60} min` : ''}`.trim() : `${mins} min`;
-};
 
 const formatDate = (dateString: string): string =>
     new Date(dateString).toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -132,22 +126,6 @@ export const Dashboard: React.FC = () => {
         };
         void fetchDashboardData();
     },);
-
-    const calculateProgress = (endDateString: string): number => {
-        const end = new Date(endDateString);
-        const start = new Date(endDateString);
-        start.setMonth(start.getMonth() - 1);
-        const now = new Date();
-        const total = end.getTime() - start.getTime();
-        const passed = now.getTime() - start.getTime();
-        const pct = (passed / total) * 100;
-        return 100 - Math.min(100, Math.max(0, pct));
-    };
-
-    const calculateDaysRemaining = (endDateString: string): number => {
-        const diffTime = Math.max(new Date(endDateString).getTime() - new Date().getTime(), 0);
-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    };
 
     const greeting = (): string => {
         const h = new Date().getHours();

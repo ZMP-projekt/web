@@ -11,8 +11,8 @@ import {
     User,
     Plus,
 } from 'lucide-react';
-import i18n from "../i18n.ts";
 import {useTranslation} from "react-i18next";
+import {formatDuration, formatTime} from "../utils/dateUtils.ts";
 
 interface TrainerProfile {
     firstName: string;
@@ -33,14 +33,6 @@ interface ApiGymClass {
     locationName?: string;
     city?: string;
 }
-
-const formatTime = (iso: string): string =>
-    new Date(iso).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
-
-const formatDuration = (start: string, end: string): string => {
-    const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
-    return mins >= 60 ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? ` ${mins % 60} min` : ''}` : `${mins} min`;
-};
 
 const getTodayIso = (): string => new Date().toISOString().split('T')[0];
 

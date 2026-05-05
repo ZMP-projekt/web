@@ -13,16 +13,7 @@ import {useNavigate, useParams} from "react-router";
 import {useTranslation} from "react-i18next";
 import i18n from "../i18n.ts";
 import {createPortal} from "react-dom";
-
-const generateNext7Days = (offset: number): string[] => {
-    const days: string[] = [];
-    for (let i = 0; i < 7; i++) {
-        const date = new Date();
-        date.setDate(date.getDate() + i + offset);
-        days.push(date.toISOString().split('T')[0]);
-    }
-    return days;
-};
+import {formatTime, generateNext7Days, isToday} from "../utils/dateUtils.ts";
 
 const formatMonthRange = (days: string[]): string => {
     const first = new Date(days[0]);
@@ -33,12 +24,6 @@ const formatMonthRange = (days: string[]): string => {
     }
     return `${first.toLocaleDateString(i18n.language, { month: 'long' })} – ${last.toLocaleDateString(i18n.language, opts)}`;
 };
-
-const isToday = (dateStr: string): boolean =>
-    dateStr === new Date().toISOString().split('T')[0];
-
-const formatTime = (isoString: string): string =>
-    new Date(isoString).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
 
 export const Schedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();

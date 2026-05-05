@@ -4,8 +4,8 @@ import {
     Users, Loader2, ChevronRight, XCircle
 } from 'lucide-react';
 import {Link} from "react-router";
-import i18n from "../i18n.ts";
 import {useTranslation} from "react-i18next";
+import {formatDuration, formatTime} from "../utils/dateUtils.ts";
 
 export interface GymClass {
     id: number;
@@ -30,16 +30,6 @@ interface ClassCardProps {
     isActionLoading: boolean;
     onEnroll: (id: number, enrolling: boolean) => void;
 }
-
-const formatTime = (isoString: string): string =>
-    new Date(isoString).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
-
-const formatDuration = (start: string, end: string): string => {
-    const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
-    return mins >= 60
-        ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? ` ${mins % 60} min` : ''}`
-        : `${mins} min`;
-};
 
 export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading, onEnroll }) => {
     const isFull = gymClass.currentParticipants >= gymClass.maxParticipants;

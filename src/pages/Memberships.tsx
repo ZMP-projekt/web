@@ -4,6 +4,7 @@ import {CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap, AlertCircle} fro
 import toast from "react-hot-toast";
 import {useMembership} from "../hooks/useMembership.ts";
 import {useTranslation} from "react-i18next";
+import {calculateDaysRemaining} from "../utils/dateUtils.ts";
 
 const MEMBERSHIP_PLANS = [
     {
@@ -48,11 +49,6 @@ export const Memberships: React.FC = () => {
         } finally {
             setPurchasingType(null);
         }
-    };
-
-    const calculateDaysRemaining = (endDateString: string) => {
-        const diffTime = Math.max(new Date(endDateString).getTime() - new Date().getTime(), 0);
-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     };
 
     const formatDate = (dateString: string) => {

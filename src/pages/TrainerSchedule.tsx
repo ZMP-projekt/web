@@ -24,6 +24,7 @@ import toast from 'react-hot-toast';
 import { api } from '../api/axios.ts';
 import i18n from "../i18n.ts";
 import {useTranslation} from "react-i18next";
+import {formatDuration, formatTime, generateNext7Days, isToday} from "../utils/dateUtils.ts";
 
 interface ApiGymClass {
     id: number;
@@ -52,24 +53,6 @@ interface Location {
     address: string;
 }
 
-const generateNext7Days = (offset: number): string[] => {
-    const days: string[] = [];
-    for (let i = 0; i < 7; i++) {
-        const d = new Date();
-        d.setDate(d.getDate() + i + offset);
-        days.push(d.toISOString().split('T')[0]);
-    }
-    return days;
-};
-
-const formatTime = (iso: string): string =>
-    new Date(iso).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
-
-const formatDuration = (start: string, end: string): string => {
-    const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
-    return mins >= 60 ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? ` ${mins % 60} min` : ''}` : `${mins} min`;
-};
-
 const formatMonthRange = (days: string[]): string => {
     const first = new Date(days[0]);
     const last = new Date(days[days.length - 1]);
@@ -77,9 +60,6 @@ const formatMonthRange = (days: string[]): string => {
         return first.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' });
     return `${first.toLocaleDateString(i18n.language, { month: 'long' })} – ${last.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })}`;
 };
-
-const isToday = (dateStr: string): boolean =>
-    dateStr === new Date().toISOString().split('T')[0];
 
 const inputCls = 'w-full pl-9 pr-4 py-3 bg-slate-900/60 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-600';
 const labelCls = 'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2';
