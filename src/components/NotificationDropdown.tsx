@@ -12,6 +12,9 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
     const { notifications, markAsRead, deleteNotification, unreadCount } = useNotifications();
     const { t } = useTranslation('notifications');
 
+    // NOWY STAN: Zapamiętuje ID powiadomienia, które zostało dotknięte/kliknięte
+    const [touchedId, setTouchedId] = React.useState<number | null>(null);
+
     if (!isOpen) return null;
 
     const formatDate = (dateString: string) => {
@@ -22,7 +25,9 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
     return (
         <>
             <div className="fixed inset-0 z-40" onClick={onClose}></div>
-            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50 flex flex-col max-h-[80vh]">
+
+            <div className="fixed left-4 right-4 top-20 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50 flex flex-col max-h-[80vh]">
+
                 <div className="p-4 border-b border-slate-700 flex items-center justify-between bg-slate-800/90 backdrop-blur-sm z-10">
                     <div className="flex items-center gap-2">
                         <h3 className="text-white font-bold text-lg">{t('notifications')}</h3>
@@ -46,48 +51,61 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
                         </div>
                     ) : (
                         <ul className="space-y-1">
-                            {notifications.map((notification) => (
-                                <li
-                                    key={notification.id}
-                                    className={`relative group p-3 rounded-xl transition-all ${
-                                        notification.read
-                                            ? 'bg-transparent hover:bg-slate-700/50'
-                                            : 'bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20'
-                                    }`}
-                                >
-                                    <div className="pr-14">
-                                        <p className={`text-sm mb-1 ${notification.read ? 'text-slate-300' : 'text-blue-100 font-medium'}`}>
-                                            {notification.content}
-                                        </p>
-                                        <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">
-                                            {formatDate(notification.createdAt)}
-                                        </span>
-                                    </div>
+                            {notifications.map((notification) => {
+                                // Sprawdzamy, czy to konkretne powiadomienie jest "aktywne" na dotyk
+                                const isTouched = touchedId === notification.id;
 
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        {!notification.read && (
+                                return (
+                                    <li
+                                        key={notification.id}
+                                        // Po kliknięciu w obszar powiadomienia, pokazujemy lub chowamy przyciski
+                                        onClick={() => setTouchedId(isTouched ? null : notification.id)}
+                                        className={`relative group p-3 rounded-xl transition-all cursor-pointer ${
+                                            notification.read
+                                                ? 'bg-transparent hover:bg-slate-700/50'
+                                                : 'bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/20'
+                                        }`}
+                                    >
+                                        <div className="pr-16 sm:pr-14">
+                                            <p className={`text-sm mb-1 ${notification.read ? 'text-slate-300' : 'text-blue-100 font-medium'}`}>
+                                                {notification.content}
+                                            </p>
+                                            <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">
+                                                {formatDate(notification.createdAt)}
+                                            </span>
+                                        </div>
+
+                                        {/* KLASY CSS: Jeśli isTouched jest true, wymuszamy opacity-100 */}
+                                        <div className={`absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 transition-opacity ${
+                                            isTouched ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
+                                        }`}>
+                                            {!notification.read && (
+                                                <button
+                                                    // e.stopPropagation() zapobiega aktywowaniu onClick z nadrzędnego <li>
+                                                    onClick={(e) => { e.stopPropagation(); markAsRead(notification.id); }}
+                                                    className="p-1.5 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-colors"
+                                                    title={t('mark_as_read')}
+                                                >
+                                                    <CheckCircle className="w-4 h-4" />
+                                                </button>
+                                            )}
                                             <button
-                                                onClick={() => markAsRead(notification.id)}
-                                                className="p-1.5 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-colors"
-                                                title={t('mark_as_read')}
+                                                onClick={(e) => { e.stopPropagation(); deleteNotification(notification.id); }}
+                                                className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                                title={t('delete_notification')}
                                             >
-                                                <CheckCircle className="w-4 h-4" />
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
-                                        )}
-                                        <button
-                                            onClick={() => deleteNotification(notification.id)}
-                                            className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                                            title={t('delete_notification')}
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </div>
+                                        </div>
 
-                                    {!notification.read && (
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500 rounded-full group-hover:opacity-0 transition-opacity shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
-                                    )}
-                                </li>
-                            ))}
+                                        {!notification.read && (
+                                            <div className={`absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500 rounded-full transition-opacity shadow-[0_0_8px_rgba(59,130,246,0.8)] hidden sm:block ${
+                                                isTouched ? 'opacity-0' : 'sm:group-hover:opacity-0'
+                                            }`}></div>
+                                        )}
+                                    </li>
+                                );
+                            })}
                         </ul>
                     )}
                 </div>
