@@ -11,8 +11,6 @@ interface NotificationDropdownProps {
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOpen, onClose }) => {
     const { notifications, markAsRead, deleteNotification, unreadCount } = useNotifications();
     const { t } = useTranslation('notifications');
-
-    // NOWY STAN: Zapamiętuje ID powiadomienia, które zostało dotknięte/kliknięte
     const [touchedId, setTouchedId] = React.useState<number | null>(null);
 
     if (!isOpen) return null;
@@ -52,13 +50,11 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
                     ) : (
                         <ul className="space-y-1">
                             {notifications.map((notification) => {
-                                // Sprawdzamy, czy to konkretne powiadomienie jest "aktywne" na dotyk
                                 const isTouched = touchedId === notification.id;
 
                                 return (
                                     <li
                                         key={notification.id}
-                                        // Po kliknięciu w obszar powiadomienia, pokazujemy lub chowamy przyciski
                                         onClick={() => setTouchedId(isTouched ? null : notification.id)}
                                         className={`relative group p-3 rounded-xl transition-all cursor-pointer ${
                                             notification.read
@@ -75,13 +71,11 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
                                             </span>
                                         </div>
 
-                                        {/* KLASY CSS: Jeśli isTouched jest true, wymuszamy opacity-100 */}
                                         <div className={`absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 transition-opacity ${
                                             isTouched ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
                                         }`}>
                                             {!notification.read && (
                                                 <button
-                                                    // e.stopPropagation() zapobiega aktywowaniu onClick z nadrzędnego <li>
                                                     onClick={(e) => { e.stopPropagation(); markAsRead(notification.id); }}
                                                     className="p-1.5 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-colors"
                                                     title={t('mark_as_read')}
