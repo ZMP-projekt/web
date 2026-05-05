@@ -224,19 +224,19 @@ export const LandingPage: React.FC = () => {
                     </div>
 
                     <div className="mt-auto flex flex-col gap-4">
-                        <LanguageButton />
+                        <div className="max-w-max"><LanguageButton/></div>
                         <Link
                             to="/login"
                             className="flex items-center justify-center w-full p-4 rounded-2xl border border-slate-700/50 text-sm font-bold text-white bg-slate-800/80"
                         >
-                            Zaloguj się
+                            {t('auth:login.submit_btn')}
                         </Link>
                         <Link
                             to="/register"
-                            className="flex items-center justify-center w-full p-4 rounded-2xl text-white text-base font-bold shadow-lg"
+                            className="flex items-center justify-center gap-2 w-full p-4 rounded-2xl text-white text-base font-bold shadow-lg"
                             style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)" }}
                         >
-                            Dołącz teraz →
+                            {t('join_now')} <MoveRight className="w-4 h-4" />
                         </Link>
                     </div>
                 </div>
