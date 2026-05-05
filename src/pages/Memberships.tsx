@@ -4,38 +4,14 @@ import {CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap, AlertCircle} fro
 import toast from "react-hot-toast";
 import {useMembership} from "../hooks/useMembership.ts";
 import {useTranslation} from "react-i18next";
-import {calculateDaysRemaining} from "../utils/dateUtils.ts";
-
-const MEMBERSHIP_PLANS = [
-    {
-        type: 'STUDENT',
-        title: 'Karnet Student',
-        price: '89 PLN',
-        icon: <GraduationCap className="w-8 h-8 text-blue-400" />,
-        features: ['Ważna legitymacja studencka', 'Dostęp do 16:00', 'Podstawowy sprzęt']
-    },
-    {
-        type: 'OPEN',
-        title: 'Karnet Open',
-        price: '149 PLN',
-        icon: <Sun className="w-8 h-8 text-yellow-400" />,
-        features: ['Dostęp 24/7', 'Wszystkie strefy', 'Zajęcia grupowe']
-    },
-    {
-        type: 'NIGHT',
-        title: 'Karnet Night',
-        price: '99 PLN',
-        icon: <Moon className="w-8 h-8 text-purple-400" />,
-        features: ['Dostęp od 22:00 do 6:00', 'Brak tłumów', 'Dostęp do sauny']
-    }
-];
+import {calculateDaysRemaining, formatDate} from "../utils/dateUtils.ts";
 
 export const Memberships: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
 
     const { membership, isValid, isMembershipLoading, refreshMembership } = useMembership()
     const [purchasingType, setPurchasingType] = useState<string | null>(null);
-    const { t } = useTranslation(['memberships', 'common']);
+    const { t } = useTranslation(['memberships', 'common', 'plan_features']);
 
     const handlePurchase = async (type: string) => {
         setPurchasingType(type);
@@ -44,16 +20,36 @@ export const Memberships: React.FC = () => {
             toast.success(t(membership?.type === type ? 'toast_extended' : 'toast_purchased', {type: type}));
             await refreshMembership();
         } catch (error) {
-            console.error("Błąd zakupu:", error);
+            console.error("Purchase error:", error);
             toast.error(t('transaction_error'));
         } finally {
             setPurchasingType(null);
         }
     };
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    };
+    const MEMBERSHIP_PLANS = [
+        {
+            type: 'STUDENT',
+            title: t('student_pass'),
+            price: '100 PLN',
+            icon: <GraduationCap className="w-8 h-8 text-blue-400" />,
+            features: [t('plan_features:student_alternative'), t('plan_features:flexible_management'), t('plan_features:basic_plan')]
+        },
+        {
+            type: 'OPEN',
+            title: t('open_pass'),
+            price: '170 PLN',
+            icon: <Sun className="w-8 h-8 text-yellow-400" />,
+            features: [t('plan_features:open_24_7'), t('plan_features:no_limits'), t('plan_features:unlimited_group_classes')]
+        },
+        {
+            type: 'NIGHT',
+            title: t('night_pass'),
+            price: '80 PLN',
+            icon: <Moon className="w-8 h-8 text-purple-400" />,
+            features: [t('plan_features:night_owls'), t('plan_features:no_crowds_guarantee'), t('plan_features:full_equipment_access')]
+        }
+    ];
 
     if (isMembershipLoading) {
         return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white"><Loader2 className="w-10 h-10 animate-spin text-blue-500" /></div>;

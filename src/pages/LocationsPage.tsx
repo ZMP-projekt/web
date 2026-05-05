@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import { api } from '../api/axios';
 import { GymMap } from '../components/GymMap';
-import { Search, MapPin, Clock, ChevronRight } from 'lucide-react';
-import {Link} from "react-router";
-import {useTranslation} from "react-i18next";
+import {Search, MapPin, List, MoveLeft} from 'lucide-react';
+import {Link, useSearchParams} from "react-router";
+import { useTranslation } from "react-i18next";
+import {LanguageButton} from "../components/LanguageButton.tsx";
 
 interface GymLocation {
     id: number;
@@ -19,7 +20,17 @@ export const LocationsPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [activePin, setActivePin] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchParams] = useSearchParams();
+
+    const targetId = searchParams.get("id");
+
+    const [isMobileMapVisible, setIsMobileMapVisible] = useState(false);
+
     const { t } = useTranslation('map');
+
+    const handlePinClick = useCallback((id: number) => {
+        setActivePin(id);
+    }, []);
 
     useEffect(() => {
         const fetchLocations = async () => {
@@ -41,12 +52,19 @@ export const LocationsPage: React.FC = () => {
         void fetchLocations();
     }, []);
 
+    useEffect(() => {
+        if (targetId && locations.length > 0) {
+            setActivePin(Number(targetId));
+        }
+    }, [targetId, locations]);
+
     const filteredLocations = useMemo(() => {
         return locations.filter(loc =>
             loc.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
             loc.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [locations, searchQuery]);
+
     const groupedLocations = useMemo(() => {
         const groups: Record<string, GymLocation[]> = {};
         filteredLocations.forEach(loc => {
@@ -57,12 +75,15 @@ export const LocationsPage: React.FC = () => {
     }, [filteredLocations]);
 
     return (
-        <div className="flex h-screen bg-slate-900 text-slate-200 overflow-hidden" style={{ fontFamily: "'Outfit', sans-serif" }}>
-            <aside className="w-full md:w-100 flex flex-col border-r border-white/5 z-20 bg-slate-900 shadow-2xl">
+        <div className="flex h-screen bg-slate-900 text-slate-200 overflow-hidden relative" style={{ fontFamily: "'Outfit', sans-serif" }}>
+
+            <aside className="w-full md:w-100 flex flex-col border-r border-white/5 z-20 bg-slate-900 shadow-2xl relative h-full">
                 <div className="p-6 border-b border-white/5 bg-slate-800/20">
-                    <h1 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                        <MapPin className="text-blue-500" /> {t('title')}
-                    </h1>
+                    <div className="flex justify-between">
+                        <h1 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                        <MapPin className="text-blue-500"/> {t('title')}</h1>
+                        <div className="-translate-y-1"><LanguageButton/></div>
+                    </div>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                         <input
@@ -75,7 +96,7 @@ export const LocationsPage: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-8 no-scrollbar">
+                <div className="flex-1 overflow-y-auto p-4 space-y-8 no-scrollbar pb-24">
                     {isLoading ? (
                         <div className="flex justify-center py-20 text-slate-500 italic">{t('loading_locations')}</div>
                     ) : Object.keys(groupedLocations).length > 0 ? (
@@ -98,16 +119,22 @@ export const LocationsPage: React.FC = () => {
                                                     <h3 className="font-bold text-white group-hover:text-blue-400 transition-colors">{loc.name}</h3>
                                                     <p className="text-sm text-slate-400 mt-1">{loc.address}</p>
                                                 </div>
-                                                <ChevronRight className={`w-4 h-4 mt-1 transition-transform ${activePin === loc.id ? 'rotate-90 text-blue-500' : 'text-slate-600'}`} />
+                                                {activePin === loc.id && (
+                                                    <div className="w-2 h-2 mt-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)] md:hidden"></div>
+                                                )}
                                             </div>
 
                                             {activePin === loc.id && (
-                                                <div className="mt-4 pt-4 border-t border-white/5 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                    <div className="flex items-center gap-2 text-xs text-slate-500">
-                                                        <Clock className="w-3 h-3" /> 24/7 ({t('depends_on_location')})
-                                                    </div>
-                                                    <button className="w-full mt-2 py-2 bg-blue-500 text-white rounded-lg text-xs font-bold hover:bg-blue-600 transition-colors">
-                                                        {t('select_club_btn')}
+                                                <div className="mt-4 pt-4 border-t border-white/5 md:hidden animate-in fade-in slide-in-from-top-2 duration-300">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation(); // Zapobiega ponownemu kliknięciu w całą kartę
+                                                            setIsMobileMapVisible(true);
+                                                        }}
+                                                        className="w-full flex items-center justify-center gap-2 py-3 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl text-sm font-bold hover:bg-blue-500/30 transition-colors active:scale-95"
+                                                    >
+                                                        <MapPin className="w-4 h-4" />
+                                                        {t('show_on_map')}
                                                     </button>
                                                 </div>
                                             )}
@@ -120,22 +147,45 @@ export const LocationsPage: React.FC = () => {
                         <div className="text-center py-20 text-slate-600">{t('no_clubs_found')}</div>
                     )}
                 </div>
+
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 md:hidden z-50">
+                    <button
+                        onClick={() => setIsMobileMapVisible(true)}
+                        className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-full text-sm font-bold shadow-[0_4px_20px_rgba(59,130,246,0.4)] hover:bg-blue-600 transition-transform active:scale-95"
+                    >
+                        <MapPin className="w-4 h-4" />
+                        {t('show_map')}
+                    </button>
+                </div>
             </aside>
 
-            <main className="hidden md:block flex-1 relative">
+            <main
+                className={`absolute inset-0 z-30 md:relative md:z-auto flex-1 transition-transform duration-300 ease-in-out bg-slate-900 ${
+                    isMobileMapVisible ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
+                }`}
+            >
                 <GymMap
                     locations={locations}
                     activeIndex={activePin}
-                    onPinClick={(id => setActivePin(id))}
+                    onPinClick={handlePinClick}
                 />
 
                 <div className="absolute top-6 right-6 z-1000">
-                    <Link to={'/'} className="px-4 py-2 bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-xl text-xs font-bold text-white hover:bg-slate-800 transition-all no-underline shadow-2xl">
-                        ← {t('back_to_home')}
+                    <Link to={'/'} className="px-4 py-2 bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-xl gap-2 text-xs font-bold text-white hover:bg-slate-800 transition-all no-underline shadow-2xl flex items-center">
+                        <MoveLeft className="h-4 w-4" /> {t('back_to_home')}
                     </Link>
                 </div>
-            </main>
 
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 md:hidden z-1000">
+                    <button
+                        onClick={() => setIsMobileMapVisible(false)}
+                        className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-full text-sm font-bold shadow-xl border border-white/10 hover:bg-slate-800 transition-transform active:scale-95"
+                    >
+                        <List className="w-4 h-4" />
+                        {t('show_list')}
+                    </button>
+                </div>
+            </main>
         </div>
     );
 };
