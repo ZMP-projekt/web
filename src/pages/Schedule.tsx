@@ -229,10 +229,8 @@ export const Schedule: React.FC = () => {
                 </div>
             </div>
 
-            {/* Używamy createPortal, aby "wyrzucić" modal poza strukturę DOM i zapobiec przykrywaniu przez Topbar */}
             {selectedClassDetails && createPortal(
                 <div className="fixed inset-0 z-100 bg-black/70 backdrop-blur-md overflow-y-auto">
-                    {/* Ten dodatkowy div naprawia błąd ucinania góry modala na małych ekranach */}
                     <div className="flex min-h-full items-start md:items-center justify-center p-4 py-8">
                         <div className="bg-slate-800 border border-slate-700 w-full max-w-xl rounded-4xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
 
@@ -329,7 +327,7 @@ export const Schedule: React.FC = () => {
                         </div>
                     </div>
                 </div>,
-                document.body // Drugi argument createPortal - mówi gdzie teleportować kod
+                document.body
             )}
         </div>
     );
