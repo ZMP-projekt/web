@@ -436,7 +436,7 @@ export const LandingPage: React.FC = () => {
 
                     <div className={`fade-up stagger-5 ${visibleSections["classes"] ? "visible" : ""} text-center`}>
                         <Link
-                            to="/public/schedule"
+                            to="/register"
                             className="inline-flex items-center gap-2 text-white font-bold no-underline px-8 py-4 rounded-2xl border transition-all hover:bg-slate-800"
                             style={{ background: "rgba(30,41,59,0.8)", borderColor: "rgba(226,232,240,0.12)" }}
                         >
