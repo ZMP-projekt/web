@@ -24,7 +24,7 @@ export const LocationsPage: React.FC = () => {
 
     const targetId = searchParams.get("id");
 
-    const [isMobileMapVisible, setIsMobileMapVisible] = useState(false);
+    const [isMobileMapVisible, setIsMobileMapVisible] = useState(true);
 
     const { t } = useTranslation('map');
 
@@ -75,7 +75,7 @@ export const LocationsPage: React.FC = () => {
     }, [filteredLocations]);
 
     return (
-        <div className="flex h-screen bg-slate-900 text-slate-200 overflow-hidden relative" style={{ fontFamily: "'Outfit', sans-serif" }}>
+        <div className="flex h-dvh bg-slate-900 text-slate-200 overflow-hidden relative" style={{ fontFamily: "'Outfit', sans-serif" }}>
 
             <aside className="w-full md:w-100 flex flex-col border-r border-white/5 z-20 bg-slate-900 shadow-2xl relative h-full">
                 <div className="p-6 border-b border-white/5 bg-slate-800/20">
