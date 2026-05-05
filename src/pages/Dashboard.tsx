@@ -8,8 +8,8 @@ import { useMembership } from '../hooks/useMembership.ts';
 import { Link } from 'react-router';
 import {SkeletonCard} from "../components/SkeletonCard.tsx";
 import {useTranslation} from "react-i18next";
-import {calculateDaysRemaining, formatDuration, formatTime} from "../utils/dateUtils.ts";
-import {calculateProgress} from "../utils/membershipUtils.ts";
+import {calculateDaysRemaining, formatDate, formatDuration, formatTime} from "../utils/dateUtils.ts";
+import {calculateProgress} from "../utils/membershipUtils.ts"
 
 interface UserProfile {
     firstName: string;
@@ -34,9 +34,6 @@ interface ClassItem {
     userEnrolled: boolean;
     personalTraining: boolean;
 }
-
-const formatDate = (dateString: string): string =>
-    new Date(dateString).toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
 const getClassIcon = (name: string): React.ReactNode => {
     const lower = name.toLowerCase();

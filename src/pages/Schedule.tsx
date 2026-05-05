@@ -13,17 +13,7 @@ import {useNavigate, useParams} from "react-router";
 import {useTranslation} from "react-i18next";
 import i18n from "../i18n.ts";
 import {createPortal} from "react-dom";
-import {formatTime, generateNext7Days, isToday} from "../utils/dateUtils.ts";
-
-const formatMonthRange = (days: string[]): string => {
-    const first = new Date(days[0]);
-    const last = new Date(days[days.length - 1]);
-    const opts: Intl.DateTimeFormatOptions = { month: 'long', year: 'numeric' };
-    if (first.getMonth() === last.getMonth()) {
-        return first.toLocaleDateString(i18n.language, opts);
-    }
-    return `${first.toLocaleDateString(i18n.language, { month: 'long' })} – ${last.toLocaleDateString(i18n.language, opts)}`;
-};
+import {formatMonthRange, formatTime, generateNext7Days, isToday} from "../utils/dateUtils.ts";
 
 export const Schedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();

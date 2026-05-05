@@ -22,9 +22,8 @@ import {
 import { ConfirmModal } from '../components/ConfirmModal.tsx';
 import toast from 'react-hot-toast';
 import { api } from '../api/axios.ts';
-import i18n from "../i18n.ts";
 import {useTranslation} from "react-i18next";
-import {formatDuration, formatTime, generateNext7Days, isToday} from "../utils/dateUtils.ts";
+import {formatDuration, formatMonthRange, formatTime, generateNext7Days, isToday} from "../utils/dateUtils.ts";
 
 interface ApiGymClass {
     id: number;
@@ -52,14 +51,6 @@ interface Location {
     city: string;
     address: string;
 }
-
-const formatMonthRange = (days: string[]): string => {
-    const first = new Date(days[0]);
-    const last = new Date(days[days.length - 1]);
-    if (first.getMonth() === last.getMonth())
-        return first.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' });
-    return `${first.toLocaleDateString(i18n.language, { month: 'long' })} – ${last.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })}`;
-};
 
 const inputCls = 'w-full pl-9 pr-4 py-3 bg-slate-900/60 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-600';
 const labelCls = 'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2';

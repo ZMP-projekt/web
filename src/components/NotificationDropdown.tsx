@@ -2,6 +2,7 @@ import React from 'react';
 import { useNotifications } from "../hooks/useNotifications.ts";
 import { Bell, CheckCircle, Trash2, X } from 'lucide-react';
 import {useTranslation} from "react-i18next";
+import {formatDate} from "../utils/dateUtils.ts";
 
 interface NotificationDropdownProps {
     isOpen: boolean;
@@ -14,11 +15,6 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
     const [touchedId, setTouchedId] = React.useState<number | null>(null);
 
     if (!isOpen) return null;
-
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('pl-PL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-    };
 
     return (
         <>
