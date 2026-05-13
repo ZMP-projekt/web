@@ -11,7 +11,7 @@ interface NotificationDropdownProps {
 
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOpen, onClose }) => {
     const { notifications, markAsRead, deleteNotification, unreadCount } = useNotifications();
-    const { t } = useTranslation('notifications');
+    const { t, i18n } = useTranslation('notifications');
     const [touchedId, setTouchedId] = React.useState<number | null>(null);
 
     if (!isOpen) return null;
@@ -63,7 +63,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
                                                 {notification.content}
                                             </p>
                                             <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">
-                                                {formatDate(notification.createdAt)}
+                                                {formatDate(notification.createdAt, i18n.language)}
                                             </span>
                                         </div>
 

@@ -27,16 +27,16 @@ export const generateNext7Days = (offset: number): string[] => {
     return days;
 };
 
-export const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(i18n.language, { day: '2-digit', month: '2-digit', year: 'numeric' });
+export const formatDate = (dateString: string, lang: string = 'pl-PL') => {
+    return new Date(dateString).toLocaleDateString(lang, { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
-export const formatMonthRange = (days: string[]): string => {
+export const formatMonthRange = (days: string[], lang: string = 'pl-PL'): string => {
     const first = new Date(days[0]);
     const last = new Date(days[days.length - 1]);
     if (first.getMonth() === last.getMonth())
-        return first.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' });
-    return `${first.toLocaleDateString(i18n.language, { month: 'long' })} – ${last.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })}`;
+        return first.toLocaleDateString(lang, { month: 'long', year: 'numeric' });
+    return `${first.toLocaleDateString(lang, { month: 'long' })} – ${last.toLocaleDateString(lang, { month: 'long', year: 'numeric' })}`;
 };
 
 export const Greeting = (): string => {

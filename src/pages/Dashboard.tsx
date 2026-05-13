@@ -105,7 +105,7 @@ export const Dashboard: React.FC = () => {
     const todayDate = new Date();
     const [todayClasses, setTodayClasses] = React.useState<ClassItem[]>([])
     const enrolledClasses = todayClasses.filter((c) => c.userEnrolled);
-    const { t } = useTranslation(['dashboard', 'common']);
+    const { t, i18n } = useTranslation(['dashboard', 'common']);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -194,7 +194,7 @@ export const Dashboard: React.FC = () => {
                                         <span className="inline-block text-xs font-bold uppercase tracking-wide text-blue-400 bg-blue-500/15 border border-blue-500/30 px-3 py-1.5 rounded-full mb-2">
                                             {membership.type}
                                         </span>
-                                        <p className="text-slate-500 text-xs">{t('common:valid_until')} {formatDate(membership.endDate)}</p>
+                                        <p className="text-slate-500 text-xs">{t('common:valid_until')} {formatDate(membership.endDate, i18n.language)}</p>
                                     </div>
                                 </div>
                                 <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
