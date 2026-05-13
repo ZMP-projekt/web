@@ -4,7 +4,7 @@ import {useAuth} from "../auth/useAuth.ts";
 import {MembershipContext, type Membership} from "../context/MembershipContext.tsx";
 
 export const MembershipProvider = ({ children }: { children: ReactNode }) => {
-    const { isAuthenticated, token } = useAuth();
+    const { isAuthenticated, token , role} = useAuth();
     const apiPrivate = useAxiosPrivate();
 
     const [membership, setMembership] = useState<Membership | null>(null);
@@ -12,7 +12,7 @@ export const MembershipProvider = ({ children }: { children: ReactNode }) => {
 
     const fetchMembership = useCallback(async () => {
         setIsMembershipLoading(true);
-        if (!isAuthenticated || !token) {
+        if (!isAuthenticated || !token || role !== "ROLE_USER") {
             setMembership(null);
             setIsMembershipLoading(false);
             return;
@@ -22,12 +22,12 @@ export const MembershipProvider = ({ children }: { children: ReactNode }) => {
             const response = await apiPrivate.get('/api/memberships/me');
             setMembership(response.data);
         } catch (error) {
-            console.error("Użytkownik nie posiada karnetu.", error)
+            console.info("User has no membership", error)
             setMembership(null);
         } finally {
             setIsMembershipLoading(false);
         }
-    }, [apiPrivate, isAuthenticated, token] );
+    }, [apiPrivate, isAuthenticated, role, token] );
     
     useEffect(() => {
         void fetchMembership();
