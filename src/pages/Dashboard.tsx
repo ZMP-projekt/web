@@ -8,7 +8,13 @@ import { useMembership } from '../hooks/useMembership.ts';
 import { Link } from 'react-router';
 import {SkeletonCard} from "../components/SkeletonCard.tsx";
 import {useTranslation} from "react-i18next";
-import {calculateDaysRemaining, formatDate, formatDuration, formatTime, Greeting} from "../utils/dateUtils.ts";
+import {
+    calculateDaysRemaining,
+    formatDate,
+    formatDuration,
+    formatTime,
+    getGreetingKey,
+} from "../utils/dateUtils.ts";
 import {calculateProgress} from "../utils/membershipUtils.ts"
 
 interface UserProfile {
@@ -107,6 +113,8 @@ export const Dashboard: React.FC = () => {
     const enrolledClasses = todayClasses.filter((c) => c.userEnrolled);
     const { t, i18n } = useTranslation(['dashboard', 'common']);
 
+    const greeting = t(getGreetingKey(new Date().getHours()));
+
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
@@ -128,7 +136,7 @@ export const Dashboard: React.FC = () => {
         <>
             <header className="flex justify-between items-center mb-8">
                 <div>
-                    <p className="text-slate-500 text-sm font-medium mb-1">{Greeting()},</p>
+                    <p className="text-slate-500 text-sm font-medium mb-1">{greeting},</p>
                     {isLoading ? (
                         <div className="h-9 w-48 bg-slate-700/50 rounded-xl animate-pulse" />
                     ) : (

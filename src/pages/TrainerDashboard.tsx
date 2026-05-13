@@ -12,7 +12,7 @@ import {
     Plus,
 } from 'lucide-react';
 import {useTranslation} from "react-i18next";
-import {formatDuration, formatTime, Greeting} from "../utils/dateUtils.ts";
+import {formatDuration, formatTime, getGreetingKey} from "../utils/dateUtils.ts";
 
 interface TrainerProfile {
     firstName: string;
@@ -91,10 +91,12 @@ export const TrainerDashboard: React.FC = () => {
         return t('trainer.starts_in', {hours: '', minutes: m > 0 ? m : '' });
     };
 
+    const greeting = t(getGreetingKey(new Date().getHours()))
+
     return (
         <div className="space-y-8">
             <header>
-                <p className="text-slate-500 text-sm font-medium mb-1">{Greeting()},</p>
+                <p className="text-slate-500 text-sm font-medium mb-1">{greeting},</p>
                 {isLoading ? (
                     <div className="h-9 w-56 bg-slate-700/50 rounded-xl animate-pulse" />
                 ) : (
