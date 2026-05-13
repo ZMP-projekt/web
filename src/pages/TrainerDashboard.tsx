@@ -12,7 +12,7 @@ import {
     Plus,
 } from 'lucide-react';
 import {useTranslation} from "react-i18next";
-import {formatDuration, formatTime} from "../utils/dateUtils.ts";
+import {formatDuration, formatTime, Greeting} from "../utils/dateUtils.ts";
 
 interface TrainerProfile {
     firstName: string;
@@ -79,13 +79,6 @@ export const TrainerDashboard: React.FC = () => {
     const nextClass = upcomingClasses[0] ?? null;
     const totalParticipantsToday = todayClasses.reduce((sum, c) => sum + c.currentParticipants, 0);
 
-    const greeting = (): string => {
-        const h = new Date().getHours();
-        if (h < 12) return t('common.greeting_morning');
-        if (h < 18) return t('common.greeting_afternoon');
-        return t('common.greeting_evening');
-    };
-
     const getTimeUntil = (iso: string): string => {
         const diff = new Date(iso).getTime() - Date.now();
         if (diff <= 0) return t('trainer.happening_now');
@@ -101,7 +94,7 @@ export const TrainerDashboard: React.FC = () => {
     return (
         <div className="space-y-8">
             <header>
-                <p className="text-slate-500 text-sm font-medium mb-1">{greeting()},</p>
+                <p className="text-slate-500 text-sm font-medium mb-1">{Greeting()},</p>
                 {isLoading ? (
                     <div className="h-9 w-56 bg-slate-700/50 rounded-xl animate-pulse" />
                 ) : (

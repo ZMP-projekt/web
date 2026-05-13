@@ -1,4 +1,5 @@
 import i18n from "../i18n.ts";
+import {useTranslation} from "react-i18next";
 
 export const formatDuration = (start: string, end: string): string => {
     const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
@@ -36,4 +37,12 @@ export const formatMonthRange = (days: string[]): string => {
     if (first.getMonth() === last.getMonth())
         return first.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' });
     return `${first.toLocaleDateString(i18n.language, { month: 'long' })} – ${last.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })}`;
+};
+
+export const Greeting = (): string => {
+    const { t } = useTranslation('dashboard');
+    const h = new Date().getHours();
+    if (h < 12) return t('common.greeting_morning');
+    if (h < 18) return t('common.greeting_afternoon');
+    return t('common.greeting_evening');
 };
