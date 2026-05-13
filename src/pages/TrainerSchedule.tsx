@@ -315,7 +315,7 @@ export const TrainerSchedule: React.FC = () => {
                                             <div className="flex flex-wrap items-center gap-2 mb-1.5">
                                                 <span className="text-white font-bold flex items-center gap-1.5">
                                                     <Clock className="w-4 h-4 text-slate-500" />
-                                                    {formatTime(gymClass.startTime)} – {formatTime(gymClass.endTime)}
+                                                    {formatTime(gymClass.startTime, i18n.language)} – {formatTime(gymClass.endTime, i18n.language)}
                                                     <span className="text-slate-500 font-normal text-sm">
                                                         ({formatDuration(gymClass.startTime, gymClass.endTime)})
                                                     </span>
@@ -515,7 +515,7 @@ export const TrainerSchedule: React.FC = () => {
                             <div>
                                 <h3 className="text-xl font-bold text-white">{t('trainer.attendance_list')}</h3>
                                 <p className="text-xs text-slate-400 mt-1">
-                                    {selectedClassForModal?.name} · {selectedClassForModal && formatTime(selectedClassForModal.startTime)}
+                                    {selectedClassForModal?.name} · {selectedClassForModal && formatTime(selectedClassForModal.startTime, i18n.language)}
                                 </p>
                             </div>
                             <button onClick={() => setIsParticipantsModalOpen(false)}

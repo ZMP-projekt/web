@@ -49,7 +49,7 @@ export const TrainerDashboard: React.FC = () => {
     const [profile, setProfile] = useState<TrainerProfile | null>(null);
     const [todayClasses, setTodayClasses] = useState<ApiGymClass[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const { t } = useTranslation('dashboard');
+    const { t, i18n } = useTranslation('dashboard');
 
     useEffect(() => {
         const fetchAll = async () => {
@@ -162,7 +162,7 @@ export const TrainerDashboard: React.FC = () => {
                                 <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-slate-400 mb-5">
                                     <span className="flex items-center gap-1.5">
                                         <Clock className="w-3.5 h-3.5 text-slate-600" />
-                                        {formatTime(nextClass.startTime)} – {formatTime(nextClass.endTime)}
+                                        {formatTime(nextClass.startTime, i18n.language)} – {formatTime(nextClass.endTime, i18n.language)}
                                         <span className="text-slate-600">({formatDuration(nextClass.startTime, nextClass.endTime)})</span>
                                     </span>
                                     {nextClass.locationName && (
@@ -248,7 +248,7 @@ export const TrainerDashboard: React.FC = () => {
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-white text-sm font-bold truncate">{cls.name}</p>
                                                 <p className="text-slate-500 text-xs">
-                                                    {formatTime(cls.startTime)} · {cls.currentParticipants}/{cls.maxParticipants} os.
+                                                    {formatTime(cls.startTime, i18n.language)} · {cls.currentParticipants}/{cls.maxParticipants} os.
                                                 </p>
                                             </div>
                                             {isActive && (

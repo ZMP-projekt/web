@@ -16,6 +16,7 @@ import {
     getGreetingKey,
 } from "../utils/dateUtils.ts";
 import {calculateProgress} from "../utils/membershipUtils.ts"
+import i18n from "i18next";
 
 interface UserProfile {
     firstName: string;
@@ -72,7 +73,7 @@ const ClassRow = ({ cls }: { cls: ClassItem; showEnrolledBadge?: boolean }) => {
             className="flex items-center gap-4 p-3 rounded-2xl bg-slate-700/20 hover:bg-slate-700/40 border border-transparent hover:border-slate-600/40 transition-all duration-200 group no-underline"
         >
             <div className="text-center min-w-11">
-                <div className="text-white font-bold text-sm leading-none">{formatTime(cls.startTime)}</div>
+                <div className="text-white font-bold text-sm leading-none">{formatTime(cls.startTime, i18n.language)}</div>
                 <div className="text-slate-500 text-[11px] mt-0.5">{formatDuration(cls.startTime, cls.endTime)}</div>
             </div>
 

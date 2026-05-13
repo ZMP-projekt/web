@@ -33,7 +33,7 @@ interface ClassCardProps {
 
 export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading, onEnroll }) => {
     const isFull = gymClass.currentParticipants >= gymClass.maxParticipants;
-    const { t } = useTranslation('class');
+    const { t, i18n } = useTranslation('class');
     const occupancyPct = gymClass.maxParticipants > 0
         ? Math.min((gymClass.currentParticipants / gymClass.maxParticipants) * 100, 100)
         : 0;
@@ -57,7 +57,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading,
                     <div className="flex flex-wrap items-center gap-3 mb-2">
                         <div className="flex items-center gap-1.5 text-white font-bold">
                             <Clock className="w-4 h-4 text-slate-500"/>
-                            <span>{formatTime(gymClass.startTime)} – {formatTime(gymClass.endTime)}</span>
+                            <span>{formatTime(gymClass.startTime, i18n.language)} – {formatTime(gymClass.endTime, i18n.language)}</span>
                             <span className="text-slate-500 font-normal text-sm">
                             ({formatDuration(gymClass.startTime, gymClass.endTime)})
                         </span>

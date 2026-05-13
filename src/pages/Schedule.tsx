@@ -242,7 +242,7 @@ export const Schedule: React.FC = () => {
                                         <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.duration')}</p>
                                         <div className="flex items-center gap-2 text-white font-semibold">
                                             <Clock className="w-5 h-5 text-slate-400" />
-                                            {formatTime(selectedClassDetails.startTime)} - {formatTime(selectedClassDetails.endTime)}
+                                            {formatTime(selectedClassDetails.startTime, i18n.language)} - {formatTime(selectedClassDetails.endTime, i18n.language)}
                                         </div>
                                     </div>
                                 </div>

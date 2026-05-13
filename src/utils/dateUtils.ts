@@ -1,5 +1,3 @@
-import i18n from "../i18n.ts";
-
 export const formatDuration = (start: string, end: string): string => {
     const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
     return mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60 > 0 ? `${mins % 60} min` : ''}`.trim() : `${mins} min`;
@@ -10,8 +8,8 @@ export const calculateDaysRemaining = (endDateString: string): number => {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
 
-export const formatTime = (iso: string): string =>
-    new Date(iso).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
+export const formatTime = (iso: string, lang: string = "pl-PL"): string =>
+    new Date(iso).toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
 
 export const isToday = (dateStr: string): boolean =>
     dateStr === new Date().toISOString().split('T')[0];
