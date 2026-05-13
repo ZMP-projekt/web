@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "leaflet.markercluster";
+import {calculateMapCenter} from "../utils/mapUtils.ts";
 
 interface GymLocation {
     id: number;
@@ -47,11 +48,8 @@ export const GymMap: React.FC<GymMapProps> = ({ locations, activeIndex, onPinCli
         if (!mapContainerRef.current || locations.length === 0) return;
 
         if (!mapInstanceRef.current) {
-            const avgLat = locations.reduce((s, l) => s + l.latitude,  0) / locations.length;
-            const avgLng = locations.reduce((s, l) => s + l.longitude, 0) / locations.length;
-
             mapInstanceRef.current = L.map(mapContainerRef.current, {
-                center: [avgLat, avgLng],
+                center: calculateMapCenter(locations),
                 zoom: 6,
                 zoomControl: false,
             });
