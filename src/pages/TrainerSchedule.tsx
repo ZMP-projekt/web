@@ -230,7 +230,7 @@ export const TrainerSchedule: React.FC = () => {
 
             <div className="bg-slate-800/30 border border-slate-700/50 rounded-3xl p-4">
                 <p className="text-slate-500 text-xs font-semibold uppercase tracking-widest px-1 mb-3">
-                    {formatMonthRange(availableDays)}
+                    {formatMonthRange(availableDays, i18n.language)}
                 </p>
                 <div className="flex items-center gap-2">
                     <button
