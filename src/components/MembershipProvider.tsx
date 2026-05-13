@@ -8,9 +8,10 @@ export const MembershipProvider = ({ children }: { children: ReactNode }) => {
     const apiPrivate = useAxiosPrivate();
 
     const [membership, setMembership] = useState<Membership | null>(null);
-    const [isMembershipLoading, setIsMembershipLoading] = useState(true);
+    const [isMembershipLoading, setIsMembershipLoading] = useState(false);
 
     const fetchMembership = useCallback(async () => {
+        setIsMembershipLoading(true);
         if (!isAuthenticated || !token) {
             setMembership(null);
             setIsMembershipLoading(false);
