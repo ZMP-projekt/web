@@ -1,22 +1,18 @@
-// src/utils/dateUtils.test.ts
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
     formatDuration,
     calculateDaysRemaining,
     formatTime,
     isToday,
-    generateNext7Days
+    generateNext7Days, formatMonthRange, getGreetingKey
 } from './dateUtils';
 
 describe('Narzędzia do obsługi dat (dateUtils)', () => {
-
-    // Przed KAŻDYM testem ustawiamy "sztuczny" czas na 5 maja 2026, godz. 12:00
     beforeEach(() => {
         vi.useFakeTimers();
         vi.setSystemTime(new Date('2026-05-05T12:00:00Z'));
     });
 
-    // Po KAŻDYM teście przywracamy normalny zegar komputera
     afterEach(() => {
         vi.useRealTimers();
     });
@@ -35,7 +31,6 @@ describe('Narzędzia do obsługi dat (dateUtils)', () => {
 
     describe('isToday()', () => {
         it('powinno zwrócić true dla dzisiejszej daty', () => {
-            // Ponieważ zamroziliśmy czas na 2026-05-05, ta funkcja musi zwrócić true
             expect(isToday('2026-05-05')).toBe(true);
         });
 
@@ -52,17 +47,16 @@ describe('Narzędzia do obsługi dat (dateUtils)', () => {
 
         it('z offsetem 0 powinno zacząć się od dzisiaj', () => {
             const days = generateNext7Days(0);
-            expect(days[0]).toBe('2026-05-05'); // Pierwszy element to nasza zamrożona data
-            expect(days[1]).toBe('2026-05-06'); // Kolejny dzień
+            expect(days[0]).toBe('2026-05-05');
+            expect(days[1]).toBe('2026-05-06');
         });
 
         it('z offsetem 7 powinno zacząć się za tydzień', () => {
             const days = generateNext7Days(7);
-            expect(days[0]).toBe('2026-05-12'); // 5 maja + 7 dni
+            expect(days[0]).toBe('2026-05-12');
         });
     });
 
-    // Zostawiamy nasze poprzednie testy, które teraz będą w 100% niezawodne!
     describe('formatDuration()', () => {
         it('powinno zwrócić same minuty dla zajęć krótszych niż godzina', () => {
             expect(formatDuration('2026-05-05T10:00:00', '2026-05-05T10:45:00')).toBe('45 min');
@@ -75,11 +69,40 @@ describe('Narzędzia do obsługi dat (dateUtils)', () => {
 
     describe('calculateDaysRemaining()', () => {
         it('powinno poprawnie obliczyć dni w przyszłości', () => {
-            expect(calculateDaysRemaining('2026-05-10T12:00:00Z')).toBe(5); // 10 maja to 5 dni od 5 maja
+            expect(calculateDaysRemaining('2026-05-10T12:00:00Z')).toBe(5);
         });
 
         it('powinno zwrócić 0 dla daty z przeszłości', () => {
             expect(calculateDaysRemaining('2026-05-01T12:00:00Z')).toBe(0);
+        });
+    });
+
+    describe('formatMonthRange()', () => {
+        it('powinno poprawnie sformatować zakres w tym samym miesiącu', () => {
+            const days = ['2026-05-01T00:00:00', '2026-05-07T00:00:00'];
+            const result = formatMonthRange(days, 'pl-PL');
+            expect(result).toContain('maj 2026');
+        });
+
+        it('powinno poprawnie sformatować zakres na przełomie miesięcy', () => {
+            const days = ['2026-05-28T00:00:00', '2026-06-03T00:00:00'];
+            const result = formatMonthRange(days, 'pl-PL');
+            expect(result).toContain('maj');
+            expect(result).toContain('czerwiec 2026');
+        });
+    });
+
+    describe('getGreetingKey()', () => {
+        it('powinno zwrócić poranne powitanie o 8:00', () => {
+            expect(getGreetingKey(8)).toBe('common.greeting_morning');
+        });
+
+        it('powinno zwrócić popołudniowe powitanie o 15:00', () => {
+            expect(getGreetingKey(15)).toBe('common.greeting_afternoon');
+        });
+
+        it('powinno zwrócić wieczorne powitanie o 20:00', () => {
+            expect(getGreetingKey(20)).toBe('common.greeting_evening');
         });
     });
 });
