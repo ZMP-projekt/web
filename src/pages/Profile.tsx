@@ -36,14 +36,27 @@ export const Profile: React.FC = () => {
     });
 
     const isTrainer = role === 'ROLE_TRAINER';
-    const apiEndpoint = isTrainer ? '/api/trainers/me' : '/api/users/me';
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await apiPrivate.get(apiEndpoint);
-                setProfile(response.data);
-                setFormData(response.data);
+                if (isTrainer) {
+                    const [userRes, trainerRes] = await Promise.all([
+                        apiPrivate.get('/api/users/me'),
+                        apiPrivate.get('/api/trainers/me')
+                    ]);
+                    const mergedData = {
+                        ...userRes.data,
+                        ...trainerRes.data,
+                    };
+
+                    setProfile(mergedData);
+                    setFormData(mergedData);
+                } else {
+                    const response = await apiPrivate.get('/api/users/me');
+                    setProfile(response.data);
+                    setFormData(response.data);
+                }
             } catch (err) {
                 console.warn('Account does not exist, or error while fetching', err);
                 const emptyProfile = { firstName: '', lastName: '', email: '', specialization: '', bio: '', photoUrl: '' };
@@ -55,13 +68,13 @@ export const Profile: React.FC = () => {
         };
 
         void fetchProfile();
-    }, [apiEndpoint, apiPrivate]);
+    }, [isTrainer, apiPrivate]);
 
     const handleSave = async () => {
         setIsSaving(true);
         setError('');
         try {
-            await apiPrivate.put(apiEndpoint, formData);
+            await apiPrivate.put('/api/trainers/me', formData);
             setProfile(formData);
             setIsEditing(false);
             toast.success(t('update_success'));
