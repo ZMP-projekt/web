@@ -24,6 +24,7 @@ import toast from 'react-hot-toast';
 import { api } from '../api/axios.ts';
 import {useTranslation} from "react-i18next";
 import {formatDuration, formatMonthRange, formatTime, generateNext7Days, isToday} from "../utils/dateUtils.ts";
+import {SkeletonCard} from "../components/SkeletonCard.tsx";
 
 interface ApiGymClass {
     id: number;
@@ -55,25 +56,7 @@ interface Location {
 const inputCls = 'w-full pl-9 pr-4 py-3 bg-slate-900/60 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-600';
 const labelCls = 'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2';
 
-const SkeletonCard: React.FC = () => (
-    <div className="bg-slate-800/40 border border-slate-700/50 rounded-3xl p-6 animate-pulse">
-        <div className="flex gap-5 items-start">
-            <div className="w-14 h-14 rounded-2xl bg-slate-700/60 shrink-0" />
-            <div className="flex-1 space-y-3">
-                <div className="h-4 bg-slate-700/60 rounded-lg w-1/3" />
-                <div className="h-6 bg-slate-700/60 rounded-lg w-1/2" />
-                <div className="flex gap-4">
-                    <div className="h-3 bg-slate-700/40 rounded w-24" />
-                    <div className="h-3 bg-slate-700/40 rounded w-32" />
-                </div>
-            </div>
-            <div className="flex gap-2 shrink-0">
-                <div className="w-24 h-10 bg-slate-700/60 rounded-xl" />
-                <div className="w-24 h-10 bg-slate-700/60 rounded-xl" />
-            </div>
-        </div>
-    </div>
-);
+
 
 export const TrainerSchedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
