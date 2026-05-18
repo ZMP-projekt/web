@@ -177,11 +177,19 @@ export const TrainerSchedule: React.FC = () => {
         e.preventDefault();
         setIsCreating(true);
         try {
+            const startDateStr = selectedDate;
+            let endDateStr = selectedDate;
+            
+            if (createForm.endTimeStr < createForm.startTimeStr) {
+                const nextDay = new Date(selectedDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+                endDateStr = nextDay.toISOString().split('T')[0];
+            }
             await apiPrivate.post('/api/classes', {
                 name: createForm.name,
                 description: createForm.description,
-                startTime: `${selectedDate}T${createForm.startTimeStr}:00.000Z`,
-                endTime: `${selectedDate}T${createForm.endTimeStr}:00.000Z`,
+                startTime: `${startDateStr}T${createForm.startTimeStr}:00.000Z`,
+                endTime: `${endDateStr}T${createForm.endTimeStr}:00.000Z`,
                 maxParticipants: createForm.personalTraining ? 1 : createForm.maxParticipants,
                 personalTraining: createForm.personalTraining,
                 locationId: Number(createForm.locationId),
