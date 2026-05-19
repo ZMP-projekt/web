@@ -1,7 +1,7 @@
 import { Home, CalendarDays, CreditCard, User, Dumbbell, LogOut, X } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import React from 'react';
-import { useAuth } from '../auth/useAuth.ts';
+import { useAuth } from '../hooks/useAuth.ts';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate.ts';
 import {useTranslation} from "react-i18next";
 import {LanguageButton} from "./LanguageButton.tsx";

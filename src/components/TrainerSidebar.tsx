@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { CalendarClock, Users, User, Dumbbell, LogOut } from 'lucide-react';
-import { useAuth } from "../auth/useAuth.ts";
+import { useAuth } from "../hooks/useAuth.ts";
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 
 export const TrainerSidebar: React.FC = () => {

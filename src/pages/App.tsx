@@ -3,7 +3,7 @@ import { LandingPage } from './LandingPage.tsx';
 import { Login } from './Login.tsx';
 import { Dashboard } from './Dashboard.tsx';
 import {Register} from './Register.tsx';
-import { AuthProvider} from "../auth/AuthProvider.tsx";
+import { AuthProvider} from "../components/AuthProvider.tsx";
 import {ProtectedRoute} from "../components/ProtectedRoute.tsx";
 import {Memberships} from "./Memberships.tsx";
 import {DashboardLayout} from "../components/DashboardLayout.tsx";

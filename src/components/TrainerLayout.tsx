@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router';
 import { Dumbbell, CalendarClock, User, LogOut, Bell, Menu, X } from 'lucide-react';
-import { useAuth } from '../auth/useAuth.ts';
+import { useAuth } from '../hooks/useAuth.ts';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import { NotificationDropdown } from './NotificationDropdown.tsx';
 import { useNotifications } from '../hooks/useNotifications.ts';

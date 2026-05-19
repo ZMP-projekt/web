@@ -2,13 +2,13 @@ import './index.css'
 import React, { useState } from 'react';
 import {Mail, Lock, ArrowRight, Dumbbell, AlertCircle, Loader2, ArrowLeft, EyeOff, Eye} from 'lucide-react';
 import {Link, useNavigate} from "react-router";
-import { useAuth } from "../auth/useAuth.ts";
+import { useAuth } from "../hooks/useAuth.ts";
 import { api } from "../api/axios.ts";
 import { jwtDecode } from "jwt-decode";
 import {useTranslation} from "react-i18next";
 import {LanguageButton} from "../components/LanguageButton.tsx";
 
-interface JwtPayload {
+export interface JwtPayload {
     sub: string;
     role: string;
     iat: number;

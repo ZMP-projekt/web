@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import {apiPrivate} from "../api/axios.ts";
-import {useAuth} from "../auth/useAuth.ts";
+import {useAuth} from "./useAuth.ts";
 
 export const useAxiosPrivate = () => {
     const {token} = useAuth();

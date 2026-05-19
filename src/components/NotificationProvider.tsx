@@ -1,4 +1,4 @@
-import {useAuth} from "../auth/useAuth.ts";
+import {useAuth} from "../hooks/useAuth.ts";
 import {useAxiosPrivate} from "../hooks/useAxiosPrivate.ts";
 import {type ReactNode, useEffect, useState} from "react";
 import {NotificationContext, type NotificationData} from "../context/NotificationContext.tsx";

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from "../auth/useAuth.ts";
+import { useAuth } from "../hooks/useAuth.ts";
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import { User, Mail, Edit2, Save, X, Loader2, AlertCircle, Link as LinkIcon } from 'lucide-react';
 import toast from "react-hot-toast";

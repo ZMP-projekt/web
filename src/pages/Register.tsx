@@ -13,7 +13,7 @@ import {
     Eye
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
-import { useAuth } from "../auth/useAuth.ts";
+import { useAuth } from "../hooks/useAuth.ts";
 import { api } from "../api/axios.ts";
 import {useTranslation} from "react-i18next";
 import {LanguageButton} from "../components/LanguageButton.tsx";

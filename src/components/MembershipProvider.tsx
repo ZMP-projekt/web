@@ -1,6 +1,6 @@
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from "react";
 import {useAxiosPrivate} from "../hooks/useAxiosPrivate.ts";
-import {useAuth} from "../auth/useAuth.ts";
+import {useAuth} from "../hooks/useAuth.ts";
 import {MembershipContext, type Membership} from "../context/MembershipContext.tsx";
 
 export const MembershipProvider = ({ children }: { children: ReactNode }) => {
