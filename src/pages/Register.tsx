@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import {Mail, Lock, User, ArrowRight, Dumbbell, User2, Loader2, AlertCircle, ArrowLeft} from 'lucide-react';
+import {
+    Mail,
+    Lock,
+    User,
+    ArrowRight,
+    Dumbbell,
+    User2,
+    Loader2,
+    AlertCircle,
+    ArrowLeft,
+    EyeOff,
+    Eye
+} from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from "../auth/useAuth.ts";
 import { api } from "../api/axios.ts";
@@ -13,6 +25,7 @@ export const Register: React.FC = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const role = "ROLE_USER";
     const { login } = useAuth();
@@ -130,7 +143,7 @@ export const Register: React.FC = () => {
                                 <Lock className="h-4 w-4 text-slate-500" />
                             </div>
                             <input
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="block w-full pl-10 pr-4 py-3 border border-slate-700/50 rounded-xl bg-slate-900/50 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[#3B82F6] focus:border-[#3B82F6] transition-all text-sm"
@@ -138,6 +151,13 @@ export const Register: React.FC = () => {
                                 required
                                 minLength={8}
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                            >
+                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
                         </div>
                     </div>
 

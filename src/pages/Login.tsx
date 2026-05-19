@@ -1,6 +1,6 @@
 import './index.css'
 import React, { useState } from 'react';
-import {Mail, Lock, ArrowRight, Dumbbell, AlertCircle, Loader2, ArrowLeft} from 'lucide-react';
+import {Mail, Lock, ArrowRight, Dumbbell, AlertCircle, Loader2, ArrowLeft, EyeOff, Eye} from 'lucide-react';
 import {Link, useNavigate} from "react-router";
 import { useAuth } from "../auth/useAuth.ts";
 import { api } from "../api/axios.ts";
@@ -20,6 +20,7 @@ export const Login: React.FC = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
     const { t } = useTranslation(['auth', 'common']);
@@ -111,13 +112,20 @@ export const Login: React.FC = () => {
                                 <Lock className="h-4 w-4 text-slate-500" />
                             </div>
                             <input
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="block w-full pl-10 pr-4 py-3.5 border border-slate-700/50 rounded-xl bg-slate-900/50 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[#3B82F6] focus:border-[#3B82F6] transition-all text-sm"
                                 placeholder="••••••••"
                                 required
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                            >
+                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
                         </div>
                     </div>
 
