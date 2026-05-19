@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import {useTranslation} from "react-i18next";
 import {formatDuration, formatTime, getGreetingKey} from "../utils/dateUtils.ts";
+import {useCurrentTime} from "../hooks/useCurrentTime.ts";
 
 interface TrainerProfile {
     firstName: string;
@@ -71,7 +72,7 @@ export const TrainerDashboard: React.FC = () => {
         void fetchAll();
     }, [apiPrivate]);
 
-    const now = Date.now();
+    const now = useCurrentTime().getTime();
     const upcomingClasses = todayClasses
         .filter((c) => new Date(c.endTime).getTime() > now)
         .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());

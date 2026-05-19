@@ -25,6 +25,7 @@ import { api } from '../api/axios.ts';
 import {useTranslation} from "react-i18next";
 import {formatDuration, formatMonthRange, formatTime, generateNext7Days, isToday} from "../utils/dateUtils.ts";
 import {SkeletonCard} from "../components/SkeletonCard.tsx";
+import {useCurrentTime} from "../hooks/useCurrentTime.ts";
 
 interface ApiGymClass {
     id: number;
@@ -76,6 +77,7 @@ export const TrainerSchedule: React.FC = () => {
     const [participantsList, setParticipantsList] = useState<Participant[]>([]);
     const [isParticipantsLoading, setIsParticipantsLoading] = useState(false);
     const { t, i18n } = useTranslation(['schedule', 'common']);
+    const currentTime = useCurrentTime()
 
     const [rescheduleForm, setRescheduleForm] = useState({ newDate: '', newTime: '' });
     const [createForm, setCreateForm] = useState({
@@ -302,7 +304,7 @@ export const TrainerSchedule: React.FC = () => {
                             const occupancyPct = gymClass.maxParticipants > 0
                                 ? Math.min((gymClass.currentParticipants / gymClass.maxParticipants) * 100, 100)
                                 : 0;
-                            const isPast = new Date(gymClass.startTime).getTime() < new Date().getTime();
+                            const isPast = new Date(gymClass.startTime).getTime() < currentTime.getTime();
 
                             return (
                                 <div

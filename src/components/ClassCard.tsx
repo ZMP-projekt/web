@@ -6,6 +6,7 @@ import {
 import {Link} from "react-router";
 import {useTranslation} from "react-i18next";
 import {formatDuration, formatTime} from "../utils/dateUtils.ts";
+import {useCurrentTime} from "../hooks/useCurrentTime.ts";
 
 export interface GymClass {
     id: number;
@@ -37,7 +38,8 @@ export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading,
     const occupancyPct = gymClass.maxParticipants > 0
         ? Math.min((gymClass.currentParticipants / gymClass.maxParticipants) * 100, 100)
         : 0;
-    const isPast = new Date(gymClass.startTime).getTime() < new Date().getTime();
+    const currentTime = useCurrentTime()
+    const isPast = new Date(gymClass.startTime).getTime() < currentTime.getTime();
 
     return (
         <div
