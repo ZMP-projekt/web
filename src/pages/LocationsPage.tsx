@@ -6,7 +6,7 @@ import {Link, useSearchParams} from "react-router";
 import { useTranslation } from "react-i18next";
 import {LanguageButton} from "../components/LanguageButton.tsx";
 
-interface GymLocation {
+export interface GymLocation {
     id: number;
     name: string;
     city: string;

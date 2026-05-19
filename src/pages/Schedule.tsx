@@ -13,6 +13,8 @@ import {useNavigate, useParams} from "react-router";
 import {useTranslation} from "react-i18next";
 import {createPortal} from "react-dom";
 import {formatMonthRange, formatTime, generateNext7Days, isToday} from "../utils/dateUtils.ts";
+import type {GymLocation} from "./LocationsPage.tsx";
+import {api} from "../api/axios.ts";
 
 export const Schedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
@@ -25,6 +27,7 @@ export const Schedule: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
     const { classId } = useParams();
+    const [locations, setLocations] = useState<GymLocation[]>([]);
     const navigate = useNavigate();
     const { t, i18n } = useTranslation(['schedule', 'common']);
 
@@ -37,6 +40,21 @@ export const Schedule: React.FC = () => {
             setSelectedDate(newDays[0]);
         }
     }, [daysOffset, selectedDate]);
+
+    useEffect(() => {
+        const fetchLocations = async () => {
+            try {
+                const response = await api.get('/api/locations');
+                const rawLocations: GymLocation[] = response.data;
+                setLocations(rawLocations);
+            } catch (error) {
+                console.error("Error while fetching locations:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        void fetchLocations();
+    }, []);
 
     useEffect(() => {
         const fetchClasses = async () => {
@@ -89,6 +107,10 @@ export const Schedule: React.FC = () => {
             setActionLoadingId(null);
         }
     };
+
+    function findLocationIdByName(name: string): number | null {
+        return locations.find(location => location.name === name)?.id ?? null;
+    }
 
     const selectedDateObj = new Date(selectedDate);
     const selectedDayFull = selectedDateObj.toLocaleDateString(i18n.language, {
@@ -252,7 +274,7 @@ export const Schedule: React.FC = () => {
                                             </div>
                                         </div>
                                         <a
-                                            href={`https://www.google.com/maps/search/?api=1&query=${selectedClassDetails.latitude},${selectedClassDetails.longitude}`}
+                                            href={`https://gymsystem-web.vercel.app/locations?id=${findLocationIdByName(selectedClassDetails.locationName)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="bg-slate-800 hover:bg-slate-700 p-2 rounded-xl border border-slate-600 transition-colors"
