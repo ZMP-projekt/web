@@ -58,13 +58,13 @@ export const Schedule: React.FC = () => {
             toast.loading(t('common:loading'));
             return;
         }
-        if (!isValid) {
-            toast.error(t('user.active_membership_required'));
-            return;
-        }
         setActionLoadingId(classId);
         try {
             if (isEnrolling) {
+                if (!isValid) {
+                    toast.error(t('user.active_membership_required'));
+                    return;
+                }
                 await apiPrivate.post(`/api/classes/${classId}/book`);
             } else {
                 await apiPrivate.delete(`/api/classes/${classId}/cancel`);
@@ -144,12 +144,6 @@ export const Schedule: React.FC = () => {
                                         {today && !selected ? t('common.today') : dayName}
                                     </span>
                                     <span className="text-xl font-black leading-none">{dayNum}</span>
-                                    {today && (
-                                        <span
-                                            className="w-1 h-1 rounded-full mt-1.5"
-                                            style={{ background: selected ? 'rgba(255,255,255,0.6)' : '#3B82F6' }}
-                                        />
-                                    )}
                                 </button>
                             );
                         })}

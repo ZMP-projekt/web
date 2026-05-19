@@ -45,9 +45,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     {icon}
                 </span>
                 <span className="font-medium text-sm">{label}</span>
-                {isActive && (
-                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/60" />
-                )}
             </Link>
         );
     };
