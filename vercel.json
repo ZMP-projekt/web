@@ -19,7 +19,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; img-src 'self' https: data:; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:;"
+          "value": "default-src 'self'; img-src 'self' https: data:; script-src 'self' 'sha256-zMRANEYzrHVQ0kpT3G933LYDXg605+4CsO+TrvNaWyo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https: wss:; frame-src 'self' https:;"
         }
       ]
     }
