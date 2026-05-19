@@ -37,6 +37,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading,
     const occupancyPct = gymClass.maxParticipants > 0
         ? Math.min((gymClass.currentParticipants / gymClass.maxParticipants) * 100, 100)
         : 0;
+    const isPast = new Date(gymClass.startTime).getTime() < new Date().getTime();
 
     return (
         <div
@@ -108,7 +109,12 @@ export const ClassCard: React.FC<ClassCardProps> = ({ gymClass, isActionLoading,
                 </div>
 
                 <div className="w-full md:w-auto shrink-0 mt-2 md:mt-0">
-                    {gymClass.userEnrolled ? (
+                    {isPast ? (
+                        <button disabled
+                                className="w-full md:w-auto px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-800 text-slate-300 border-red-500/20 cursor-not-allowed">
+                            {t('signup_closed')}
+                        </button>
+                    ) : gymClass.userEnrolled ? (
                         <button
                             onClick={(e) => {
                                 e.preventDefault()

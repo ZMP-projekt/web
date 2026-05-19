@@ -270,10 +270,6 @@ export const TrainerSchedule: React.FC = () => {
                                         {today && !selected ? t('common.today') : d.toLocaleDateString(i18n.language, { weekday: 'short' })}
                                     </span>
                                     <span className="text-xl font-black leading-none">{d.getDate()}</span>
-                                    {today && (
-                                        <span className="w-1 h-1 rounded-full mt-1.5"
-                                              style={{ background: selected ? 'rgba(255,255,255,0.6)' : '#3B82F6' }} />
-                                    )}
                                 </button>
                             );
                         })}
@@ -306,6 +302,7 @@ export const TrainerSchedule: React.FC = () => {
                             const occupancyPct = gymClass.maxParticipants > 0
                                 ? Math.min((gymClass.currentParticipants / gymClass.maxParticipants) * 100, 100)
                                 : 0;
+                            const isPast = new Date(gymClass.startTime).getTime() < new Date().getTime();
 
                             return (
                                 <div
@@ -364,14 +361,16 @@ export const TrainerSchedule: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
-                                            <button onClick={() => handleOpenReschedule(gymClass)} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-700/40 hover:bg-slate-700 text-white text-sm font-bold rounded-xl border border-slate-600/50 transition-all">
-                                                <Edit className="w-4 h-4" /> {t('trainer.reschedule_btn')}
-                                            </button>
-                                            <button onClick={() => handleCancelClass(gymClass.id, gymClass.name)} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm font-bold rounded-xl border border-red-500/20 hover:border-red-500/30 transition-all">
-                                                <XCircle className="w-4 h-4" /> {t('trainer.cancel_btn')}
-                                            </button>
-                                        </div>
+                                        {!isPast && (
+                                            <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
+                                                <button onClick={() => handleOpenReschedule(gymClass)} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-700/40 hover:bg-slate-700 text-white text-sm font-bold rounded-xl border border-slate-600/50 transition-all">
+                                                    <Edit className="w-4 h-4" /> {t('trainer.reschedule_btn')}
+                                                </button>
+                                                <button onClick={() => handleCancelClass(gymClass.id, gymClass.name)} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm font-bold rounded-xl border border-red-500/20 hover:border-red-500/30 transition-all">
+                                                    <XCircle className="w-4 h-4" /> {t('trainer.cancel_btn')}
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             );

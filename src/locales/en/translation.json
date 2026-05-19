@@ -184,7 +184,8 @@
     "free_spots_other": "{{count}} spots left",
     "drop_out_btn": "Drop out",
     "no_places": "No places available",
-    "sign_up_btn": "Sign up"
+    "sign_up_btn": "Sign up",
+    "signup_closed": "Sign-up Closed"
   },
   "profile": {
     "title": "Profile",

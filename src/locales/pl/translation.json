@@ -193,7 +193,8 @@
     "free_spots_many": "{{count}} wolnych miejsc",
     "drop_out_btn": "Wypisz się",
     "no_places": "Brak miejsc",
-    "sign_up_btn": "Zapisz się"
+    "sign_up_btn": "Zapisz się",
+    "signup_closed": "Koniec Zapisów"
   },
   "profile": {
     "title": "Profil",
