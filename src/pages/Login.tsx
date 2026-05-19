@@ -1,7 +1,7 @@
 import './index.css'
 import React, { useState } from 'react';
 import {Mail, Lock, ArrowRight, Dumbbell, AlertCircle, Loader2, ArrowLeft, EyeOff, Eye} from 'lucide-react';
-import {Link, useNavigate} from "react-router";
+import {Link, Navigate, useNavigate} from "react-router";
 import { useAuth } from "../hooks/useAuth.ts";
 import { api } from "../api/axios.ts";
 import { jwtDecode } from "jwt-decode";
@@ -22,7 +22,7 @@ export const Login: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, token, role } = useAuth();
     const { t } = useTranslation(['auth', 'common']);
 
     const handleSubmit = async (e: React.SubmitEvent) => {
@@ -54,6 +54,10 @@ export const Login: React.FC = () => {
             setIsLoading(false);
         }
     };
+
+    if (token) {
+        return <Navigate to={role === 'ROLE_USER' ? '/dashboard' : '/trainer/dashboard'} replace />;
+    }
 
     return (
         <div className="min-h-screen flex overflow-hidden relative items-center justify-center bg-slate-900 text-slate-200 p-4" style={{ fontFamily: "'Outfit', sans-serif" }}>

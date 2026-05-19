@@ -12,7 +12,7 @@ import {
     EyeOff,
     Eye
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import {Link, Navigate, useNavigate} from 'react-router';
 import { useAuth } from "../hooks/useAuth.ts";
 import { api } from "../api/axios.ts";
 import {useTranslation} from "react-i18next";
@@ -27,8 +27,8 @@ export const Register: React.FC = () => {
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const role = "ROLE_USER";
-    const { login } = useAuth();
+    const formRole = "ROLE_USER";
+    const { login, role, token } = useAuth();
     const { t } = useTranslation(['auth', 'common']);
 
     const handleSubmit = async (e: React.SubmitEvent) => {
@@ -37,9 +37,9 @@ export const Register: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const response = await api.post('/auth/register', {firstName, lastName, email, password, role});
+            const response = await api.post('/auth/register', {firstName, lastName, email, password, formRole});
             const { token } = response.data;
-            login(token, role);
+            login(token, formRole);
             navigate('/dashboard');
         } catch (err) {
             console.error('Error while registering:', err);
@@ -48,6 +48,10 @@ export const Register: React.FC = () => {
             setIsLoading(false);
         }
     };
+
+    if (token) {
+        return <Navigate to={role === 'ROLE_USER' ? '/dashboard' : '/trainer/dashboard'} replace />;
+    }
 
     return (
         <div className="min-h-screen overflow-hidden relative flex items-center justify-center bg-slate-900 text-slate-200 p-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
