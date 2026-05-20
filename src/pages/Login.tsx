@@ -46,7 +46,7 @@ export const Login: React.FC = () => {
             navigate(
                 role === 'ROLE_USER' ? '/dashboard'
                 : role === 'ROLE_TRAINER' ? '/trainer/dashboard'
-                : 'unauthorised')
+                : '/unauthorised')
         } catch (err) {
             console.error('Error while signing in:', err);
             setError(t('login.invalid_credentials'));

@@ -1,9 +1,11 @@
 import { Link } from 'react-router';
 import { ShieldAlert, ArrowLeft } from 'lucide-react';
 import { useAuth } from "../hooks/useAuth.ts";
+import {useTranslation} from "react-i18next";
 
-export const Unauthorized = () => {
+export const Unauthorised = () => {
     const { role } = useAuth();
+    const { t } = useTranslation('common');
 
     const homeLink = role === 'ROLE_TRAINER' ? '/trainer/dashboard' : role === 'ROLE_USER' ? '/dashboard' : '/'
 
@@ -18,12 +20,11 @@ export const Unauthorized = () => {
             </h1>
 
             <h2 className="text-2xl font-bold text-slate-300 mb-2">
-                Brak dostępu
+                {t('no_access')}
             </h2>
 
             <p className="text-slate-500 max-w-md mb-20">
-                Wygląda na to, że nie masz odpowiednich uprawnień, aby przeglądać tę sekcję.
-                Jeśli uważasz, że to błąd, skontaktuj się z administratorem.
+                {t('no_access_desc')}
             </p>
 
             <Link
@@ -31,7 +32,7 @@ export const Unauthorized = () => {
                 className="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold rounded-xl transition-all"
             >
                 <ArrowLeft className="w-5 h-5" />
-                Wróć w bezpieczne miejsce
+                {t('go_back_btn')}
             </Link>
         </div>
     );

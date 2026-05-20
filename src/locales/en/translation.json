@@ -61,7 +61,12 @@
     "email": "Email address",
     "password": "Password",
     "log_in": "Log in",
-    "month": "month"
+    "month": "month",
+    "no_access": "No access",
+    "no_access_desc": "It appears you do not have the appropriate permissions to view this section. If you believe this is an error, please contact an administrator.",
+    "go_back_btn": "Return to home page",
+    "lost": "We are lost...",
+    "lost_desc": "The page you are looking for does not exist or has been moved. Please check the URL or return to the safe area."
   },
   "navbar": {
     "dashboard": "Dashboard",

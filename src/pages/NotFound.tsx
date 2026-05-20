@@ -1,9 +1,11 @@
 import { Link } from 'react-router';
 import { MapPinOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from "../hooks/useAuth.ts";
+import {useTranslation} from "react-i18next";
 
 export const NotFound = () => {
     const { role } = useAuth();
+    const { t } = useTranslation('common');
 
     const homeLink = role === 'ROLE_TRAINER' ? '/trainer/dashboard' : role === 'ROLE_USER' ? '/dashboard' : '/'
 
@@ -18,12 +20,11 @@ export const NotFound = () => {
             </h1>
 
             <h2 className="text-2xl font-bold text-slate-300 mb-2">
-                Zgubiliśmy się...
+                {t('lost')}
             </h2>
 
             <p className="text-slate-500 max-w-md mb-20">
-                Strona, której szukasz, nie istnieje lub została przeniesiona.
-                Sprawdź poprawność adresu URL lub wróć do bezpiecznej strefy.
+                {t('lost_desc')}
             </p>
 
             <Link
@@ -31,7 +32,7 @@ export const NotFound = () => {
                 className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/30"
             >
                 <ArrowLeft className="w-5 h-5" />
-                Wróć na stronę główną
+                {t('go_back_btn')}
             </Link>
         </div>
     );

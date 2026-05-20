@@ -65,7 +65,12 @@
     "email": "Adres E-mail",
     "password": "Hasło",
     "log_in": "Zaloguj się",
-    "month": "miesiąc"
+    "month": "miesiąc",
+    "no_access": "Brak dostępu",
+    "no_access_desc": "Wygląda na to, że nie masz odpowiednich uprawnień, aby przeglądać tę sekcję. Jeśli uważasz, że to błąd, skontaktuj się z administratorem.",
+    "go_back_btn": "Wróć do strony głównej",
+    "lost": "Zgubiliśmy się...",
+    "lost_desc": "Strona, której szukasz, nie istnieje lub została przeniesiona. Sprawdź poprawność adresu URL lub wróć do bezpiecznej strefy."
   },
   "navbar": {
     "dashboard": "Pulpit",
