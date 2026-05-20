@@ -180,7 +180,7 @@ export const LandingPage: React.FC = () => {
                     <span className="font-bold text-lg text-white">GymSystem</span>
                 </div>
 
-                <div className="hidden md:flex gap-10">
+                <div className="hidden lg:flex gap-10">
                     {NAV_LINKS.map((link) => (
                         <a key={link.href} href={link.href} className="nav-link text-slate-400 text-sm font-medium no-underline">
                             {link.label}
@@ -188,7 +188,7 @@ export const LandingPage: React.FC = () => {
                     ))}
                 </div>
 
-                <div className="hidden md:flex items-center gap-3">
+                <div className="hidden lg:flex items-center gap-3">
                     <LanguageButton />
                     <Link to="/login" className="text-slate-400 hover:text-white text-sm font-medium no-underline transition-colors">
                         {t('common:log_in')}
@@ -203,7 +203,7 @@ export const LandingPage: React.FC = () => {
                 </div>
 
                 <button
-                    className="md:hidden p-2 -mr-2 text-slate-400 hover:text-white"
+                    className="lg:hidden p-2 -mr-2 text-slate-400 hover:text-white"
                     onClick={() => setIsMobileMenuOpen(true)}
                 >
                     <Menu className="w-7 h-7" />
@@ -211,7 +211,7 @@ export const LandingPage: React.FC = () => {
             </nav>
 
             <div
-                className={`fixed inset-0 bg-slate-900/98 backdrop-blur-3xl z-60 flex flex-col transition-transform duration-500 ease-in-out md:hidden ${
+                className={`fixed inset-0 bg-slate-900/98 backdrop-blur-3xl z-60 flex flex-col transition-transform duration-500 ease-in-out lg:hidden ${
                     isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
                 }`}
             >
