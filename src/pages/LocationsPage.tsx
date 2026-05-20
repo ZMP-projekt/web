@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import { api } from '../api/axios';
 import { GymMap } from '../components/GymMap';
-import {Search, MapPin, List, MoveLeft} from 'lucide-react';
+import {Search, MapPin, List, MoveLeft, Loader2} from 'lucide-react';
 import {Link, useSearchParams} from "react-router";
 import { useTranslation } from "react-i18next";
 import {LanguageButton} from "../components/LanguageButton.tsx";
@@ -164,11 +164,16 @@ export const LocationsPage: React.FC = () => {
                     isMobileMapVisible ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
                 }`}
             >
-                <GymMap
-                    locations={locations}
-                    activeIndex={activePin}
-                    onPinClick={handlePinClick}
-                />
+                {isLoading ? (
+                    <div className="min-h-screen flex items-center justify-center text-white"><Loader2 className="w-10 h-10 animate-spin text-blue-500" /></div>
+                ) : (
+                    <GymMap
+                        locations={locations}
+                        activeIndex={activePin}
+                        onPinClick={handlePinClick}
+                    />
+                )}
+
 
                 <div className="absolute top-6 right-6 z-1000">
                     <Link to={'/'} className="px-4 py-2 bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-xl gap-2 text-xs font-bold text-white hover:bg-slate-800 transition-all no-underline shadow-2xl flex items-center">
