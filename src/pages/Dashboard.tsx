@@ -109,7 +109,7 @@ export const Dashboard: React.FC = () => {
     const [profileData, setProfileData] = React.useState<UserProfile | null>(null);
     const { unreadCount } = useNotifications();
     const [isNotifOpen, setIsNotifOpen] = React.useState(false);
-    const todayDate = new Date();
+
     const [todayClasses, setTodayClasses] = React.useState<ClassItem[]>([])
     const enrolledClasses = todayClasses.filter((c) => c.userEnrolled);
     const { t, i18n } = useTranslation(['dashboard', 'common']);
@@ -117,6 +117,7 @@ export const Dashboard: React.FC = () => {
     const greeting = t(getGreetingKey(new Date().getHours()));
 
     useEffect(() => {
+        const todayDate = new Date();
         const fetchDashboardData = async () => {
             try {
                 const [profile, classes] = await Promise.all(
@@ -131,7 +132,7 @@ export const Dashboard: React.FC = () => {
             }
         };
         void fetchDashboardData();
-    },);
+    },[apiPrivate]);
 
     return (
         <>
