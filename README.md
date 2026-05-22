@@ -1,34 +1,69 @@
-# 🌐 GymSystem Web App
-Webowa część systemu zarządzania siłownią realizowana w ramach projektu ZMP. Aplikacja stanowi responsywne centrum obsługi dla klientów siłowni oraz panel operacyjny dla kadry trenerskiej.
+# GymSystem - Aplikacja Webowa
 
-## 🛠 Tech Stack & Wersje
-* **Framework**: React 19.2.0
-* **Build Tool**: Vite 7.3.1
-* **Język**: TypeScript 5.9.3
-* **Komunikacja API**: Axios (obsługa zapytań REST, interceptory JWT)
-* **Stylizacja**: Tailwind CSS
+Kliencka aplikacja webowa będąca częścią kompleksowego systemu zarządzania siłownią. Projekt obsługuje interfejsy dla różnych ról użytkowników, umożliwiając m.in. zakup karnetów, zarządzanie zajęciami oraz przeglądanie interaktywnej mapy placówek.
 
-## 🚀 Funkcjonalności (Roadmap)
-Na podstawie analizy wymagań, aplikacja realizuje następujące moduły:
+---
 
-**🔐 Autoryzacja i Dostęp**
-* Kompletny system logowania i rejestracji.
-* Logowanie przez zewnętrzne serwisy (oAuth).
-* Procedura resetowania zapomnianego hasła.
-* Wybór wersji językowej interfejsu.
+## Główne Funkcjonalności
 
-**👤 Panel Użytkownika (Klient)**
-* **Profil**: Zarządzanie danymi użytkownika i status karnetu.
-* **Harmonogram**: Pełny podgląd grafiku zajęć w ujęciu miesięcznym.
-* **Karnety**: Przegląd dostępnych pakietów, cenników oraz dodatkowych benefitów.
-* **Mapa**: Interaktywna lokalizacja placówek siłowni.
+Aplikacja dostosowuje swój interfejs i możliwości w zależności od poziomu autoryzacji:
 
-**🏋️ Panel Trenera**
-* Dedykowany interfejs dla kadry zarządzającej treningami.
-* **Zarządzanie zajęciami**: Możliwość przekładania oraz odwoływania treningów.
-* Dostęp do szczegółowych informacji o grupach i uczestnikach.
+| Rola | Dostępne funkcje |
+| :--- | :--- |
+| **Gość (Niezalogowany)** | Przeglądanie mapy wszystkich lokalizacji siłowni, dostęp do materiałów marketingowych i opisowych systemu. |
+| **Użytkownik (Klient)** | Sprawdzanie statusu i zakup karnetu, przeglądanie pełnego grafiku, zapisywanie się i wypisywanie z zajęć, podgląd podstawowych danych profilu. |
+| **Trener** | Tworzenie, edycja i usuwanie własnych zajęć, przeglądanie list uczestników, pełne zarządzanie profilem (specjalizacja, biografia, zdjęcie profilowe). |
 
-**ℹ️ Informacje i Content**
-* Sekcja "O nas": Galeria zdjęć obiektu oraz informacje o siłowni.
-* Lista trenerów: Prezentacja kadry wraz z opisami kompetencji.
-* Rozszerzone informacje o wszystkich usługach systemu.
+---
+
+## Stack Technologiczny
+
+Projekt został zbudowany w oparciu o nowoczesny ekosystem narzędzi frontendowych:
+
+* **Framework:** React 19
+* **Język:** TypeScript
+* **Narzędzie budujące (Bundler):** Vite
+* **Style:** Tailwind CSS 4
+* **Routing:** React Router
+* **Komunikacja z API:** Axios, SockJS / STOMP (obsługa WebSockets)
+* **Mapy:** Leaflet
+* **Wielojęzyczność (i18n):** i18next
+
+---
+
+## Struktura Projektu
+
+Główny kod aplikacji znajduje się w katalogu `src`, który utrzymuje podział na logiczne moduły:
+
+* `assets` - Statyczne pliki takie jak obrazy, ikony.
+* `components` - Wielokrotnego użytku komponenty UI.
+* `context` - Konteksty Reacta zarządzające globalnym stanem aplikacji.
+* `hooks` - Niestandardowe hooki z logiką biznesową.
+* `locales` - Pliki z tłumaczeniami aplikacji.
+* `pages` - Główne widoki/strony przypisane do konkretnych ścieżek w routingu.
+* `utils` - Funkcje pomocnicze, formatowanie danych, konfiguracje.
+
+---
+
+## Uruchomienie Lokalne
+
+Aby uruchomić projekt w środowisku deweloperskim, wykonaj poniższe kroki. Wymagane jest posiadanie zainstalowanego środowiska Node.js.
+
+1. Sklonuj repozytorium na swój komputer.
+2. Zainstaluj wymagane zależności za pomocą menedżera pakietów:
+   ```bash
+   npm install
+3. Uruchom serwer deweloperski:
+   ```bash
+   npm run dev
+   ``` 
+   Aplikacja będzie domyślnie dostępna pod adresem podanym w konsoli (najczęściej `http://localhost:5173`)
+   
+
+## Informacje o wdrożeniu
+
+* **Zmienne środowiskowe:** Aplikacja w obecnej architekturze nie wymaga konfiguracji pliku `.env` po stronie klienta.
+* **Wersja produkcyjna:** Aby zbudować zoptymalizowaną wersję aplikacji gotową do wdrożenia, należy użyć polecenia:
+    ```bash
+    npm run build
+    ```
