@@ -13,7 +13,16 @@ export const useAxiosPrivate = () => {
                 }
                 return config;
             },
-            (error) => Promise.reject(error)
+            (error) => {
+                if (error.response && error.response.status === 401) {
+                    console.warn("Session expired or token is invalid.");
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('role');
+                    window.location.href = '/login';
+                }
+
+                return Promise.reject(error);
+            }
         );
         return () => {
             apiPrivate.interceptors.request.eject(requestIntercept);
