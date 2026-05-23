@@ -203,6 +203,7 @@ export const LandingPage: React.FC = () => {
                 </div>
 
                 <button
+                    aria-label="Menu"
                     className="lg:hidden p-2 -mr-2 text-slate-400 hover:text-white"
                     onClick={() => setIsMobileMenuOpen(true)}
                 >
@@ -243,6 +244,7 @@ export const LandingPage: React.FC = () => {
                         <div className="max-w-max"><LanguageButton/></div>
                         <Link
                             to="/login"
+                            data-cy="mobile-login-btn"
                             className="flex items-center justify-center w-full p-4 rounded-2xl border border-slate-700/50 text-sm font-bold text-white bg-slate-800/80"
                         >
                             {t('auth:login.submit_btn')}

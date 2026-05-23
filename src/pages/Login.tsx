@@ -99,6 +99,7 @@ export const Login: React.FC = () => {
                                 <Mail className="h-4 w-4 text-slate-500" />
                             </div>
                             <input
+                                name="email"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -116,6 +117,7 @@ export const Login: React.FC = () => {
                                 <Lock className="h-4 w-4 text-slate-500" />
                             </div>
                             <input
+                                name="password"
                                 type={showPassword ? 'text' : 'password'}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
