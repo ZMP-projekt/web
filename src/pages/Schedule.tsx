@@ -16,6 +16,14 @@ import {formatMonthRange, formatTime, generateNext7Days, isToday} from "../utils
 import type {GymLocation} from "./LocationsPage.tsx";
 import {api} from "../api/axios.ts";
 
+export interface Trainer {
+    firstName: string;
+    lastName: string;
+    specialization: string;
+    bio: string;
+    photoUrl?: string | null;
+}
+
 export const Schedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
     const { isValid, isMembershipLoading } = useMembership();
@@ -30,6 +38,8 @@ export const Schedule: React.FC = () => {
     const [locations, setLocations] = useState<GymLocation[]>([]);
     const navigate = useNavigate();
     const { t, i18n } = useTranslation(['schedule', 'common']);
+    const [trainers, setTrainers] = useState<Trainer[]>([]);
+    const [selectedTrainer, setSelectedTrainer] = useState<Trainer | null>(null);
 
     const selectedClassDetails = classId ? classes.find(c => c.id === Number(classId)) : null;
 
@@ -44,8 +54,13 @@ export const Schedule: React.FC = () => {
     useEffect(() => {
         const fetchLocations = async () => {
             try {
-                const response = await api.get('/api/locations');
-                const rawLocations: GymLocation[] = response.data;
+                const [locationsRes, trainersRes] = await Promise.all([
+                    api.get('/api/locations'),
+                    api.get('/api/trainers')
+                ]);
+                setLocations(locationsRes.data);
+                setTrainers(trainersRes.data);
+                const rawLocations: GymLocation[] = locationsRes.data;
                 setLocations(rawLocations);
             } catch (error) {
                 console.error("Error while fetching locations:", error);
@@ -247,12 +262,31 @@ export const Schedule: React.FC = () => {
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-1">
                                         <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.trainer')}</p>
-                                        <div className="flex items-center gap-2 text-white font-semibold">
-                                            <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center">
-                                                <User className="w-4 h-4 text-blue-400" />
-                                            </div>
-                                            {selectedClassDetails.trainerName}
-                                        </div>
+                                        {(() => {
+                                            const currentTrainer = trainers.find(t =>
+                                                `${t.firstName} ${t.lastName}` === selectedClassDetails.trainerName
+                                            );
+
+                                            return (
+                                                <button
+                                                    onClick={() => currentTrainer && setSelectedTrainer(currentTrainer)}
+                                                    className="flex items-center gap-2 text-white font-semibold hover:text-blue-400 transition-colors mt-1 text-left"
+                                                >
+                                                    <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0 overflow-hidden border border-slate-600">
+                                                        {currentTrainer?.photoUrl ? (
+                                                            <img
+                                                                src={currentTrainer.photoUrl}
+                                                                alt={selectedClassDetails.trainerName}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            <User className="w-4 h-4 text-blue-400" />
+                                                        )}
+                                                    </div>
+                                                    {selectedClassDetails.trainerName}
+                                                </button>
+                                            );
+                                        })()}
                                     </div>
                                     <div className="space-y-1">
                                         <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">{t('user.duration')}</p>
@@ -315,6 +349,51 @@ export const Schedule: React.FC = () => {
                                 )}
                             </div>
                         </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+            {selectedTrainer && createPortal(
+                <div className="fixed inset-0 z-110 bg-black/60 backdrop-blur-sm overflow-y-auto flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-200">
+
+                        <div className="p-6 bg-slate-800/80">
+                            <button
+                                onClick={() => setSelectedTrainer(null)}
+                                className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors"
+                            >
+                                <XCircle className="w-6 h-6" />
+                            </button>
+
+                            <div className="flex flex-col items-center mt-4 text-center">
+                                <div className="w-20 h-20 rounded-full bg-slate-700 flex items-center justify-center mb-4 ring-4 ring-slate-800 shadow-xl overflow-hidden border border-slate-600 shrink-0">
+                                    {selectedTrainer.photoUrl ? (
+                                        <img
+                                            src={selectedTrainer.photoUrl}
+                                            alt={`${selectedTrainer.firstName} ${selectedTrainer.lastName}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <User className="w-10 h-10 text-blue-400" />
+                                    )}
+                                </div>
+
+                                <h3 className="text-2xl font-black text-white">
+                                    {selectedTrainer.firstName} {selectedTrainer.lastName}
+                                </h3>
+                                <span className="mt-2 text-xs font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                                    {selectedTrainer.specialization}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="p-6 bg-slate-900/50 border-t border-slate-700/50">
+                            <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-2">Bio</p>
+                            <p className="text-slate-300 text-sm leading-relaxed italic">
+                                {selectedTrainer.bio}
+                            </p>
+                        </div>
+
                     </div>
                 </div>,
                 document.body
