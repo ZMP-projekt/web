@@ -74,7 +74,8 @@
     "my_membership": "Membership",
     "profile": "Profile",
     "logout": "Logout",
-    "trainer_badge": "Trainer panel"
+    "trainer_badge": "Trainer panel",
+    "go_to_dashboard": "Go to dashboard"
   },
   "notifications": {
     "notifications": "Notifications",

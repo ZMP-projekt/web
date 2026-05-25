@@ -78,7 +78,8 @@
     "my_membership": "Mój Karnet",
     "profile": "Profil",
     "logout": "Wyloguj się",
-    "trainer_badge": "Panel trenera"
+    "trainer_badge": "Panel trenera",
+    "go_to_dashboard": "Przejdź do panelu"
   },
   "notifications": {
     "notifications": "Powiadomienia",

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import {Link} from "react-router";
+import { Link } from "react-router";
 import {
     BicepsFlexedIcon,
     CalendarDays, Dumbbell,
     Flame,
-    Leaf,
+    Leaf, LogOut,
     MapPin, Menu,
     MoveRight,
     Navigation,
@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import {LanguageButton} from "../components/LanguageButton.tsx";
 import {useTranslation} from "react-i18next";
+import {useAuth} from "../hooks/useAuth.ts";
+import {apiPrivate} from "../api/axios.ts";
 
 interface NavLink {
     label: string;
@@ -36,13 +38,13 @@ export const LandingPage: React.FC = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
     const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({});
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
-    const { t } = useTranslation(['landing_page', 'common', 'plan_features']);
+    const { t } = useTranslation(['landing_page', 'common', 'plan_features', 'navbar']);
+    const { token, role, logout } = useAuth();
 
     const NAV_LINKS: NavLink[] = [
         { label: t('about'), href: "#about" },
         { label: t('classes'), href: "#classes" },
         { label: t('pricing'), href: "#pricing" },
-        { label: t('locations'), href: "/locations" },
     ];
 
     const STATS: Stat[] = [
@@ -116,6 +118,16 @@ export const LandingPage: React.FC = () => {
         sectionRefs.current[id] = el;
     };
 
+    const handleLogout = async (): Promise<void> => {
+        try {
+            await apiPrivate.post('/auth/logout');
+        } catch (error) {
+            console.error(error);
+        } finally {
+            logout();
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-900 text-slate-200 overflow-x-hidden" style={{ fontFamily: "'Outfit', sans-serif" }}>
             <style>{`
@@ -186,20 +198,40 @@ export const LandingPage: React.FC = () => {
                             {link.label}
                         </a>
                     ))}
+                    <Link to={'/locations'} className="nav-link text-slate-400 text-sm font-medium no-underline">{t('locations')}</Link>
                 </div>
 
                 <div className="hidden lg:flex items-center gap-3">
                     <LanguageButton />
-                    <Link to="/login" className="text-slate-400 hover:text-white text-sm font-medium no-underline transition-colors">
-                        {t('common:log_in')}
-                    </Link>
-                    <Link
-                        to="/register"
-                        className="text-white text-sm flex items-center gap-2 font-bold no-underline px-5 py-2 rounded-xl transition-opacity hover:opacity-90"
-                        style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)", boxShadow: "0 0 20px rgba(59,130,246,0.3)" }}
-                    >
-                        {t('join_now')} <MoveRight className="w-4 h-4" />
-                    </Link>
+                    {token ? (
+                        <>
+                            <Link
+                                to={role === 'ROLE_TRAINER' ? '/trainer/schedule' : '/dashboard'}
+                                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/30"
+                                >
+                                {t('navbar:go_to_dashboard')}
+                            </Link>
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all duration-200 text-slate-400 hover:bg-red-500/10 hover:text-red-400"
+                            >
+                                <LogOut className="w-5 h-5 shrink-0"/>
+                                <span className="font-medium text-sm">{t('navbar:logout')}</span>
+                            </button>
+                        </>
+                    ) : (
+                        <><Link to="/login" className="text-slate-400 hover:text-white text-sm font-medium no-underline transition-colors">
+                            {t('common:log_in')}
+                        </Link>
+                        <Link
+                            to="/register"
+                            className="text-white text-sm flex items-center gap-2 font-bold no-underline px-5 py-2 rounded-xl transition-opacity hover:opacity-90"
+                            style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)", boxShadow: "0 0 20px rgba(59,130,246,0.3)" }}
+                        >
+                            {t('join_now')} <MoveRight className="w-4 h-4" />
+                        </Link></>
+                    )}
+
                 </div>
 
                 <button
@@ -519,12 +551,12 @@ export const LandingPage: React.FC = () => {
                 style={{ background: "rgba(15,23,42,0.6)" }}
             >
                 <div className="text-center mt-12">
-                    <a
-                        href="/locations"
+                    <Link
+                        to="/locations"
                         className="inline-flex items-center gap-2 bg-blue-500 px-8 py-4 rounded-2xl font-bold text-white hover:bg-blue-600 transition-all"
                     >
                         {t('find_club')} <Navigation className="w-5 h-5" />
-                    </a>
+                    </Link>
                 </div>
             </section>
 
