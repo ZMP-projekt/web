@@ -58,13 +58,14 @@ export const TrainerLayout: React.FC = () => {
         >
             <header className="sticky top-0 z-50 flex items-center justify-between px-4 md:px-8 h-16 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md">
                 <div className="flex items-center gap-3">
-                    <div
+                    <Link
+                        to={'/'}
                         className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                         style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}
                     >
                         <Dumbbell className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="hidden sm:block font-bold text-white text-base tracking-tight">GymSystem</span>
+                    </Link>
+                    <Link to={'/'} className="hidden sm:block font-bold text-white text-base tracking-tight">GymSystem</Link>
                     <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">
                         {t('trainer_badge')}
                     </span>

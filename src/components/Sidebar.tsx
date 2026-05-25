@@ -1,5 +1,5 @@
 import { Home, CalendarDays, CreditCard, User, Dumbbell, LogOut, X } from 'lucide-react';
-import { Link, useNavigate, useLocation } from 'react-router';
+import {Link, useNavigate, useLocation } from 'react-router';
 import React from 'react';
 import { useAuth } from '../hooks/useAuth.ts';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate.ts';
@@ -63,13 +63,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             }`}>
                 <div className="flex items-center justify-between mb-8 px-1">
                     <div className="flex items-center gap-2.5">
-                        <div
+                        <Link
+                            to={'/'}
                             className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                             style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}
                         >
                             <Dumbbell className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-white font-bold text-lg tracking-tight">GymSystem</span>
+                        </Link>
+                        <Link to={'/'} className="text-white font-bold text-lg tracking-tight">GymSystem</Link>
                     </div>
                     <button onClick={onClose} className="md:hidden p-1 text-slate-400 hover:text-white">
                         <X className="w-6 h-6" />
