@@ -27,7 +27,6 @@ export const Register: React.FC = () => {
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const formRole = "ROLE_USER";
     const { login, role, token } = useAuth();
     const { t } = useTranslation(['auth', 'common']);
 
@@ -37,9 +36,10 @@ export const Register: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const response = await api.post('/auth/register', {firstName, lastName, email, password, formRole});
+            const role = "ROLE_USER";
+            const response = await api.post('/auth/register', {firstName, lastName, email, password, role});
             const { token } = response.data;
-            login(token, formRole);
+            login(token, role);
             navigate('/dashboard');
         } catch (err) {
             console.error('Error while registering:', err);

@@ -244,11 +244,11 @@ const InputField = ({ label, name, value, isEditing, onChange }: { label: string
                 value={value}
                 onChange={onChange}
                 className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder:text-slate-600"
-                placeholder={`${t('enter_label')} ${label.toLowerCase()}`}
+                placeholder={`${t('profile:enter_label')} ${label.toLowerCase()}`}
             />
         ) : (
             <div className="w-full px-4 py-3 bg-slate-900/20 border border-slate-700/50 rounded-xl text-white font-medium">
-                {value || <span className="text-slate-500 italic">{t('no_data')}</span>}
+                {value || <span className="text-slate-500 italic">{t('profile:no_data')}</span>}
             </div>
         )}
     </div>
