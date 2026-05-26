@@ -26,7 +26,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
                 const response = await apiPrivate.get('/api/notifications');
                 setNotifications(response.data);
             } catch (error) {
-                console.error("Błąd pobierania historii powiadomień:", error);
+                console.error("Error while fetching old notifications:", error);
             }
         };
         void fetchOldNotifications();
@@ -38,14 +38,13 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
             },
             reconnectDelay: 5000,
             onConnect: () => {
-                console.log("Połączono z WebSocketem!");
                 client.subscribe('/user/queue/notifications', (message) => {
                     let newNotification: NotificationData;
 
                     try {
                         newNotification = JSON.parse(message.body);
                     } catch (error) {
-                        console.warn("Otrzymano zwykły tekst zamiast JSON. Tworzę tymczasowy obiekt.", error);
+                        console.warn("Received a string instead of JSON. Creating a temporary object.", error);
                         newNotification = {
                             id: Date.now(),
                             content: message.body,
@@ -63,8 +62,8 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
                 });
             },
             onStompError: (frame) => {
-                console.error('Błąd STOMP:', frame.headers['message']);
-                console.error('Szczegóły:', frame.body);
+                console.error('STOMP error:', frame.headers['message']);
+                console.error('Details:', frame.body);
             },
         });
 
@@ -80,7 +79,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
             await apiPrivate.patch(`/api/notifications/${id}/read`);
             setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
         } catch (error) {
-            console.error("Nie udało się oznaczyć powiadomienia", error);
+            console.error("Couldn't mark the notification as read:", error);
         }
     };
 

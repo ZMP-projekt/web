@@ -270,24 +270,54 @@ export const LandingPage: React.FC = () => {
                                 {link.label}
                             </a>
                         ))}
+                        <Link
+                            to={'/locations'}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-3xl font-bold text-slate-300 hover:text-white transition-colors"
+                        >
+                            {t('locations')}
+                        </Link>
                     </div>
 
                     <div className="mt-auto flex flex-col gap-4">
                         <div className="max-w-max"><LanguageButton/></div>
-                        <Link
-                            to="/login"
-                            data-cy="mobile-login-btn"
-                            className="flex items-center justify-center w-full p-4 rounded-2xl border border-slate-700/50 text-sm font-bold text-white bg-slate-800/80"
-                        >
-                            {t('auth:login.submit_btn')}
-                        </Link>
-                        <Link
-                            to="/register"
-                            className="flex items-center justify-center gap-2 w-full p-4 rounded-2xl text-white text-base font-bold shadow-lg"
-                            style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)" }}
-                        >
-                            {t('join_now')} <MoveRight className="w-4 h-4" />
-                        </Link>
+                        {token ? (
+                            <>
+                                <>
+                                    <button
+                                        onClick={handleLogout}
+                                        data-cy="mobile-login-btn"
+                                        className="flex items-center justify-center w-full p-4 rounded-2xl border border-slate-700/50 text-sm font-bold text-white bg-slate-800/80"
+                                    >
+                                        {t('navbar:logout')}
+                                    </button>
+                                    <Link
+                                        to={role === 'ROLE_TRAINER' ? '/trainer/schedule' : '/dashboard'}
+                                        className="flex items-center justify-center gap-2 w-full p-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-base font-bold shadow-lg"
+                                    >
+                                        {t('navbar:go_to_dashboard')}
+                                    </Link>
+                                </>
+                            </>
+                        ) : (
+                            <>
+                                <Link
+                                    to="/login"
+                                    data-cy="mobile-login-btn"
+                                    className="flex items-center justify-center w-full p-4 rounded-2xl border border-slate-700/50 text-sm font-bold text-white bg-slate-800/80"
+                                >
+                                    {t('auth:login.submit_btn')}
+                                </Link>
+                                <Link
+                                    to="/register"
+                                    className="flex items-center justify-center gap-2 w-full p-4 rounded-2xl text-white text-base font-bold shadow-lg"
+                                    style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)" }}
+                                >
+                                    {t('join_now')} <MoveRight className="w-4 h-4" />
+                                </Link>
+                            </>
+                        )}
+
                     </div>
                 </div>
             </div>
@@ -360,7 +390,7 @@ export const LandingPage: React.FC = () => {
                         <p className="text-slate-500 leading-relaxed text-sm">
                             {t('description_2')}
                         </p>
-                        <div className="flex gap-8 mt-10">
+                        <div className="flex gap-7 mt-10">
                             {([t('gym'), "Cardio", "Spa & Sauna"] as const).map((s, i) => (
                                 <div key={s}>
                                     <div className="text-sm font-bold text-white">{s}</div>

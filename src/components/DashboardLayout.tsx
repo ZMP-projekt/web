@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router';
+import {Link, Outlet} from 'react-router';
 import { Sidebar } from './Sidebar.tsx';
 import { Menu, Dumbbell } from 'lucide-react';
 
@@ -15,13 +15,14 @@ export const DashboardLayout: React.FC = () => {
         >
             <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80">
                 <div className="flex items-center gap-2.5">
-                    <div
+                    <Link
+                        to={'/'}
                         className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                         style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}
                     >
                         <Dumbbell className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-white font-bold tracking-tight">GymSystem</span>
+                    </Link>
+                    <Link to={'/'} className="text-white font-bold tracking-tight">GymSystem</Link>
                 </div>
 
                 <button

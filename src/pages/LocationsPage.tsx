@@ -119,9 +119,6 @@ export const LocationsPage: React.FC = () => {
                                                     <h3 className="font-bold text-white group-hover:text-blue-400 transition-colors">{loc.name}</h3>
                                                     <p className="text-sm text-slate-400 mt-1">{loc.address}</p>
                                                 </div>
-                                                {activePin === loc.id && (
-                                                    <div className="w-2 h-2 mt-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)] md:hidden"></div>
-                                                )}
                                             </div>
 
                                             {activePin === loc.id && (
