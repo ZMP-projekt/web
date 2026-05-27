@@ -1,5 +1,5 @@
-import {useContext} from "react";
-import {MembershipContext} from "../context/MembershipContext.tsx";
+import { useContext } from "react";
+import { MembershipContext } from "../context/MembershipContext.tsx";
 
 export const useMembership = () => {
     const context = useContext(MembershipContext);

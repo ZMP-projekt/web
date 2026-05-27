@@ -11,9 +11,9 @@ import {
     User,
     Plus,
 } from 'lucide-react';
-import {useTranslation} from "react-i18next";
-import {formatDuration, formatTime, getGreetingKey} from "../utils/dateUtils.ts";
-import {useCurrentTime} from "../hooks/useCurrentTime.ts";
+import { useTranslation } from "react-i18next";
+import { formatDuration, formatTime, getGreetingKey } from "../utils/dateUtils.ts";
+import { useCurrentTime } from "../hooks/useCurrentTime.ts";
 
 interface TrainerProfile {
     firstName: string;
@@ -37,8 +37,13 @@ interface ApiGymClass {
 
 const getTodayIso = (): string => new Date().toISOString().split('T')[0];
 
-const StatTile = ({ value, label, color = 'text-white' }: { value: string | number; label: string; color?: string }) => (
-    <div className="bg-slate-800/40 border flex flex-col min-w-max border-slate-700/50 rounded-2xl px-5 py-4 text-center">
+const StatTile = ({ value, label, color = 'text-white' }: {
+    value: string | number;
+    label: string;
+    color?: string
+}) => (
+    <div
+        className="bg-slate-800/40 border flex flex-col min-w-max border-slate-700/50 rounded-2xl px-5 py-4 text-center">
         <p className={`text-3xl font-extrabold leading-none ${color}`}>{value}</p>
         <p className="text-slate-500 text-xs mt-1.5 uppercase tracking-wider font-medium">{label}</p>
     </div>
@@ -89,7 +94,7 @@ export const TrainerDashboard: React.FC = () => {
             hours: `${h} h`,
             minutes: m > 0 ? m : ''
         });
-        return t('trainer.starts_in', {hours: '', minutes: m > 0 ? m : '' });
+        return t('trainer.starts_in', { hours: '', minutes: m > 0 ? m : '' });
     };
 
     const greeting = t(getGreetingKey(new Date().getHours()))
@@ -111,14 +116,20 @@ export const TrainerDashboard: React.FC = () => {
                 {isLoading ? (
                     <>
                         {[0, 1, 2].map((i) => (
-                            <div key={i} className="h-20 rounded-2xl bg-slate-800/40 border border-slate-700/50 animate-pulse" />
+                            <div key={i}
+                                 className="h-20 rounded-2xl bg-slate-800/40 border border-slate-700/50 animate-pulse" />
                         ))}
                     </>
                 ) : (
                     <>
-                        <StatTile value={todayClasses.length} label={t('trainer.classes_today', {count: todayClasses.length})} />
-                        <StatTile value={upcomingClasses.length} label={t('trainer.upcoming', {count: upcomingClasses.length})} color="text-blue-400" />
-                        <StatTile value={totalParticipantsToday} label={t('trainer.total_participants', {count: totalParticipantsToday})} color="text-purple-400" />
+                        <StatTile value={todayClasses.length}
+                                  label={t('trainer.classes_today', { count: todayClasses.length })} />
+                        <StatTile value={upcomingClasses.length}
+                                  label={t('trainer.upcoming', { count: upcomingClasses.length })}
+                                  color="text-blue-400" />
+                        <StatTile value={totalParticipantsToday}
+                                  label={t('trainer.total_participants', { count: totalParticipantsToday })}
+                                  color="text-purple-400" />
                     </>
                 )}
             </div>
@@ -152,7 +163,8 @@ export const TrainerDashboard: React.FC = () => {
                                         {getTimeUntil(nextClass.startTime)}
                                     </span>
                                     {nextClass.personalTraining && (
-                                        <span className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/15 border border-amber-500/30 px-3 py-1 rounded-full">
+                                        <span
+                                            className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/15 border border-amber-500/30 px-3 py-1 rounded-full">
                                             {t('trainer.personal')}
                                         </span>
                                     )}
@@ -164,7 +176,8 @@ export const TrainerDashboard: React.FC = () => {
                                     <span className="flex items-center gap-1.5">
                                         <Clock className="w-3.5 h-3.5 text-slate-600" />
                                         {formatTime(nextClass.startTime, i18n.language)} – {formatTime(nextClass.endTime, i18n.language)}
-                                        <span className="text-slate-600">({formatDuration(nextClass.startTime, nextClass.endTime)})</span>
+                                        <span
+                                            className="text-slate-600">({formatDuration(nextClass.startTime, nextClass.endTime)})</span>
                                     </span>
                                     {nextClass.locationName && (
                                         <span className="flex items-center gap-1.5">
@@ -191,14 +204,18 @@ export const TrainerDashboard: React.FC = () => {
                                 <Link
                                     to="/trainer/schedule"
                                     className="inline-flex items-center gap-2 text-sm font-bold text-white no-underline px-5 py-2.5 rounded-xl transition-all hover:opacity-90"
-                                    style={{ background: 'linear-gradient(135deg, #3B82F6, #6D28D9)', boxShadow: '0 4px 16px rgba(59,130,246,0.25)' }}
+                                    style={{
+                                        background: 'linear-gradient(135deg, #3B82F6, #6D28D9)',
+                                        boxShadow: '0 4px 16px rgba(59,130,246,0.25)'
+                                    }}
                                 >
                                     <Users className="w-4 h-4" /> {t('trainer.view_attendance')}
                                 </Link>
                             </div>
                         </div>
                     ) : (
-                        <div className="rounded-3xl p-8 border border-slate-700/50 bg-slate-800/30 flex flex-col items-center justify-center text-center h-52">
+                        <div
+                            className="rounded-3xl p-8 border border-slate-700/50 bg-slate-800/30 flex flex-col items-center justify-center text-center h-52">
                             <CalendarClock className="w-10 h-10 text-slate-600 mb-3" />
                             <p className="text-white font-semibold mb-1">{t('trainer.no_classes_today')}</p>
                             <p className="text-slate-500 text-sm mb-4">{t('trainer.add_new_hint')}</p>
@@ -219,7 +236,8 @@ export const TrainerDashboard: React.FC = () => {
                     {isLoading ? (
                         <div className="space-y-2">
                             {[0, 1, 2].map((i) => (
-                                <div key={i} className="h-16 rounded-2xl bg-slate-800/40 border border-slate-700/50 animate-pulse" />
+                                <div key={i}
+                                     className="h-16 rounded-2xl bg-slate-800/40 border border-slate-700/50 animate-pulse" />
                             ))}
                         </div>
                     ) : todayClasses.length > 0 ? (
@@ -253,9 +271,11 @@ export const TrainerDashboard: React.FC = () => {
                                                 </p>
                                             </div>
                                             {isActive && (
-                                                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider shrink-0">{t('trainer.live')}</span>
+                                                <span
+                                                    className="text-[10px] font-bold text-blue-400 uppercase tracking-wider shrink-0">{t('trainer.live')}</span>
                                             )}
-                                            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
+                                            <ChevronRight
+                                                className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
                                         </Link>
                                     );
                                 })}

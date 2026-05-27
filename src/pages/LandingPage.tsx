@@ -11,10 +11,10 @@ import {
     Smartphone,
     Trophy, X
 } from "lucide-react";
-import {LanguageButton} from "../components/LanguageButton.tsx";
-import {useTranslation} from "react-i18next";
-import {useAuth} from "../hooks/useAuth.ts";
-import {apiPrivate} from "../api/axios.ts";
+import { LanguageButton } from "../components/LanguageButton.tsx";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../hooks/useAuth.ts";
+import { apiPrivate } from "../api/axios.ts";
 
 interface NavLink {
     label: string;
@@ -129,7 +129,8 @@ export const LandingPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-900 text-slate-200 overflow-x-hidden" style={{ fontFamily: "'Outfit', sans-serif" }}>
+        <div className="min-h-screen bg-slate-900 text-slate-200 overflow-x-hidden"
+             style={{ fontFamily: "'Outfit', sans-serif" }}>
             <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap');
         .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; }
@@ -181,9 +182,10 @@ export const LandingPage: React.FC = () => {
       `}</style>
 
             <div className="grain" />
-            <nav className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 transition-all duration-300 ${
-                scrolled ? "h-15 bg-slate-900/90 backdrop-blur-md border-b border-white/5" : "h-18 bg-transparent"
-            }`}>
+            <nav
+                className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 transition-all duration-300 ${
+                    scrolled ? "h-15 bg-slate-900/90 backdrop-blur-md border-b border-white/5" : "h-18 bg-transparent"
+                }`}>
                 <div className="flex items-center gap-2.5">
                     <div
                         className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg display"
@@ -194,11 +196,13 @@ export const LandingPage: React.FC = () => {
 
                 <div className="hidden lg:flex gap-10">
                     {NAV_LINKS.map((link) => (
-                        <a key={link.href} href={link.href} className="nav-link text-slate-400 text-sm font-medium no-underline">
+                        <a key={link.href} href={link.href}
+                           className="nav-link text-slate-400 text-sm font-medium no-underline">
                             {link.label}
                         </a>
                     ))}
-                    <Link to={'/locations'} className="nav-link text-slate-400 text-sm font-medium no-underline">{t('locations')}</Link>
+                    <Link to={'/locations'}
+                          className="nav-link text-slate-400 text-sm font-medium no-underline">{t('locations')}</Link>
                 </div>
 
                 <div className="hidden lg:flex items-center gap-3">
@@ -208,28 +212,32 @@ export const LandingPage: React.FC = () => {
                             <Link
                                 to={role === 'ROLE_TRAINER' ? '/trainer/schedule' : '/dashboard'}
                                 className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/30"
-                                >
+                            >
                                 {t('navbar:go_to_dashboard')}
                             </Link>
                             <button
                                 onClick={handleLogout}
                                 className="flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all duration-200 text-slate-400 hover:bg-red-500/10 hover:text-red-400"
                             >
-                                <LogOut className="w-5 h-5 shrink-0"/>
+                                <LogOut className="w-5 h-5 shrink-0" />
                                 <span className="font-medium text-sm">{t('navbar:logout')}</span>
                             </button>
                         </>
                     ) : (
-                        <><Link to="/login" className="text-slate-400 hover:text-white text-sm font-medium no-underline transition-colors">
+                        <><Link to="/login"
+                                className="text-slate-400 hover:text-white text-sm font-medium no-underline transition-colors">
                             {t('common:log_in')}
                         </Link>
-                        <Link
-                            to="/register"
-                            className="text-white text-sm flex items-center gap-2 font-bold no-underline px-5 py-2 rounded-xl transition-opacity hover:opacity-90"
-                            style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)", boxShadow: "0 0 20px rgba(59,130,246,0.3)" }}
-                        >
-                            {t('join_now')} <MoveRight className="w-4 h-4" />
-                        </Link></>
+                            <Link
+                                to="/register"
+                                className="text-white text-sm flex items-center gap-2 font-bold no-underline px-5 py-2 rounded-xl transition-opacity hover:opacity-90"
+                                style={{
+                                    background: "linear-gradient(135deg, #3B82F6, #7C3AED)",
+                                    boxShadow: "0 0 20px rgba(59,130,246,0.3)"
+                                }}
+                            >
+                                {t('join_now')} <MoveRight className="w-4 h-4" />
+                            </Link></>
                     )}
 
                 </div>
@@ -280,7 +288,7 @@ export const LandingPage: React.FC = () => {
                     </div>
 
                     <div className="mt-auto flex flex-col gap-4">
-                        <div className="max-w-max"><LanguageButton/></div>
+                        <div className="max-w-max"><LanguageButton /></div>
                         {token ? (
                             <>
                                 <>
@@ -326,17 +334,25 @@ export const LandingPage: React.FC = () => {
                 className="hero-bg diagonal-bottom relative flex flex-col justify-center overflow-hidden"
                 style={{ minHeight: "100vh", padding: "120px 2rem 80px" }}
             >
-                <div className="absolute top-[15%] right-[8%] w-px h-[40%]" style={{ background: "linear-gradient(to bottom, transparent, rgba(59,130,246,0.3), transparent)" }} />
-                <div className="absolute top-[30%] right-[12%] w-px h-[30%]" style={{ background: "linear-gradient(to bottom, transparent, rgba(139,92,246,0.2), transparent)" }} />
+                <div className="absolute top-[15%] right-[8%] w-px h-[40%]"
+                     style={{ background: "linear-gradient(to bottom, transparent, rgba(59,130,246,0.3), transparent)" }} />
+                <div className="absolute top-[30%] right-[12%] w-px h-[30%]"
+                     style={{ background: "linear-gradient(to bottom, transparent, rgba(139,92,246,0.2), transparent)" }} />
 
                 <div className="max-w-300 w-full mx-auto">
 
-                    <h1 className="hero-title display text-white mb-8" style={{ fontSize: "clamp(72px, 12vw, 160px)", lineHeight: 0.9 }}>
+                    <h1 className="hero-title display text-white mb-8"
+                        style={{ fontSize: "clamp(72px, 12vw, 160px)", lineHeight: 0.9 }}>
                         {t('hero.word1')}<br />
                         <span style={{ WebkitTextStroke: "2px #3B82F6", color: "transparent" }}>{t('hero.word2')}</span><br />
-                        <span style={{ background: "linear-gradient(90deg, #3B82F6, #8B5CF6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{t('hero.word3')}</span>
+                        <span style={{
+                            background: "linear-gradient(90deg, #3B82F6, #8B5CF6)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent"
+                        }}>{t('hero.word3')}</span>
                     </h1>
-                    <h1 className="hero-title display text-white mb-12" style={{ fontSize: "clamp(72px, 12vw, 160px)", lineHeight: 0.9 }}>
+                    <h1 className="hero-title display text-white mb-12"
+                        style={{ fontSize: "clamp(72px, 12vw, 160px)", lineHeight: 0.9 }}>
                         {t('hero.word4')}
                     </h1>
 
@@ -360,17 +376,20 @@ export const LandingPage: React.FC = () => {
 
             </section>
 
-            <section className="border-b border-blue-500/20 py-12 px-8" style={{ background: "linear-gradient(135deg, #1E293B, #1E3A5F)" }}>
+            <section className="border-b border-blue-500/20 py-12 px-8"
+                     style={{ background: "linear-gradient(135deg, #1E293B, #1E3A5F)" }}>
                 <div
                     className="stats-grid max-w-300 mx-auto grid grid-cols-4 rounded-2xl overflow-hidden"
                     style={{ gap: "1px", background: "rgba(226,232,240,0.06)" }}
                 >
                     {STATS.map((stat, i) => (
                         <div key={i} className="text-center px-6 py-9" style={{ background: "rgba(15,23,42,0.7)" }}>
-                            <div className="display text-[52px] leading-none" style={{ color: i % 2 === 0 ? "#3B82F6" : "#8B5CF6" }}>
+                            <div className="display text-[52px] leading-none"
+                                 style={{ color: i % 2 === 0 ? "#3B82F6" : "#8B5CF6" }}>
                                 {stat.value}
                             </div>
-                            <div className="text-slate-500 text-xs font-medium mt-1.5 uppercase tracking-wider">{stat.label}</div>
+                            <div
+                                className="text-slate-500 text-xs font-medium mt-1.5 uppercase tracking-wider">{stat.label}</div>
                         </div>
                     ))}
                 </div>
@@ -380,8 +399,10 @@ export const LandingPage: React.FC = () => {
                 <div className="about-grid max-w-300 mx-auto grid grid-cols-2 gap-20 items-center">
 
                     <div className={`fade-up ${visibleSections["about"] ? "visible" : ""}`}>
-                        <div className="text-xs font-bold tracking-[0.16em] text-blue-500 uppercase mb-4">{t('about')}</div>
-                        <h2 className="display text-white mb-6" style={{ fontSize: "clamp(40px, 5vw, 72px)", lineHeight: 0.95 }}>
+                        <div
+                            className="text-xs font-bold tracking-[0.16em] text-blue-500 uppercase mb-4">{t('about')}</div>
+                        <h2 className="display text-white mb-6"
+                            style={{ fontSize: "clamp(40px, 5vw, 72px)", lineHeight: 0.95 }}>
                             {t('title1')}<br />{t('title2')}
                         </h2>
                         <p className="text-slate-400 leading-relaxed text-base mb-6">
@@ -394,7 +415,8 @@ export const LandingPage: React.FC = () => {
                             {([t('gym'), "Cardio", "Spa & Sauna"] as const).map((s, i) => (
                                 <div key={s}>
                                     <div className="text-sm font-bold text-white">{s}</div>
-                                    <div className="text-xs text-slate-500 mt-0.5">{[t('premium_equipment'), t('full_zone'), t('vip_zone')][i]}</div>
+                                    <div
+                                        className="text-xs text-slate-500 mt-0.5">{[t('premium_equipment'), t('full_zone'), t('vip_zone')][i]}</div>
                                 </div>
                             ))}
                         </div>
@@ -435,7 +457,9 @@ export const LandingPage: React.FC = () => {
                                     onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => (e.currentTarget.style.borderColor = card.color + "55")}
                                     onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => (e.currentTarget.style.borderColor = "rgba(226,232,240,0.07)")}
                                 >
-                                    <div className="w-fit mb-5 transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1" style={{ color: card.color }}>
+                                    <div
+                                        className="w-fit mb-5 transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1"
+                                        style={{ color: card.color }}>
                                         {card.icon}
                                     </div>
                                     <div className="text-sm font-bold text-white mb-1.5">{card.title}</div>
@@ -456,10 +480,12 @@ export const LandingPage: React.FC = () => {
             >
                 <div className="max-w-300 mx-auto">
                     <div className={`fade-up ${visibleSections["classes"] ? "visible" : ""} text-center mb-16`}>
-                        <div className="text-xs font-bold tracking-[0.16em] uppercase mb-3" style={{ color: "#8B5CF6" }}>
+                        <div className="text-xs font-bold tracking-[0.16em] uppercase mb-3"
+                             style={{ color: "#8B5CF6" }}>
                             {t('path_to_goal')}
                         </div>
-                        <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)", lineHeight: 1 }}>
+                        <h2 className="display text-white"
+                            style={{ fontSize: "clamp(36px, 4vw, 60px)", lineHeight: 1 }}>
                             {t('find_rhythm')}
                         </h2>
                         <p className="text-slate-400 mt-4 text-base max-w-125 mx-auto">
@@ -490,7 +516,9 @@ export const LandingPage: React.FC = () => {
                                 className={`fade-up stagger-${i + 2} ${visibleSections["classes"] ? "visible" : ""} flex flex-col items-center text-center relative p-8 rounded-3xl border transition-transform hover:-translate-y-2`}
                                 style={{ background: "rgba(30,41,59,0.5)", borderColor: "rgba(226,232,240,0.07)" }}
                             >
-                                <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-20 pointer-events-none" style={{ background: type.color }} />
+                                <div
+                                    className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-20 pointer-events-none"
+                                    style={{ background: type.color }} />
                                 <div className="text-4xl mb-6">{type.icon}</div>
                                 <h3 className="text-xl font-bold text-white mb-3">{type.title}</h3>
                                 <p className="text-sm text-slate-400 leading-relaxed">{type.desc}</p>
@@ -513,8 +541,10 @@ export const LandingPage: React.FC = () => {
             <section id="pricing" ref={registerRef("pricing")} className="py-24 px-8">
                 <div className="max-w-300 mx-auto">
                     <div className={`fade-up ${visibleSections["pricing"] ? "visible" : ""} text-center mb-16`}>
-                        <div className="text-xs font-bold tracking-[0.16em] text-blue-500 uppercase mb-3">{t('title_memberships')}</div>
-                        <h2 className="display text-white" style={{ fontSize: "clamp(36px, 4vw, 60px)" }}>{t('choose_plan')}</h2>
+                        <div
+                            className="text-xs font-bold tracking-[0.16em] text-blue-500 uppercase mb-3">{t('title_memberships')}</div>
+                        <h2 className="display text-white"
+                            style={{ fontSize: "clamp(36px, 4vw, 60px)" }}>{t('choose_plan')}</h2>
                         <p className="text-slate-500 mt-3 text-sm">{t('transparent_desc')}</p>
                     </div>
 
@@ -537,12 +567,14 @@ export const LandingPage: React.FC = () => {
                                         {t('most_popular')}
                                     </div>
                                 )}
-                                <div className="text-[11px] font-bold tracking-widest uppercase mb-2" style={{ color: plan.popular ? "#60A5FA" : "#64748B" }}>
+                                <div className="text-[11px] font-bold tracking-widest uppercase mb-2"
+                                     style={{ color: plan.popular ? "#60A5FA" : "#64748B" }}>
                                     {plan.title}
                                 </div>
                                 <div className="flex items-baseline gap-1 mb-7">
                                     <span className="display text-[56px] text-white leading-none">{plan.price}</span>
-                                    <span className="text-sm text-slate-500 font-medium">PLN / {t('common:month')}</span>
+                                    <span
+                                        className="text-sm text-slate-500 font-medium">PLN / {t('common:month')}</span>
                                 </div>
                                 <div className="h-px mb-6" style={{ background: "rgba(226,232,240,0.06)" }} />
                                 <ul className="list-none mb-8 p-0">
@@ -552,7 +584,8 @@ export const LandingPage: React.FC = () => {
                                             className="flex items-center gap-2.5 py-2 text-sm text-slate-300"
                                             style={{ borderBottom: fi < plan.features.length - 1 ? "1px solid rgba(226,232,240,0.04)" : "none" }}
                                         >
-                                            <span className="text-base" style={{ color: plan.popular ? "#3B82F6" : "#8B5CF6" }}>✓</span>
+                                            <span className="text-base"
+                                                  style={{ color: plan.popular ? "#3B82F6" : "#8B5CF6" }}>✓</span>
                                             {feature}
                                         </li>
                                     ))}
@@ -601,9 +634,14 @@ export const LandingPage: React.FC = () => {
                 />
 
                 <div className="relative max-w-200 mx-auto text-center">
-                    <div className="display text-white mb-6" style={{ fontSize: "clamp(48px, 8vw, 96px)", lineHeight: 0.95 }}>
+                    <div className="display text-white mb-6"
+                         style={{ fontSize: "clamp(48px, 8vw, 96px)", lineHeight: 0.95 }}>
                         {t('transformation_part1')}<br />
-                        <span style={{ background: "linear-gradient(90deg, #3B82F6, #8B5CF6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                        <span style={{
+                            background: "linear-gradient(90deg, #3B82F6, #8B5CF6)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent"
+                        }}>
                             {t('transformation_part2')}
                         </span>
                     </div>
@@ -613,7 +651,10 @@ export const LandingPage: React.FC = () => {
                     <Link
                         to="/register"
                         className="inline-flex items-center gap-3 text-white font-black text-lg no-underline px-10 py-5 rounded-2xl tracking-wide transition-all hover:-translate-y-0.5"
-                        style={{ background: "linear-gradient(135deg, #3B82F6, #7C3AED)", boxShadow: "0 8px 40px rgba(59,130,246,0.4)" }}
+                        style={{
+                            background: "linear-gradient(135deg, #3B82F6, #7C3AED)",
+                            boxShadow: "0 8px 40px rgba(59,130,246,0.4)"
+                        }}
                     >
                         {t('start_free_cta')} <MoveRight />
                     </Link>
@@ -628,7 +669,7 @@ export const LandingPage: React.FC = () => {
                     <div
                         className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm display"
                         style={{ background: "linear-gradient(135deg, #3B82F6, #8B5CF6)" }}
-                    ><Dumbbell className="w-4 h-4"/></div>
+                    ><Dumbbell className="w-4 h-4" /></div>
                     <span className="font-bold text-sm text-slate-200">GymSystem</span>
                 </div>
                 <p className="text-xs text-slate-700">© 2026 GymSystem</p>

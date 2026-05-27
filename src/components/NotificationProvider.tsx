@@ -1,12 +1,12 @@
-import {useAuth} from "../hooks/useAuth.ts";
-import {useAxiosPrivate} from "../hooks/useAxiosPrivate.ts";
-import {type ReactNode, useEffect, useState} from "react";
-import {NotificationContext, type NotificationData} from "../context/NotificationContext.tsx";
-import {Client} from "@stomp/stompjs";
-import {BellRing} from "lucide-react";
+import { useAuth } from "../hooks/useAuth.ts";
+import { useAxiosPrivate } from "../hooks/useAxiosPrivate.ts";
+import { type ReactNode, useEffect, useState } from "react";
+import { NotificationContext, type NotificationData } from "../context/NotificationContext.tsx";
+import { Client } from "@stomp/stompjs";
+import { BellRing } from "lucide-react";
 import toast from "react-hot-toast";
 import SockJS from "sockjs-client";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {

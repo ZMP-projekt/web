@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Link, Outlet} from 'react-router';
+import { Link, Outlet } from 'react-router';
 import { Sidebar } from './Sidebar.tsx';
 import { Menu, Dumbbell } from 'lucide-react';
 
@@ -13,7 +13,8 @@ export const DashboardLayout: React.FC = () => {
                 background: 'radial-gradient(ellipse 80% 60% at 80% 0%, rgba(139,92,246,0.07) 0%, transparent 60%), #0F172A',
             }}
         >
-            <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80">
+            <header
+                className="lg:hidden sticky top-0 z-40 flex items-center justify-between px-4 h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80">
                 <div className="flex items-center gap-2.5">
                     <Link
                         to={'/'}

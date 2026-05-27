@@ -1,10 +1,10 @@
-import {type ReactNode, useCallback, useEffect, useMemo, useState} from "react";
-import {useAxiosPrivate} from "../hooks/useAxiosPrivate.ts";
-import {useAuth} from "../hooks/useAuth.ts";
-import {MembershipContext, type Membership} from "../context/MembershipContext.tsx";
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { useAxiosPrivate } from "../hooks/useAxiosPrivate.ts";
+import { useAuth } from "../hooks/useAuth.ts";
+import { MembershipContext, type Membership } from "../context/MembershipContext.tsx";
 
 export const MembershipProvider = ({ children }: { children: ReactNode }) => {
-    const { isAuthenticated, token , role} = useAuth();
+    const { isAuthenticated, token, role } = useAuth();
     const apiPrivate = useAxiosPrivate();
 
     const [membership, setMembership] = useState<Membership | null>(null);
@@ -27,12 +27,12 @@ export const MembershipProvider = ({ children }: { children: ReactNode }) => {
         } finally {
             setIsMembershipLoading(false);
         }
-    }, [apiPrivate, isAuthenticated, role, token] );
-    
+    }, [apiPrivate, isAuthenticated, role, token]);
+
     useEffect(() => {
         void fetchMembership();
     }, [fetchMembership, isAuthenticated, token]);
-    
+
     const isValid = useMemo(() => {
         if (!membership || !membership.active) return false;
 

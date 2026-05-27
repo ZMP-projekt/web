@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "leaflet.markercluster";
-import {calculateMapCenter} from "../utils/mapUtils.ts";
+import { calculateMapCenter } from "../utils/mapUtils.ts";
 
 interface GymLocation {
     id: number;
@@ -35,9 +35,9 @@ const createMarkerIcon = (isActive: boolean): L.DivIcon =>
 
 export const GymMap: React.FC<GymMapProps> = ({ locations, activeIndex, onPinClick }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
-    const mapInstanceRef   = useRef<L.Map | null>(null);
-    const clusterGroupRef  = useRef<L.MarkerClusterGroup | null>(null);
-    const markersMapRef    = useRef<Map<number, L.Marker>>(new Map());
+    const mapInstanceRef = useRef<L.Map | null>(null);
+    const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
+    const markersMapRef = useRef<Map<number, L.Marker>>(new Map());
 
     const onPinClickRef = useRef(onPinClick);
     useEffect(() => {
@@ -118,8 +118,8 @@ export const GymMap: React.FC<GymMapProps> = ({ locations, activeIndex, onPinCli
         const markersRef = markersMapRef.current;
         return () => {
             mapInstanceRef.current?.remove();
-            mapInstanceRef.current   = null;
-            clusterGroupRef.current  = null;
+            mapInstanceRef.current = null;
+            clusterGroupRef.current = null;
             markersRef.clear();
         };
     }, []);

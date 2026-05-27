@@ -5,8 +5,8 @@ import { useAuth } from '../hooks/useAuth.ts';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import { NotificationDropdown } from './NotificationDropdown.tsx';
 import { useNotifications } from '../hooks/useNotifications.ts';
-import {useTranslation} from "react-i18next";
-import {LanguageButton} from "./LanguageButton.tsx";
+import { useTranslation } from "react-i18next";
+import { LanguageButton } from "./LanguageButton.tsx";
 
 export const TrainerLayout: React.FC = () => {
     const navigate = useNavigate();
@@ -56,7 +56,8 @@ export const TrainerLayout: React.FC = () => {
                 background: 'radial-gradient(ellipse 80% 60% at 80% 0%, rgba(59,130,246,0.07) 0%, transparent 60%), #0F172A',
             }}
         >
-            <header className="sticky top-0 z-50 flex items-center justify-between px-4 md:px-8 h-16 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md">
+            <header
+                className="sticky top-0 z-50 flex items-center justify-between px-4 md:px-8 h-16 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md">
                 <div className="flex items-center gap-3">
                     <Link
                         to={'/'}
@@ -65,16 +66,19 @@ export const TrainerLayout: React.FC = () => {
                     >
                         <Dumbbell className="w-4 h-4 text-white" />
                     </Link>
-                    <Link to={'/'} className="hidden sm:block font-bold text-white text-base tracking-tight">GymSystem</Link>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">
+                    <Link to={'/'}
+                          className="hidden sm:block font-bold text-white text-base tracking-tight">GymSystem</Link>
+                    <span
+                        className="text-[10px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">
                         {t('trainer_badge')}
                     </span>
                 </div>
 
                 <nav className="hidden md:flex items-center gap-1">
                     <NavLink to="/trainer/dashboard" icon={<Dumbbell className="w-4 h-4" />} label={t('dashboard')} />
-                    <NavLink to="/trainer/schedule"  icon={<CalendarClock className="w-4 h-4" />} label={t('schedule')} />
-                    <NavLink to="/trainer/profile"   icon={<User className="w-4 h-4" />} label={t('profile')} />
+                    <NavLink to="/trainer/schedule" icon={<CalendarClock className="w-4 h-4" />}
+                             label={t('schedule')} />
+                    <NavLink to="/trainer/profile" icon={<User className="w-4 h-4" />} label={t('profile')} />
                 </nav>
 
                 <div className="flex items-center gap-1 md:gap-2">
@@ -131,9 +135,11 @@ export const TrainerLayout: React.FC = () => {
 
                 <div className="flex flex-col flex-1 px-4 py-8 overflow-y-auto">
                     <nav className="flex flex-col gap-2 mb-8">
-                        <NavLink to="/trainer/dashboard" icon={<Dumbbell className="w-5 h-5" />} label={t('dashboard')} />
-                        <NavLink to="/trainer/schedule"  icon={<CalendarClock className="w-5 h-5" />} label={t('schedule')} />
-                        <NavLink to="/trainer/profile"   icon={<User className="w-5 h-5" />} label={t('profile')} />
+                        <NavLink to="/trainer/dashboard" icon={<Dumbbell className="w-5 h-5" />}
+                                 label={t('dashboard')} />
+                        <NavLink to="/trainer/schedule" icon={<CalendarClock className="w-5 h-5" />}
+                                 label={t('schedule')} />
+                        <NavLink to="/trainer/profile" icon={<User className="w-5 h-5" />} label={t('profile')} />
                     </nav>
 
                     <div className="mt-auto">

@@ -10,7 +10,9 @@ export const ProtectedRoute = ({ children, roles }: { children: JSX.Element, rol
     }
 
     if (!roles.includes(role)) {
-        return <Navigate to={role === 'ROLE_USER' ? '/dashboard' : role === 'ROLE_TRAINER' ? '/trainer/dashboard' : '/unauthorised'} replace />;
+        return <Navigate
+            to={role === 'ROLE_USER' ? '/dashboard' : role === 'ROLE_TRAINER' ? '/trainer/dashboard' : '/unauthorised'}
+            replace />;
     }
 
     return children

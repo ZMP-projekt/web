@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNotifications } from "../hooks/useNotifications.ts";
 import { Bell, CheckCircle, Trash2, X } from 'lucide-react';
-import {useTranslation} from "react-i18next";
-import {formatDate} from "../utils/dateUtils.ts";
+import { useTranslation } from "react-i18next";
+import { formatDate } from "../utils/dateUtils.ts";
 
 interface NotificationDropdownProps {
     isOpen: boolean;
@@ -20,9 +20,11 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
         <>
             <div className="fixed inset-0 z-40" onClick={onClose}></div>
 
-            <div className="fixed left-4 right-4 top-20 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50 flex flex-col max-h-[80vh]">
+            <div
+                className="fixed left-4 right-4 top-20 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50 flex flex-col max-h-[80vh]">
 
-                <div className="p-4 border-b border-slate-700 flex items-center justify-between bg-slate-800/90 backdrop-blur-sm z-10">
+                <div
+                    className="p-4 border-b border-slate-700 flex items-center justify-between bg-slate-800/90 backdrop-blur-sm z-10">
                     <div className="flex items-center gap-2">
                         <h3 className="text-white font-bold text-lg">{t('notifications')}</h3>
                         {unreadCount > 0 && (
@@ -62,17 +64,22 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
                                             <p className={`text-sm mb-1 ${notification.read ? 'text-slate-300' : 'text-blue-100 font-medium'}`}>
                                                 {notification.content}
                                             </p>
-                                            <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">
+                                            <span
+                                                className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">
                                                 {formatDate(notification.createdAt, i18n.language)}
                                             </span>
                                         </div>
 
-                                        <div className={`absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 transition-opacity ${
-                                            isTouched ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
-                                        }`}>
+                                        <div
+                                            className={`absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 transition-opacity ${
+                                                isTouched ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
+                                            }`}>
                                             {!notification.read && (
                                                 <button
-                                                    onClick={(e) => { e.stopPropagation(); markAsRead(notification.id); }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        markAsRead(notification.id);
+                                                    }}
                                                     className="p-1.5 text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 rounded-lg transition-colors"
                                                     title={t('mark_as_read')}
                                                 >
@@ -80,7 +87,10 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
                                                 </button>
                                             )}
                                             <button
-                                                onClick={(e) => { e.stopPropagation(); deleteNotification(notification.id); }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    deleteNotification(notification.id);
+                                                }}
                                                 className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                                                 title={t('delete_notification')}
                                             >
@@ -89,9 +99,10 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ isOp
                                         </div>
 
                                         {!notification.read && (
-                                            <div className={`absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500 rounded-full transition-opacity shadow-[0_0_8px_rgba(59,130,246,0.8)] hidden sm:block ${
-                                                isTouched ? 'opacity-0' : 'sm:group-hover:opacity-0'
-                                            }`}></div>
+                                            <div
+                                                className={`absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500 rounded-full transition-opacity shadow-[0_0_8px_rgba(59,130,246,0.8)] hidden sm:block ${
+                                                    isTouched ? 'opacity-0' : 'sm:group-hover:opacity-0'
+                                                }`}></div>
                                         )}
                                     </li>
                                 );

@@ -6,8 +6,8 @@ import { NotificationDropdown } from '../components/NotificationDropdown.tsx';
 import { useNotifications } from '../hooks/useNotifications.ts';
 import { useMembership } from '../hooks/useMembership.ts';
 import { Link } from 'react-router';
-import {SkeletonCard} from "../components/SkeletonCard.tsx";
-import {useTranslation} from "react-i18next";
+import { SkeletonCard } from "../components/SkeletonCard.tsx";
+import { useTranslation } from "react-i18next";
 import {
     calculateDaysRemaining,
     formatDate,
@@ -15,7 +15,7 @@ import {
     formatTime,
     getGreetingKey,
 } from "../utils/dateUtils.ts";
-import {calculateProgress} from "../utils/membershipUtils.ts"
+import { calculateProgress } from "../utils/membershipUtils.ts"
 import i18n from "i18next";
 
 interface UserProfile {
@@ -73,7 +73,8 @@ const ClassRow = ({ cls }: { cls: ClassItem; showEnrolledBadge?: boolean }) => {
             className="flex items-center gap-4 p-3 rounded-2xl bg-slate-700/20 hover:bg-slate-700/40 border border-transparent hover:border-slate-600/40 transition-all duration-200 group no-underline"
         >
             <div className="text-center min-w-11">
-                <div className="text-white font-bold text-sm leading-none">{formatTime(cls.startTime, i18n.language)}</div>
+                <div
+                    className="text-white font-bold text-sm leading-none">{formatTime(cls.startTime, i18n.language)}</div>
                 <div className="text-slate-500 text-[11px] mt-0.5">{formatDuration(cls.startTime, cls.endTime)}</div>
             </div>
 
@@ -122,7 +123,7 @@ export const Dashboard: React.FC = () => {
             try {
                 const [profile, classes] = await Promise.all(
                     [apiPrivate.get('/api/users/me'),
-                    apiPrivate.get(`/api/classes/by-date?date=${todayDate.toISOString().split('T')[0]}T00:00:00`),]);
+                        apiPrivate.get(`/api/classes/by-date?date=${todayDate.toISOString().split('T')[0]}T00:00:00`),]);
                 setProfileData(profile.data);
                 setTodayClasses(classes.data)
             } catch (err) {
@@ -132,7 +133,7 @@ export const Dashboard: React.FC = () => {
             }
         };
         void fetchDashboardData();
-    },[apiPrivate]);
+    }, [apiPrivate]);
 
     return (
         <>
@@ -163,7 +164,8 @@ export const Dashboard: React.FC = () => {
                         </button>
                         <NotificationDropdown isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 border-2 border-slate-700 flex items-center justify-center text-white font-bold text-sm">
+                    <div
+                        className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 border-2 border-slate-700 flex items-center justify-center text-white font-bold text-sm">
                         {profileData?.firstName?.[0] ?? '?'}
                     </div>
                 </div>
@@ -171,10 +173,12 @@ export const Dashboard: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
-                    <SectionCard title={t('user.membership_status')} icon={<IdCard className="w-5 h-5 text-slate-400" />}>
+                    <SectionCard title={t('user.membership_status')}
+                                 icon={<IdCard className="w-5 h-5 text-slate-400" />}>
                         {isMembershipLoading ? (
                             <div className="flex items-center gap-3 py-2">
-                                <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                                <div
+                                    className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
                                 <span className="text-slate-400 text-sm">{t('common:loading_data')}</span>
                             </div>
                         ) : membership && !isValid ? (
@@ -197,11 +201,13 @@ export const Dashboard: React.FC = () => {
                                         <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">{t('common:days_left')}</p>
                                         <p className="text-5xl font-extrabold text-white leading-none">
                                             {calculateDaysRemaining(membership.endDate)}
-                                            <span className="text-slate-500 text-xl font-medium ml-2">{t('common:days_unit', {count: calculateDaysRemaining(membership.endDate)})}</span>
+                                            <span
+                                                className="text-slate-500 text-xl font-medium ml-2">{t('common:days_unit', { count: calculateDaysRemaining(membership.endDate) })}</span>
                                         </p>
                                     </div>
                                     <div className="text-right">
-                                        <span className="inline-block text-xs font-bold uppercase tracking-wide text-blue-400 bg-blue-500/15 border border-blue-500/30 px-3 py-1.5 rounded-full mb-2">
+                                        <span
+                                            className="inline-block text-xs font-bold uppercase tracking-wide text-blue-400 bg-blue-500/15 border border-blue-500/30 px-3 py-1.5 rounded-full mb-2">
                                             {membership.type}
                                         </span>
                                         <p className="text-slate-500 text-xs">{t('common:valid_until')} {formatDate(membership.endDate, i18n.language)}</p>
@@ -241,7 +247,7 @@ export const Dashboard: React.FC = () => {
                     >
                         {isLoading ? (
                             <>
-                                <SkeletonCard/>
+                                <SkeletonCard />
                             </>
                         ) : enrolledClasses.length === 0 ? (
                             <div className="text-center py-8">

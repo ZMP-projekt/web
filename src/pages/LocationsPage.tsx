@@ -1,10 +1,10 @@
-import React, {useState, useEffect, useMemo, useCallback} from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { api } from '../api/axios';
 import { GymMap } from '../components/GymMap';
-import {Search, MapPin, List, MoveLeft, Loader2} from 'lucide-react';
-import {Link, useSearchParams} from "react-router";
+import { Search, MapPin, List, MoveLeft, Loader2 } from 'lucide-react';
+import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import {LanguageButton} from "../components/LanguageButton.tsx";
+import { LanguageButton } from "../components/LanguageButton.tsx";
 
 export interface GymLocation {
     id: number;
@@ -75,14 +75,16 @@ export const LocationsPage: React.FC = () => {
     }, [filteredLocations]);
 
     return (
-        <div className="flex h-dvh bg-slate-900 text-slate-200 overflow-hidden relative" style={{ fontFamily: "'Outfit', sans-serif" }}>
+        <div className="flex h-dvh bg-slate-900 text-slate-200 overflow-hidden relative"
+             style={{ fontFamily: "'Outfit', sans-serif" }}>
 
-            <aside className="w-full md:w-100 flex flex-col border-r border-white/5 z-20 bg-slate-900 shadow-2xl relative h-full">
+            <aside
+                className="w-full md:w-100 flex flex-col border-r border-white/5 z-20 bg-slate-900 shadow-2xl relative h-full">
                 <div className="p-6 border-b border-white/5 bg-slate-800/20">
                     <div className="flex justify-between">
                         <h1 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                        <MapPin className="text-blue-500"/> {t('title')}</h1>
-                        <div className="-translate-y-1"><LanguageButton/></div>
+                            <MapPin className="text-blue-500" /> {t('title')}</h1>
+                        <div className="-translate-y-1"><LanguageButton /></div>
                     </div>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -122,7 +124,8 @@ export const LocationsPage: React.FC = () => {
                                             </div>
 
                                             {activePin === loc.id && (
-                                                <div className="mt-4 pt-4 border-t border-white/5 md:hidden animate-in fade-in slide-in-from-top-2 duration-300">
+                                                <div
+                                                    className="mt-4 pt-4 border-t border-white/5 md:hidden animate-in fade-in slide-in-from-top-2 duration-300">
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation(); // Zapobiega ponownemu kliknięciu w całą kartę
@@ -162,7 +165,8 @@ export const LocationsPage: React.FC = () => {
                 }`}
             >
                 {isLoading ? (
-                    <div className="min-h-screen flex items-center justify-center text-white"><Loader2 className="w-10 h-10 animate-spin text-blue-500" /></div>
+                    <div className="min-h-screen flex items-center justify-center text-white"><Loader2
+                        className="w-10 h-10 animate-spin text-blue-500" /></div>
                 ) : (
                     <GymMap
                         locations={locations}
@@ -173,7 +177,8 @@ export const LocationsPage: React.FC = () => {
 
 
                 <div className="absolute top-6 right-6 z-1000">
-                    <Link to={'/'} className="px-4 py-2 bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-xl gap-2 text-xs font-bold text-white hover:bg-slate-800 transition-all no-underline shadow-2xl flex items-center">
+                    <Link to={'/'}
+                          className="px-4 py-2 bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-xl gap-2 text-xs font-bold text-white hover:bg-slate-800 transition-all no-underline shadow-2xl flex items-center">
                         <MoveLeft className="h-4 w-4" /> {t('back_to_home')}
                     </Link>
                 </div>

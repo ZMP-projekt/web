@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { ShieldAlert, ArrowLeft } from 'lucide-react';
 import { useAuth } from "../hooks/useAuth.ts";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 export const Unauthorised = () => {
     const { role } = useAuth();
@@ -11,7 +11,8 @@ export const Unauthorised = () => {
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-top pt-30 text-center px-4 bg-slate-900">
-            <div className="w-24 h-24 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-6">
+            <div
+                className="w-24 h-24 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-6">
                 <ShieldAlert className="w-12 h-12 text-red-500" />
             </div>
 

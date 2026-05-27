@@ -42,7 +42,6 @@
       "greeting_afternoon": "Hi",
       "greeting_evening": "Good evening"
     }
-
   },
   "common": {
     "days_unit_one": "day",

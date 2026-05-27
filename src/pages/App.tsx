@@ -2,22 +2,22 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router';
 import { LandingPage } from './LandingPage.tsx';
 import { Login } from './Login.tsx';
 import { Dashboard } from './Dashboard.tsx';
-import {Register} from './Register.tsx';
-import { AuthProvider} from "../components/AuthProvider.tsx";
-import {ProtectedRoute} from "../components/ProtectedRoute.tsx";
-import {Memberships} from "./Memberships.tsx";
-import {DashboardLayout} from "../components/DashboardLayout.tsx";
+import { Register } from './Register.tsx';
+import { AuthProvider } from "../components/AuthProvider.tsx";
+import { ProtectedRoute } from "../components/ProtectedRoute.tsx";
+import { Memberships } from "./Memberships.tsx";
+import { DashboardLayout } from "../components/DashboardLayout.tsx";
 import { TrainerLayout } from "../components/TrainerLayout.tsx";
 import { TrainerDashboard } from "./TrainerDashboard.tsx";
-import {Profile} from "./Profile.tsx";
-import {Schedule} from "./Schedule.tsx";
-import {Toaster} from "react-hot-toast";
-import {NotificationProvider} from "../components/NotificationProvider.tsx";
-import {LocationsPage} from "./LocationsPage.tsx";
-import {MembershipProvider} from "../components/MembershipProvider.tsx";
-import {TrainerSchedule} from "./TrainerSchedule.tsx";
-import {NotFound} from "./NotFound.tsx";
-import {Unauthorised} from "./Unauthorised.tsx";
+import { Profile } from "./Profile.tsx";
+import { Schedule } from "./Schedule.tsx";
+import { Toaster } from "react-hot-toast";
+import { NotificationProvider } from "../components/NotificationProvider.tsx";
+import { LocationsPage } from "./LocationsPage.tsx";
+import { MembershipProvider } from "../components/MembershipProvider.tsx";
+import { TrainerSchedule } from "./TrainerSchedule.tsx";
+import { NotFound } from "./NotFound.tsx";
+import { Unauthorised } from "./Unauthorised.tsx";
 
 function App() {
     return (
@@ -53,24 +53,26 @@ function App() {
                     <NotificationProvider>
                         <Router>
                             <Routes>
-                                <Route path="/" element={<LandingPage/>}/>
-                                <Route path="/login" element={<Login/>}/>
-                                <Route path="/register" element={<Register/>}/>
-                                <Route path="/locations" element={<LocationsPage/>}/>
-                                <Route element={<ProtectedRoute roles={['ROLE_USER']}><DashboardLayout/></ProtectedRoute>}>
-                                    <Route path="/dashboard" element={<Dashboard/>}/>
-                                    <Route path="/memberships" element={<Memberships/>}/>
-                                    <Route path="/profile" element={<Profile/>}/>
-                                    <Route path="/schedule" element={<Schedule/>}/>
+                                <Route path="/" element={<LandingPage />} />
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/register" element={<Register />} />
+                                <Route path="/locations" element={<LocationsPage />} />
+                                <Route element={<ProtectedRoute
+                                    roles={['ROLE_USER']}><DashboardLayout /></ProtectedRoute>}>
+                                    <Route path="/dashboard" element={<Dashboard />} />
+                                    <Route path="/memberships" element={<Memberships />} />
+                                    <Route path="/profile" element={<Profile />} />
+                                    <Route path="/schedule" element={<Schedule />} />
                                     <Route path="/schedule/:classId" element={<Schedule />} />
                                 </Route>
-                                <Route element={<ProtectedRoute roles={['ROLE_TRAINER']}><TrainerLayout/></ProtectedRoute>}>
-                                    <Route path="/trainer/dashboard" element={<TrainerDashboard/>}/>
-                                    <Route path="/trainer/profile" element={<Profile/>}/>
-                                    <Route path="/trainer/schedule" element={<TrainerSchedule/>}/>
+                                <Route element={<ProtectedRoute
+                                    roles={['ROLE_TRAINER']}><TrainerLayout /></ProtectedRoute>}>
+                                    <Route path="/trainer/dashboard" element={<TrainerDashboard />} />
+                                    <Route path="/trainer/profile" element={<Profile />} />
+                                    <Route path="/trainer/schedule" element={<TrainerSchedule />} />
                                 </Route>
-                                <Route path="/unauthorised" element={<Unauthorised/>}/>
-                                <Route path="*" element={<NotFound/>}/>
+                                <Route path="/unauthorised" element={<Unauthorised />} />
+                                <Route path="*" element={<NotFound />} />
                             </Routes>
                         </Router>
                     </NotificationProvider>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
-import {CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap, AlertCircle} from 'lucide-react';
+import { CheckCircle2, Award, Loader2, Moon, Sun, GraduationCap, AlertCircle } from 'lucide-react';
 import toast from "react-hot-toast";
-import {useMembership} from "../hooks/useMembership.ts";
-import {useTranslation} from "react-i18next";
-import {calculateDaysRemaining, formatDate} from "../utils/dateUtils.ts";
+import { useMembership } from "../hooks/useMembership.ts";
+import { useTranslation } from "react-i18next";
+import { calculateDaysRemaining, formatDate } from "../utils/dateUtils.ts";
 
 export const Memberships: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
@@ -17,7 +17,7 @@ export const Memberships: React.FC = () => {
         setPurchasingType(type);
         try {
             await apiPrivate.post(`api/memberships/purchase?type=${type}`);
-            toast.success(t(membership?.type === type ? 'toast_extended' : 'toast_purchased', {type: type}));
+            toast.success(t(membership?.type === type ? 'toast_extended' : 'toast_purchased', { type: type }));
             await refreshMembership();
         } catch (error) {
             console.error("Purchase error:", error);
@@ -52,7 +52,8 @@ export const Memberships: React.FC = () => {
     ];
 
     if (isMembershipLoading) {
-        return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white"><Loader2 className="w-10 h-10 animate-spin text-blue-500" /></div>;
+        return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white"><Loader2
+            className="w-10 h-10 animate-spin text-blue-500" /></div>;
     }
 
     return (
@@ -63,8 +64,10 @@ export const Memberships: React.FC = () => {
             </div>
 
             {membership && isValid ? (
-                <div className="bg-slate-800/50 backdrop-blur-sm border border-emerald-500/30 rounded-3xl p-6 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10">
+                <div
+                    className="bg-slate-800/50 backdrop-blur-sm border border-emerald-500/30 rounded-3xl p-6 relative overflow-hidden">
+                    <div
+                        className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10">
                         {t('status_active')}
                     </div>
                     <div className="flex items-center gap-6 relative z-10">
@@ -74,7 +77,8 @@ export const Memberships: React.FC = () => {
                         <div>
                             <h2 className="text-2xl font-bold text-white">{t('my_plan')} {membership.type}</h2>
                             <p className="text-slate-400 mt-1">
-                                {t('common:days_left')}: <span className="text-white font-bold">{calculateDaysRemaining(membership.endDate)} {t('common:days_unit', {count: calculateDaysRemaining(membership.endDate)})}</span> ({t('common:valid_until')} {formatDate(membership.endDate, i18n.language)})
+                                {t('common:days_left')}: <span
+                                className="text-white font-bold">{calculateDaysRemaining(membership.endDate)} {t('common:days_unit', { count: calculateDaysRemaining(membership.endDate) })}</span> ({t('common:valid_until')} {formatDate(membership.endDate, i18n.language)})
                             </p>
                         </div>
                     </div>
@@ -114,10 +118,12 @@ export const Memberships: React.FC = () => {
                     const isPurchasingThis = purchasingType === plan.type;
 
                     return (
-                        <div key={plan.type} className={`relative p-8 rounded-3xl border flex flex-col ${isCurrentPlan ? 'bg-slate-800/80 border-blue-500 shadow-lg shadow-blue-900/20' : 'bg-slate-800/30 border-slate-700/50'}`}>
+                        <div key={plan.type}
+                             className={`relative p-8 rounded-3xl border flex flex-col ${isCurrentPlan ? 'bg-slate-800/80 border-blue-500 shadow-lg shadow-blue-900/20' : 'bg-slate-800/30 border-slate-700/50'}`}>
 
                             {isCurrentPlan && (
-                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md">
+                                <div
+                                    className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-md">
                                     {t('your_plan')}
                                 </div>
                             )}

@@ -1,7 +1,7 @@
-import {useState, type ReactNode} from "react";
+import { useState, type ReactNode } from "react";
 import { AuthContext } from "../context/AuthContext.ts";
-import type {JwtPayload} from "../pages/Login.tsx";
-import {jwtDecode} from "jwt-decode";
+import type { JwtPayload } from "../pages/Login.tsx";
+import { jwtDecode } from "jwt-decode";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useState<string | null>(() => {

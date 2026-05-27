@@ -1,10 +1,10 @@
 import { Home, CalendarDays, CreditCard, User, Dumbbell, LogOut, X } from 'lucide-react';
-import {Link, useNavigate, useLocation } from 'react-router';
+import { Link, useNavigate, useLocation } from 'react-router';
 import React from 'react';
 import { useAuth } from '../hooks/useAuth.ts';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate.ts';
-import {useTranslation} from "react-i18next";
-import {LanguageButton} from "./LanguageButton.tsx";
+import { useTranslation } from "react-i18next";
+import { LanguageButton } from "./LanguageButton.tsx";
 
 interface SidebarProps {
     isOpen: boolean;
@@ -58,9 +58,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 />
             )}
 
-            <div className={`fixed left-0 top-0 h-full w-64 bg-slate-900/95 border-r border-slate-800/80 p-5 flex flex-col z-50 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-                isOpen ? 'translate-x-0' : '-translate-x-full'
-            }`}>
+            <div
+                className={`fixed left-0 top-0 h-full w-64 bg-slate-900/95 border-r border-slate-800/80 p-5 flex flex-col z-50 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+                    isOpen ? 'translate-x-0' : '-translate-x-full'
+                }`}>
                 <div className="flex items-center justify-between mb-8 px-1">
                     <div className="flex items-center gap-2.5">
                         <Link
@@ -82,13 +83,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 </p>
 
                 <nav className="flex-1 space-y-1">
-                    <NavButton to="/dashboard"   icon={<Home className="w-5 h-5" />}         label={t('dashboard')} />
-                    <NavButton to="/schedule"    icon={<CalendarDays className="w-5 h-5" />}  label={t('schedule')} />
-                    <NavButton to="/memberships" icon={<CreditCard className="w-5 h-5" />}    label={t('my_membership')} />
-                    <NavButton to="/profile"     icon={<User className="w-5 h-5" />}          label={t('profile')} />
+                    <NavButton to="/dashboard" icon={<Home className="w-5 h-5" />} label={t('dashboard')} />
+                    <NavButton to="/schedule" icon={<CalendarDays className="w-5 h-5" />} label={t('schedule')} />
+                    <NavButton to="/memberships" icon={<CreditCard className="w-5 h-5" />} label={t('my_membership')} />
+                    <NavButton to="/profile" icon={<User className="w-5 h-5" />} label={t('profile')} />
                 </nav>
 
-                <div className="flex justify-center"><LanguageButton/></div>
+                <div className="flex justify-center"><LanguageButton /></div>
 
                 <div className="pt-4 border-t border-slate-800/80 mt-4">
                     <button

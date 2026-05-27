@@ -33,7 +33,10 @@ export const formatMonthRange = (days: string[], lang: string = 'pl-PL'): string
     const last = new Date(days[days.length - 1]);
     if (first.getMonth() === last.getMonth())
         return first.toLocaleDateString(lang, { month: 'long', year: 'numeric' });
-    return `${first.toLocaleDateString(lang, { month: 'long' })} – ${last.toLocaleDateString(lang, { month: 'long', year: 'numeric' })}`;
+    return `${first.toLocaleDateString(lang, { month: 'long' })} – ${last.toLocaleDateString(lang, {
+        month: 'long',
+        year: 'numeric'
+    })}`;
 };
 
 export const getGreetingKey = (h: number): string => {

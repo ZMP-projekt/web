@@ -1,9 +1,9 @@
-import {useEffect} from "react";
-import {apiPrivate} from "../api/axios.ts";
-import {useAuth} from "./useAuth.ts";
+import { useEffect } from "react";
+import { apiPrivate } from "../api/axios.ts";
+import { useAuth } from "./useAuth.ts";
 
 export const useAxiosPrivate = () => {
-    const {token} = useAuth();
+    const { token } = useAuth();
 
     useEffect(() => {
         const requestIntercept = apiPrivate.interceptors.request.use(

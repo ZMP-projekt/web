@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAxiosPrivate } from '../hooks/useAxiosPrivate';
 import {
     Calendar as CalendarIcon,
@@ -22,10 +22,10 @@ import {
 import { ConfirmModal } from '../components/ConfirmModal.tsx';
 import toast from 'react-hot-toast';
 import { api } from '../api/axios.ts';
-import {useTranslation} from "react-i18next";
-import {formatDuration, formatMonthRange, formatTime, generateNext7Days, isToday} from "../utils/dateUtils.ts";
-import {SkeletonCard} from "../components/SkeletonCard.tsx";
-import {useCurrentTime} from "../hooks/useCurrentTime.ts";
+import { useTranslation } from "react-i18next";
+import { formatDuration, formatMonthRange, formatTime, generateNext7Days, isToday } from "../utils/dateUtils.ts";
+import { SkeletonCard } from "../components/SkeletonCard.tsx";
+import { useCurrentTime } from "../hooks/useCurrentTime.ts";
 
 interface ApiGymClass {
     id: number;
@@ -58,7 +58,6 @@ const inputCls = 'w-full pl-9 pr-4 py-3 bg-slate-900/60 border border-slate-700 
 const labelCls = 'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2';
 
 
-
 export const TrainerSchedule: React.FC = () => {
     const apiPrivate = useAxiosPrivate();
 
@@ -85,7 +84,8 @@ export const TrainerSchedule: React.FC = () => {
         maxParticipants: 15, personalTraining: false, locationId: '',
     });
     const [confirmDialog, setConfirmDialog] = useState({
-        isOpen: false, title: '', message: '', onConfirm: async () => {},
+        isOpen: false, title: '', message: '', onConfirm: async () => {
+        },
     });
 
     const fetchTrainerClasses = useCallback(async () => {
@@ -98,7 +98,7 @@ export const TrainerSchedule: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    },[selectedDate, apiPrivate]);
+    }, [selectedDate, apiPrivate]);
 
     useEffect(() => {
         const newDays = generateNext7Days(daysOffset);
@@ -106,7 +106,9 @@ export const TrainerSchedule: React.FC = () => {
         if (!newDays.includes(selectedDate)) setSelectedDate(newDays[0]);
     }, [daysOffset, selectedDate]);
 
-    useEffect(() => { void fetchTrainerClasses(); }, [selectedDate, apiPrivate, fetchTrainerClasses]);
+    useEffect(() => {
+        void fetchTrainerClasses();
+    }, [selectedDate, apiPrivate, fetchTrainerClasses]);
 
     useEffect(() => {
         const fetchLocations = async () => {
@@ -166,10 +168,10 @@ export const TrainerSchedule: React.FC = () => {
         setConfirmDialog({
             isOpen: true,
             title: t('trainer.cancel_class'),
-            message: t('trainer.cancel_confirm_msg', {className: className}),
+            message: t('trainer.cancel_confirm_msg', { className: className }),
             onConfirm: async () => {
                 await apiPrivate.delete(`/api/classes/${classId}`);
-                toast.success(t('trainer.cancel_success_msg', {className: className}));
+                toast.success(t('trainer.cancel_success_msg', { className: className }));
                 await fetchTrainerClasses();
             },
         });
@@ -181,7 +183,7 @@ export const TrainerSchedule: React.FC = () => {
         try {
             const startDateStr = selectedDate;
             let endDateStr = selectedDate;
-            
+
             if (createForm.endTimeStr < createForm.startTimeStr) {
                 const nextDay = new Date(selectedDate);
                 nextDay.setDate(nextDay.getDate() + 1);
@@ -198,7 +200,15 @@ export const TrainerSchedule: React.FC = () => {
             });
             toast.success(t('trainer.add_success'));
             setIsCreateModalOpen(false);
-            setCreateForm({ name: '', description: '', startTimeStr: '12:00', endTimeStr: '13:00', maxParticipants: 15, personalTraining: false, locationId: '' });
+            setCreateForm({
+                name: '',
+                description: '',
+                startTimeStr: '12:00',
+                endTimeStr: '13:00',
+                maxParticipants: 15,
+                personalTraining: false,
+                locationId: ''
+            });
             await fetchTrainerClasses();
         } catch {
             toast.error(t('trainer.add_error'));
@@ -211,7 +221,11 @@ export const TrainerSchedule: React.FC = () => {
         const { name, value, type } = e.target;
         if (type === 'checkbox') {
             const checked = (e.target as HTMLInputElement).checked;
-            setCreateForm((prev) => ({ ...prev, [name]: checked, maxParticipants: checked ? 1 : prev.maxParticipants }));
+            setCreateForm((prev) => ({
+                ...prev,
+                [name]: checked,
+                maxParticipants: checked ? 1 : prev.maxParticipants
+            }));
         } else {
             setCreateForm((prev) => ({ ...prev, [name]: value }));
         }
@@ -232,7 +246,10 @@ export const TrainerSchedule: React.FC = () => {
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
                     className="flex items-center gap-2 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-all hover:opacity-90 shrink-0"
-                    style={{ background: 'linear-gradient(135deg, #3B82F6, #6D28D9)', boxShadow: '0 4px 16px rgba(59,130,246,0.25)' }}
+                    style={{
+                        background: 'linear-gradient(135deg, #3B82F6, #6D28D9)',
+                        boxShadow: '0 4px 16px rgba(59,130,246,0.25)'
+                    }}
                 >
                     <Plus className="w-4 h-4" /> {t('trainer.add_class_btn')}
                 </button>
@@ -291,7 +308,8 @@ export const TrainerSchedule: React.FC = () => {
                     <h2 className="text-white font-semibold capitalize">{selectedDateLabel}</h2>
                     {!isLoading && <div className="h-px flex-1 bg-slate-700/50" />}
                     {!isLoading && classes.length > 0 && (
-                        <span className="text-xs text-slate-500 font-medium shrink-0">{t('trainer.classes_count', {count: classes.length})}</span>
+                        <span
+                            className="text-xs text-slate-500 font-medium shrink-0">{t('trainer.classes_count', { count: classes.length })}</span>
                     )}
                 </div>
 
@@ -315,7 +333,8 @@ export const TrainerSchedule: React.FC = () => {
                                         <div className={`p-3.5 rounded-2xl border shrink-0
                                             'bg-blue-500/10 border-blue-500/20 text-blue-500'
                                         `}>
-                                            {gymClass.personalTraining ? <User className="w-5 h-5" /> : <Activity className="w-5 h-5" />}
+                                            {gymClass.personalTraining ? <User className="w-5 h-5" /> :
+                                                <Activity className="w-5 h-5" />}
                                         </div>
 
                                         <div className="flex-1 min-w-0">
@@ -328,7 +347,8 @@ export const TrainerSchedule: React.FC = () => {
                                                     </span>
                                                 </span>
                                                 {gymClass.personalTraining && (
-                                                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full text-blue-500 border border-blue-500/20 bg-blue-500/10">
+                                                    <span
+                                                        className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full text-blue-500 border border-blue-500/20 bg-blue-500/10">
                                                         {t('trainer.personal')}
                                                     </span>
                                                 )}
@@ -346,29 +366,33 @@ export const TrainerSchedule: React.FC = () => {
                                             >
                                                 <Users className="w-4 h-4 text-blue-400" />
                                                 {gymClass.currentParticipants}/{gymClass.maxParticipants} {t('trainer.participants_label')}
-                                                {isFull && <span className="text-red-400 text-xs font-bold">({t('trainer.full_capacity')})</span>}
+                                                {isFull && <span
+                                                    className="text-red-400 text-xs font-bold">({t('trainer.full_capacity')})</span>}
                                                 <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
                                             </button>
 
                                             <div className="mt-3 flex items-center gap-2">
-                                                <div className="w-32 h-1.5 bg-slate-700/60 rounded-full overflow-hidden">
+                                                <div
+                                                    className="w-32 h-1.5 bg-slate-700/60 rounded-full overflow-hidden">
                                                     <div
                                                         className={`h-full rounded-full ${isFull ? 'bg-red-500' : 'bg-blue-500'}`}
                                                         style={{ width: `${occupancyPct}%` }}
                                                     />
                                                 </div>
                                                 <span className="text-[11px] text-slate-500 font-medium">
-                                                    {isFull ? t('trainer.no_spots') : t('trainer.spots_available', {count: gymClass.maxParticipants - gymClass.currentParticipants})}
+                                                    {isFull ? t('trainer.no_spots') : t('trainer.spots_available', { count: gymClass.maxParticipants - gymClass.currentParticipants })}
                                                 </span>
                                             </div>
                                         </div>
 
                                         {!isPast && (
                                             <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
-                                                <button onClick={() => handleOpenReschedule(gymClass)} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-700/40 hover:bg-slate-700 text-white text-sm font-bold rounded-xl border border-slate-600/50 transition-all">
+                                                <button onClick={() => handleOpenReschedule(gymClass)}
+                                                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-700/40 hover:bg-slate-700 text-white text-sm font-bold rounded-xl border border-slate-600/50 transition-all">
                                                     <Edit className="w-4 h-4" /> {t('trainer.reschedule_btn')}
                                                 </button>
-                                                <button onClick={() => handleCancelClass(gymClass.id, gymClass.name)} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm font-bold rounded-xl border border-red-500/20 hover:border-red-500/30 transition-all">
+                                                <button onClick={() => handleCancelClass(gymClass.id, gymClass.name)}
+                                                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm font-bold rounded-xl border border-red-500/20 hover:border-red-500/30 transition-all">
                                                     <XCircle className="w-4 h-4" /> {t('trainer.cancel_btn')}
                                                 </button>
                                             </div>
@@ -379,7 +403,8 @@ export const TrainerSchedule: React.FC = () => {
                         })
                     ) : (
                         <div className="flex flex-col items-center justify-center py-24 text-center">
-                            <div className="w-16 h-16 rounded-3xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4">
+                            <div
+                                className="w-16 h-16 rounded-3xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4">
                                 <CalendarIcon className="w-7 h-7 text-slate-600" />
                             </div>
                             <p className="text-white font-semibold mb-1">{t('trainer.day_off')}</p>
@@ -397,14 +422,20 @@ export const TrainerSchedule: React.FC = () => {
             </div>
 
             {isCreateModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
                     <div className="absolute inset-0" onClick={() => !isCreating && setIsCreateModalOpen(false)} />
-                    <div className="relative bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]">
+                    <div
+                        className="relative bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]">
                         <div className="flex justify-between items-center p-6 border-b border-slate-700/80">
                             <div>
                                 <h3 className="text-xl font-bold text-white">{t('trainer.add_new_class')}</h3>
                                 <p className="text-xs text-slate-500 mt-1">
-                                    {new Date(selectedDate).toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' })}
+                                    {new Date(selectedDate).toLocaleDateString(i18n.language, {
+                                        weekday: 'long',
+                                        day: 'numeric',
+                                        month: 'long'
+                                    })}
                                 </p>
                             </div>
                             <button onClick={() => !isCreating && setIsCreateModalOpen(false)}
@@ -415,15 +446,18 @@ export const TrainerSchedule: React.FC = () => {
 
                         <div className="p-6 overflow-y-auto">
                             <form id="createClassForm" onSubmit={handleCreateSubmit} className="space-y-5">
-                                <label className="flex items-center gap-3 p-4 border border-slate-600/50 bg-slate-700/30 hover:bg-slate-700/50 rounded-2xl cursor-pointer transition-colors">
+                                <label
+                                    className="flex items-center gap-3 p-4 border border-slate-600/50 bg-slate-700/30 hover:bg-slate-700/50 rounded-2xl cursor-pointer transition-colors">
                                     <input
                                         type="checkbox" name="personalTraining"
                                         checked={createForm.personalTraining} onChange={handleFormChange}
                                         className="w-4 h-4 accent-blue-500 rounded cursor-pointer"
                                     />
                                     <div>
-                                        <span className="block font-bold text-slate-200 text-sm">{t('common.personal_training')}</span>
-                                        <span className="block text-xs text-slate-500">{t('trainer.individual_hint')}</span>
+                                        <span
+                                            className="block font-bold text-slate-200 text-sm">{t('common.personal_training')}</span>
+                                        <span
+                                            className="block text-xs text-slate-500">{t('trainer.individual_hint')}</span>
                                     </div>
                                 </label>
 
@@ -431,16 +465,19 @@ export const TrainerSchedule: React.FC = () => {
                                     <div className="col-span-2">
                                         <label className={labelCls}>{t('trainer.class_name')}</label>
                                         <div className="relative">
-                                            <Dumbbell className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                            <Dumbbell
+                                                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                             <input type="text" required name="name" value={createForm.name}
-                                                   onChange={handleFormChange} placeholder={t('trainer.class_name_placeholder')}
+                                                   onChange={handleFormChange}
+                                                   placeholder={t('trainer.class_name_placeholder')}
                                                    className={inputCls} />
                                         </div>
                                     </div>
                                     <div>
                                         <label className={labelCls}>{t('trainer.capacity')}</label>
                                         <div className="relative">
-                                            <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                            <Users
+                                                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                             <input type="number" required min="1" max="100" name="maxParticipants"
                                                    value={createForm.maxParticipants} onChange={handleFormChange}
                                                    disabled={createForm.personalTraining}
@@ -453,8 +490,10 @@ export const TrainerSchedule: React.FC = () => {
                                     <div>
                                         <label className={labelCls}>{t('trainer.time_from')}</label>
                                         <div className="relative">
-                                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                                            <input type="time" required name="startTimeStr" value={createForm.startTimeStr}
+                                            <Clock
+                                                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                            <input type="time" required name="startTimeStr"
+                                                   value={createForm.startTimeStr}
                                                    onChange={handleFormChange}
                                                    className={inputCls + ' [&::-webkit-calendar-picker-indicator]:invert'} />
                                         </div>
@@ -462,7 +501,8 @@ export const TrainerSchedule: React.FC = () => {
                                     <div>
                                         <label className={labelCls}>{t('trainer.time_to')}</label>
                                         <div className="relative">
-                                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                            <Clock
+                                                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                             <input type="time" required name="endTimeStr" value={createForm.endTimeStr}
                                                    onChange={handleFormChange}
                                                    className={inputCls + ' [&::-webkit-calendar-picker-indicator]:invert'} />
@@ -473,7 +513,8 @@ export const TrainerSchedule: React.FC = () => {
                                 <div>
                                     <label className={labelCls}>{t('common.location')}</label>
                                     <div className="relative">
-                                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                                        <MapPin
+                                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                                         <select required name="locationId" value={createForm.locationId}
                                                 onChange={handleFormChange}
                                                 className={inputCls + ' appearance-none pr-8'}>
@@ -484,7 +525,8 @@ export const TrainerSchedule: React.FC = () => {
                                                 </option>
                                             ))}
                                         </select>
-                                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                                        <ChevronDown
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                                     </div>
                                 </div>
 
@@ -505,9 +547,13 @@ export const TrainerSchedule: React.FC = () => {
                             <button
                                 type="submit" form="createClassForm" disabled={isCreating}
                                 className="w-full flex justify-center items-center gap-2 py-3 text-white font-bold rounded-xl transition-all disabled:opacity-60"
-                                style={{ background: 'linear-gradient(135deg, #3B82F6, #6D28D9)', boxShadow: '0 4px 16px rgba(59,130,246,0.25)' }}
+                                style={{
+                                    background: 'linear-gradient(135deg, #3B82F6, #6D28D9)',
+                                    boxShadow: '0 4px 16px rgba(59,130,246,0.25)'
+                                }}
                             >
-                                {isCreating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                                {isCreating ? <Loader2 className="w-5 h-5 animate-spin" /> :
+                                    <Save className="w-5 h-5" />}
                                 {isCreating ? t('common:saving') : t('trainer.create_class_btn')}
                             </button>
                         </div>
@@ -516,9 +562,11 @@ export const TrainerSchedule: React.FC = () => {
             )}
 
             {isParticipantsModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
                     <div className="absolute inset-0" onClick={() => setIsParticipantsModalOpen(false)} />
-                    <div className="relative bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden z-10">
+                    <div
+                        className="relative bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden z-10">
 
                         <div className="flex justify-between items-center p-6 border-b border-slate-700/80">
                             <div>
@@ -542,9 +590,11 @@ export const TrainerSchedule: React.FC = () => {
                             ) : participantsList.length > 0 ? (
                                 <ul className="space-y-2">
                                     {participantsList.map((p, index) => (
-                                        <li key={p.id} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-900/50 border border-slate-700/50">
-                                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-slate-300 shrink-0"
-                                                 style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.3), rgba(139,92,246,0.3))' }}>
+                                        <li key={p.id}
+                                            className="flex items-center gap-3 p-3 rounded-2xl bg-slate-900/50 border border-slate-700/50">
+                                            <div
+                                                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-slate-300 shrink-0"
+                                                style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.3), rgba(139,92,246,0.3))' }}>
                                                 {index + 1}
                                             </div>
                                             <div>
@@ -567,9 +617,12 @@ export const TrainerSchedule: React.FC = () => {
             )}
 
             {isRescheduleModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-                    <div className="absolute inset-0" onClick={() => !isRescheduling && setIsRescheduleModalOpen(false)} />
-                    <div className="relative bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden z-10">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+                    <div className="absolute inset-0"
+                         onClick={() => !isRescheduling && setIsRescheduleModalOpen(false)} />
+                    <div
+                        className="relative bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden z-10">
 
                         <div className="flex justify-between items-center p-6 border-b border-slate-700/80">
                             <div>
@@ -587,18 +640,26 @@ export const TrainerSchedule: React.FC = () => {
                                 <div>
                                     <label className={labelCls}>{t('trainer.new_date')}</label>
                                     <div className="relative">
-                                        <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                        <CalendarIcon
+                                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                         <input type="date" required value={rescheduleForm.newDate}
-                                               onChange={(e) => setRescheduleForm((p) => ({ ...p, newDate: e.target.value }))}
+                                               onChange={(e) => setRescheduleForm((p) => ({
+                                                   ...p,
+                                                   newDate: e.target.value
+                                               }))}
                                                className={inputCls + ' [&::-webkit-calendar-picker-indicator]:invert'} />
                                     </div>
                                 </div>
                                 <div>
                                     <label className={labelCls}>{t('trainer.new_start_time')}</label>
                                     <div className="relative">
-                                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                        <Clock
+                                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                         <input type="time" required value={rescheduleForm.newTime}
-                                               onChange={(e) => setRescheduleForm((p) => ({ ...p, newTime: e.target.value }))}
+                                               onChange={(e) => setRescheduleForm((p) => ({
+                                                   ...p,
+                                                   newTime: e.target.value
+                                               }))}
                                                className={inputCls + ' [&::-webkit-calendar-picker-indicator]:invert'} />
                                     </div>
                                     <p className="text-xs text-slate-600 mt-2">{t('trainer.calc_end_time_hint')}</p>
@@ -610,9 +671,13 @@ export const TrainerSchedule: React.FC = () => {
                             <button
                                 type="submit" form="rescheduleForm" disabled={isRescheduling}
                                 className="w-full flex justify-center items-center gap-2 py-3 text-white font-bold rounded-xl transition-all disabled:opacity-60"
-                                style={{ background: 'linear-gradient(135deg, #3B82F6, #6D28D9)', boxShadow: '0 4px 16px rgba(59,130,246,0.25)' }}
+                                style={{
+                                    background: 'linear-gradient(135deg, #3B82F6, #6D28D9)',
+                                    boxShadow: '0 4px 16px rgba(59,130,246,0.25)'
+                                }}
                             >
-                                {isRescheduling ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                                {isRescheduling ? <Loader2 className="w-5 h-5 animate-spin" /> :
+                                    <Save className="w-5 h-5" />}
                                 {isRescheduling ? t('common:saving') : t('trainer.reschedule_modal_title')}
                             </button>
                         </div>

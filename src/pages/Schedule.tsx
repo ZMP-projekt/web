@@ -7,14 +7,14 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useMembership } from '../hooks/useMembership.ts';
-import {SkeletonCard} from "../components/SkeletonCard.tsx";
-import {ClassCard, type GymClass} from "../components/ClassCard.tsx";
-import {useNavigate, useParams} from "react-router";
-import {useTranslation} from "react-i18next";
-import {createPortal} from "react-dom";
-import {formatMonthRange, formatTime, generateNext7Days, isToday} from "../utils/dateUtils.ts";
-import type {GymLocation} from "./LocationsPage.tsx";
-import {api} from "../api/axios.ts";
+import { SkeletonCard } from "../components/SkeletonCard.tsx";
+import { ClassCard, type GymClass } from "../components/ClassCard.tsx";
+import { useNavigate, useParams } from "react-router";
+import { useTranslation } from "react-i18next";
+import { createPortal } from "react-dom";
+import { formatMonthRange, formatTime, generateNext7Days, isToday } from "../utils/dateUtils.ts";
+import type { GymLocation } from "./LocationsPage.tsx";
+import { api } from "../api/axios.ts";
 
 export interface Trainer {
     firstName: string;
@@ -224,7 +224,8 @@ export const Schedule: React.FC = () => {
                         ))
                     ) : (
                         <div className="flex flex-col items-center justify-center py-24 text-center">
-                            <div className="w-16 h-16 rounded-3xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4">
+                            <div
+                                className="w-16 h-16 rounded-3xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4">
                                 <CalendarIcon className="w-7 h-7 text-slate-600" />
                             </div>
                             <p className="text-white font-semibold mb-1">{t('user.no_classes_day')}</p>
@@ -237,15 +238,17 @@ export const Schedule: React.FC = () => {
             {selectedClassDetails && createPortal(
                 <div className="fixed inset-0 z-100 bg-black/70 backdrop-blur-md overflow-y-auto">
                     <div className="flex min-h-full items-start md:items-center justify-center p-4 py-8">
-                        <div className="bg-slate-800 border border-slate-700 w-full max-w-xl rounded-4xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+                        <div
+                            className="bg-slate-800 border border-slate-700 w-full max-w-xl rounded-4xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
 
                             <div className="p-8 pb-6 bg-slate-800">
                                 <div className="flex justify-between items-start mb-4">
-                                    <span className={`text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${
-                                        selectedClassDetails.personalTraining
-                                            ? 'border-amber-500/30 text-amber-500 bg-amber-500/5'
-                                            : 'border-blue-500/30 text-blue-500 bg-blue-500/5'
-                                    }`}>
+                                    <span
+                                        className={`text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${
+                                            selectedClassDetails.personalTraining
+                                                ? 'border-amber-500/30 text-amber-500 bg-amber-500/5'
+                                                : 'border-blue-500/30 text-blue-500 bg-blue-500/5'
+                                        }`}>
                                         {selectedClassDetails.personalTraining ? t('common.personal_training') : t('user.group_class')}
                                     </span>
                                     <button
@@ -272,7 +275,8 @@ export const Schedule: React.FC = () => {
                                                     onClick={() => currentTrainer && setSelectedTrainer(currentTrainer)}
                                                     className="flex items-center gap-2 text-white font-semibold hover:text-blue-400 transition-colors mt-1 text-left"
                                                 >
-                                                    <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0 overflow-hidden border border-slate-600">
+                                                    <div
+                                                        className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0 overflow-hidden border border-slate-600">
                                                         {currentTrainer?.photoUrl ? (
                                                             <img
                                                                 src={currentTrainer.photoUrl}
@@ -328,7 +332,8 @@ export const Schedule: React.FC = () => {
 
                                 <div className="pt-4 border-t border-slate-700/50">
                                     <div className="flex justify-between items-end mb-2">
-                                        <span className="text-slate-400 text-sm font-medium">{t('user.participants')}</span>
+                                        <span
+                                            className="text-slate-400 text-sm font-medium">{t('user.participants')}</span>
                                         <span className="text-white font-bold">
                                             {selectedClassDetails.currentParticipants} / {selectedClassDetails.maxParticipants}
                                         </span>
@@ -342,9 +347,11 @@ export const Schedule: React.FC = () => {
                                 </div>
 
                                 {selectedClassDetails.userEnrolled && (
-                                    <div className="flex items-center justify-center gap-2 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+                                    <div
+                                        className="flex items-center justify-center gap-2 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
                                         <CheckCircle className="w-5 h-5 text-emerald-500" />
-                                        <span className="text-emerald-500 font-bold text-sm uppercase tracking-wide">{t('user.on_participants_list')}</span>
+                                        <span
+                                            className="text-emerald-500 font-bold text-sm uppercase tracking-wide">{t('user.on_participants_list')}</span>
                                     </div>
                                 )}
                             </div>
@@ -354,8 +361,10 @@ export const Schedule: React.FC = () => {
                 document.body
             )}
             {selectedTrainer && createPortal(
-                <div className="fixed inset-0 z-110 bg-black/60 backdrop-blur-sm overflow-y-auto flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-200">
+                <div
+                    className="fixed inset-0 z-110 bg-black/60 backdrop-blur-sm overflow-y-auto flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div
+                        className="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-200">
 
                         <div className="p-6 bg-slate-800/80">
                             <button
@@ -366,7 +375,8 @@ export const Schedule: React.FC = () => {
                             </button>
 
                             <div className="flex flex-col items-center mt-4 text-center">
-                                <div className="w-20 h-20 rounded-full bg-slate-700 flex items-center justify-center mb-4 ring-4 ring-slate-800 shadow-xl overflow-hidden border border-slate-600 shrink-0">
+                                <div
+                                    className="w-20 h-20 rounded-full bg-slate-700 flex items-center justify-center mb-4 ring-4 ring-slate-800 shadow-xl overflow-hidden border border-slate-600 shrink-0">
                                     {selectedTrainer.photoUrl ? (
                                         <img
                                             src={selectedTrainer.photoUrl}
@@ -381,7 +391,8 @@ export const Schedule: React.FC = () => {
                                 <h3 className="text-2xl font-black text-white">
                                     {selectedTrainer.firstName} {selectedTrainer.lastName}
                                 </h3>
-                                <span className="mt-2 text-xs font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                                <span
+                                    className="mt-2 text-xs font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
                                     {selectedTrainer.specialization}
                                 </span>
                             </div>
