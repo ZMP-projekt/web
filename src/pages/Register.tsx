@@ -105,6 +105,7 @@ export const Register: React.FC = () => {
                                     <User className="h-4 w-4 text-slate-500" />
                                 </div>
                                 <input
+                                    name="firstName"
                                     type="text"
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
@@ -123,6 +124,7 @@ export const Register: React.FC = () => {
                                     <User2 className="h-4 w-4 text-slate-500" />
                                 </div>
                                 <input
+                                    name="lastName"
                                     type="text"
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
@@ -142,6 +144,7 @@ export const Register: React.FC = () => {
                                 <Mail className="h-4 w-4 text-slate-500" />
                             </div>
                             <input
+                                name="email"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -160,6 +163,7 @@ export const Register: React.FC = () => {
                                 <Lock className="h-4 w-4 text-slate-500" />
                             </div>
                             <input
+                                name="password"
                                 type={showPassword ? 'text' : 'password'}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}

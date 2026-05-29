@@ -4,7 +4,7 @@ import {
     calculateDaysRemaining,
     formatTime,
     isToday,
-    generateNext7Days, formatMonthRange, getGreetingKey
+    generateNext7Days, formatMonthRange, getGreetingKey, formatDate
 } from './dateUtils';
 
 describe('Narzędzia do obsługi dat (dateUtils)', () => {
@@ -28,6 +28,18 @@ describe('Narzędzia do obsługi dat (dateUtils)', () => {
             expect(result).toBe('18:30');
         });
     });
+
+    describe('formatDate()', () => {
+        it('should format date from ISO to DD.MM.YYYY', () => {
+            const result = formatDate('2026-10-05T08:05:00');
+            expect(result).toBe('05.10.2026');
+        });
+
+        it('should format date properly for en-EN locale', () => {
+            const result = formatDate('2026-10-05T08:05:00', 'en-EN');
+            expect(result).toBe('10/05/2026');
+        });
+    })
 
     describe('isToday()', () => {
         it('powinno zwrócić true dla dzisiejszej daty', () => {

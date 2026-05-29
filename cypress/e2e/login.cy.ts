@@ -27,6 +27,15 @@ describe('Przepływ logowania i pobierania danych (E2E)', () => {
         cy.contains('Niepoprawny').should('be.visible');
         cy.url().should('include', '/login');
     });
+    it('powinno zablokować logowanie na admina z komunikatem', () => {
+        cy.visit('http://localhost:5173/login');
+        cy.env(['testAdminEmail', 'testAdminPassword']).then((s) => {
+            cy.get('input[name="email"]').type(s.testAdminEmail);
+            cy.get('input[name="password"]').type(`${s.testAdminPassword}{enter}`);
+        });
+        cy.url().should('include', '/login');
+        cy.contains('Konta administratorów').should('be.visible');
+    });
     it('powinno zalogować użytkownika i poprawnie załadować dane z API', () => {
         cy.intercept('GET', '**/api/**').as('pobieranieDanych');
         cy.visit('http://localhost:5173/login');
